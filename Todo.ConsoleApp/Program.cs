@@ -4,6 +4,11 @@ using Todo.ConsoleApp;
 
 var builder = Host.CreateDefaultBuilder(args);
 
+builder.ConfigureAppConfiguration((hostingContext, config) =>
+{
+    config.AddJsonFiles(hostingContext.HostingEnvironment);
+});
+
 builder.ConfigureServices((_, services) =>
 {
     services.AddSingleton<TodoApplication>();
