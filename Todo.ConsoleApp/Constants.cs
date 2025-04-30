@@ -7,4 +7,6 @@ public class Constants
     public const string UserCaret = "> ";
 
     public const string AppSettings = "appsettings.json";
+
+    public const string ApplicationInsights = "ApplicationInsights:ConnectionString";
 }

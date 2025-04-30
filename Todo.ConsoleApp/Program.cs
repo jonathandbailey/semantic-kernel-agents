@@ -1,17 +1,28 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Todo.ConsoleApp;
 
 var builder = Host.CreateDefaultBuilder(args);
 
 builder.ConfigureAppConfiguration((hostingContext, config) =>
 {
-    config.AddJsonFiles(hostingContext.HostingEnvironment);
+    config.Configure(hostingContext.HostingEnvironment);
 });
 
-builder.ConfigureServices((_, services) =>
+builder.ConfigureServices((context, services) =>
 {
+    services.AddApplicationInsightsTelemetryWorkerService(options =>
+    {
+        options.ConnectionString = context.GetConfigurationValue(Constants.ApplicationInsights);
+    });
+
     services.AddSingleton<TodoApplication>();
+});
+
+builder.ConfigureLogging(logging =>
+{
+    logging.AddApplicationInsights();
 });
 
 var host = builder.Build();
