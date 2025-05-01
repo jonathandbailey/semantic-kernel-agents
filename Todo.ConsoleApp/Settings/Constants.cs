@@ -1,4 +1,4 @@
-﻿namespace Todo.ConsoleApp;
+﻿namespace Todo.ConsoleApp.Settings;
 
 public class Constants
 {
@@ -7,6 +7,8 @@ public class Constants
     public const string UserCaret = "> ";
 
     public const string AppSettings = "appsettings.json";
+
+    public const string AppSettingsDevelopment = "appsettings.{0}.json";
 
     public const string ApplicationInsights = "ApplicationInsights:ConnectionString";
 }

@@ -2,6 +2,9 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Todo.ConsoleApp;
+using Todo.ConsoleApp.Settings;
+using Todo.Core;
+using Todo.Core.Settings;
 
 var builder = Host.CreateDefaultBuilder(args);
 
@@ -14,8 +17,10 @@ builder.ConfigureServices((context, services) =>
 {
     services.AddApplicationInsightsTelemetryWorkerService(options =>
     {
-        options.ConnectionString = context.GetConfigurationValue(Constants.ApplicationInsights);
+        options.ConnectionString = context.GetRequiredValue(Constants.ApplicationInsights);
     });
+  
+    services.AddSingleton(SemanticKernelBuilder.CreateKernel(context.GetRequiredSetting<LanguageModelSettings>()));
 
     services.AddSingleton<TodoApplication>();
 });

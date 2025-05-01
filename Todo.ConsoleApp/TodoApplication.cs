@@ -1,4 +1,6 @@
-﻿namespace Todo.ConsoleApp;
+﻿using Todo.ConsoleApp.Settings;
+
+namespace Todo.ConsoleApp;
 
 public class TodoApplication
 {
