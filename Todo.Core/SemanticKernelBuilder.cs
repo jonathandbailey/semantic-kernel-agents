@@ -15,7 +15,7 @@ namespace Todo.Core
                     deploymentName: azureOpenAiSettings.DeploymentName,
                     apiKey: azureOpenAiSettings.ApiKey,
                     endpoint: azureOpenAiSettings.Endpoint,
-                    serviceId: azureOpenAiSettings.Name
+                    serviceId: azureOpenAiSettings.ServiceId
                 );
             }
 

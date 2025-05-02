@@ -8,5 +8,5 @@ public class AzureOpenAiSettings
 
     public string Endpoint { get; set; } = string.Empty;
 
-    public string Name { get; set; } = string.Empty;
+    public string ServiceId { get; set; } = string.Empty;
 }

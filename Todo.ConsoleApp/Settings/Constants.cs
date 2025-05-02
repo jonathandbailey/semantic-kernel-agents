@@ -13,4 +13,6 @@ public class Constants
     public const string ApplicationInsights = "ApplicationInsights:ConnectionString";
 
     public const string AgentSettings = "AgentSettings";
+
+    public const string ChatCommandKey = "/chat";
 }

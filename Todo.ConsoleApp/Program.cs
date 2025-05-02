@@ -7,6 +7,7 @@ using Todo.ConsoleApp.Settings;
 using Todo.Core;
 using Todo.Core.Agents;
 using Todo.Core.Infrastructure;
+using Todo.Core.Services;
 using Todo.Core.Settings;
 
 var builder = Host.CreateDefaultBuilder(args);
@@ -31,6 +32,7 @@ builder.ConfigureServices((context, services) =>
     
     services.AddSingleton(SemanticKernelBuilder.CreateKernel(context.GetRequiredSetting<LanguageModelSettings>()));
     services.AddSingleton<TodoApplication>();
+    services.AddSingleton<ITodoService, TodoService>();
 });
 
 builder.ConfigureLogging(logging =>
