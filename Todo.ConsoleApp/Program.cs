@@ -1,9 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Todo.ConsoleApp;
 using Todo.ConsoleApp.Settings;
 using Todo.Core;
+using Todo.Core.Agents;
 using Todo.Core.Infrastructure;
 using Todo.Core.Settings;
 
@@ -21,11 +23,13 @@ builder.ConfigureServices((context, services) =>
         options.ConnectionString = context.GetRequiredValue(Constants.ApplicationInsights);
     });
 
+    services.Configure<List<AgentSettings>>(context.Configuration.GetRequiredSection(Constants.AgentSettings));
     services.Configure<AzureStorageSettings>(context.GetRequiredSection<AzureStorageSettings>());
+    
     services.AddSingleton<IAgentTemplateRepository, AgentTemplateRepository>();
-  
+    services.AddSingleton<IAgentProvider, AgentProvider>();
+    
     services.AddSingleton(SemanticKernelBuilder.CreateKernel(context.GetRequiredSetting<LanguageModelSettings>()));
-
     services.AddSingleton<TodoApplication>();
 });
 

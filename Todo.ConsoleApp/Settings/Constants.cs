@@ -11,4 +11,6 @@ public class Constants
     public const string AppSettingsDevelopment = "appsettings.{0}.json";
 
     public const string ApplicationInsights = "ApplicationInsights:ConnectionString";
+
+    public const string AgentSettings = "AgentSettings";
 }

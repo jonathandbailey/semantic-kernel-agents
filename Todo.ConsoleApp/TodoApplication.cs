@@ -4,11 +4,14 @@ namespace Todo.ConsoleApp;
 
 public class TodoApplication
 {
-    private readonly Dictionary<string, Func<string, Task>> _commands = new();
+    private readonly Dictionary<string, Func<string, Task>> _commands = new()
+    {
+        { Constants.ExitCommandKey, async _ => await Task.CompletedTask }
+    };
 
     public async Task RunAsync(CancellationTokenSource cancellationTokenSource)
     {
-        _commands.Add(Constants.ExitCommandKey, async _ => await cancellationTokenSource.CancelAsync());
+        _commands[Constants.ExitCommandKey] = async _ => await cancellationTokenSource.CancelAsync();
 
         while (!cancellationTokenSource.IsCancellationRequested)
         {

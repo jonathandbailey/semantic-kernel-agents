@@ -1,9 +1,8 @@
-﻿namespace Todo.Core.Settings
-{
-    public class AzureStorageSettings
-    {
-        public string ConnectionString { get; set; } = string.Empty;
+﻿namespace Todo.Core.Settings;
 
-        public string AgentTemplatesContainerName { get; set;  } = string.Empty;
-    }
+public class AzureStorageSettings
+{
+    public string ConnectionString { get; set; } = string.Empty;
+
+    public string AgentTemplatesContainerName { get; set;  } = string.Empty;
 }
