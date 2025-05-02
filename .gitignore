@@ -53,3 +53,5 @@ CodeCoverage/
 TestResult.xml
 nunit-*.xml
 /.vs/Todo
+/.vs/ProjectEvaluation
+/Todo.sln.DotSettings.user
