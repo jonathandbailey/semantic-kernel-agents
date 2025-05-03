@@ -1,8 +1,10 @@
-﻿namespace Todo.Core.Settings;
+﻿using Todo.Core.Agents;
+
+namespace Todo.Core.Settings;
 
 public class AgentSettings
 {
-    public string Name { get; set; } = string.Empty;
+    public AgentNames Name { get; set; } 
 
     public string Template { get; set; } = string.Empty;
 

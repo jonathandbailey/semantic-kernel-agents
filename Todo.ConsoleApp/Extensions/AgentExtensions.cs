@@ -1,0 +1,18 @@
+﻿using Microsoft.Extensions.DependencyInjection;
+using Todo.Core.Agents;
+using Todo.Core.Settings;
+
+namespace Todo.ConsoleApp.Extensions;
+
+public static class AgentExtensions
+{
+    public static void AddAgents(this IServiceCollection services, List<AgentSettings> agentSettings)
+    {
+        services.AddKeyedSingleton<IAgent, TaskAgent>(AgentNames.TaskAgent);
+
+        foreach (var agentSetting in agentSettings)
+        {
+            services.AddKeyedSingleton<AgentSettings>(agentSetting.Name);
+        }
+    }
+}

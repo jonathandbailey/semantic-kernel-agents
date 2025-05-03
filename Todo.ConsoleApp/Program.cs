@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Todo.ConsoleApp;
+using Todo.ConsoleApp.Extensions;
 using Todo.ConsoleApp.Settings;
 using Todo.Core;
 using Todo.Core.Agents;
@@ -28,8 +29,10 @@ builder.ConfigureServices((context, services) =>
     services.Configure<AzureStorageSettings>(context.GetRequiredSection<AzureStorageSettings>());
     
     services.AddSingleton<IAgentTemplateRepository, AgentTemplateRepository>();
-    services.AddSingleton<IAgentProvider, AgentProvider>();
-    
+    services.AddSingleton<IAgentTemplateProvider, AgentTemplateProvider>();
+   
+    services.AddAgents(context.GetRequiredSetting<List<AgentSettings>>(Constants.AgentSettings));
+
     services.AddSingleton(SemanticKernelBuilder.CreateKernel(context.GetRequiredSetting<LanguageModelSettings>()));
     services.AddSingleton<TodoApplication>();
     services.AddSingleton<ITodoService, TodoService>();
@@ -43,5 +46,7 @@ builder.ConfigureLogging(logging =>
 var host = builder.Build();
 
 using var cancellationTokenSource = new CancellationTokenSource();
+
+await host.Services.GetRequiredService<IAgentTemplateProvider>().LoadAgentTemplates();
 
 await host.Services.GetRequiredService<TodoApplication>().RunAsync(cancellationTokenSource);

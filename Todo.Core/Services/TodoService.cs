@@ -1,13 +1,12 @@
-﻿using Todo.Core.Agents;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Todo.Core.Agents;
 
 namespace Todo.Core.Services;
 
-public class TodoService(IAgentProvider agentProvider) : ITodoService
+public class TodoService([FromKeyedServices(AgentNames.TaskAgent)] IAgent agent) : ITodoService
 {
     public async Task Chat(string userInput)
     {
-        var agent = await agentProvider.Get(AgentNames.TaskAgent);
-
         await agent.Chat(userInput);
     }
 }

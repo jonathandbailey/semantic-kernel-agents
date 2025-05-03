@@ -21,6 +21,13 @@ public static class SettingsExtensions
         return section.Get<T>() ?? throw new InvalidOperationException($"Could not get configuration section {typeof(T).Name}.");
     }
 
+    public static T GetRequiredSetting<T>(this HostBuilderContext context, string key)
+    {
+        var section = context.Configuration.GetRequiredSection(key);
+
+        return section.Get<T>() ?? throw new InvalidOperationException($"Could not get configuration section {typeof(T).Name}.");
+    }
+
     public static IConfigurationSection GetRequiredSection<T>(this HostBuilderContext context)
     {
         return context.Configuration.GetRequiredSection(typeof(T).Name);

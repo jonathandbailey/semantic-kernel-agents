@@ -10,5 +10,11 @@ namespace Todo.Core.Utilities
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(str, paramName);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void NotNull([NotNull] object? obj, [CallerArgumentExpression(nameof(obj))] string? paramName = null)
+        {
+            ArgumentNullException.ThrowIfNull(obj, paramName);
+        }
     }
 }
