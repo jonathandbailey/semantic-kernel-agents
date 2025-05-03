@@ -5,11 +5,13 @@ using Microsoft.Extensions.Logging;
 using Todo.ConsoleApp;
 using Todo.ConsoleApp.Extensions;
 using Todo.ConsoleApp.Settings;
+using Todo.ConsoleApp.Users;
 using Todo.Core;
 using Todo.Core.Agents;
 using Todo.Core.Infrastructure;
 using Todo.Core.Services;
 using Todo.Core.Settings;
+using Todo.Core.Users;
 
 var builder = Host.CreateDefaultBuilder(args);
 
@@ -32,6 +34,8 @@ builder.ConfigureServices((context, services) =>
     
     services.AddSingleton<IAgentTemplateRepository, AgentTemplateRepository>();
     services.AddSingleton<IAgentTemplateProvider, AgentTemplateProvider>();
+
+    services.AddSingleton<IUser, User>();
    
     services.AddAgents(context.GetRequiredSetting<List<AgentSettings>>(Constants.AgentSettings));
 
