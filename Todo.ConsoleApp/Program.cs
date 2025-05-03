@@ -15,7 +15,9 @@ var builder = Host.CreateDefaultBuilder(args);
 
 builder.ConfigureAppConfiguration((hostingContext, config) =>
 {
-    config.Configure(hostingContext.HostingEnvironment);
+    config.AddJsonFiles(hostingContext.HostingEnvironment);
+    config.AddEnvironmentVariables();
+    config.AddUserSecrets<Program>();
 });
 
 builder.ConfigureServices((context, services) =>
@@ -43,10 +45,18 @@ builder.ConfigureLogging(logging =>
     logging.AddApplicationInsights();
 });
 
-var host = builder.Build();
+try
+{
+    var host = builder.Build();
 
-using var cancellationTokenSource = new CancellationTokenSource();
+    using var cancellationTokenSource = new CancellationTokenSource();
 
-await host.Services.GetRequiredService<IAgentTemplateProvider>().LoadAgentTemplates();
+    await host.Services.GetRequiredService<IAgentTemplateProvider>().LoadAgentTemplates();
 
-await host.Services.GetRequiredService<TodoApplication>().RunAsync(cancellationTokenSource);
+    await host.Services.GetRequiredService<TodoApplication>().RunAsync(cancellationTokenSource);
+
+}
+catch (Exception exception)
+{
+    Console.WriteLine($"Failed to Start the Applicatoin : {exception.Message}");
+}

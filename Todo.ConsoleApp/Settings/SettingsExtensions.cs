@@ -5,13 +5,10 @@ namespace Todo.ConsoleApp.Settings;
 
 public static class SettingsExtensions
 {
-    public static void Configure(this IConfigurationBuilder configurationBuilder, IHostEnvironment env)
+    public static void AddJsonFiles(this IConfigurationBuilder configurationBuilder, IHostEnvironment env)
     {
         configurationBuilder.AddJsonFile(Constants.AppSettings, optional: false, reloadOnChange: true);
         configurationBuilder.AddJsonFile(string.Format(Constants.AppSettingsDevelopment, env.EnvironmentName), optional: true, reloadOnChange: true);
-
-        configurationBuilder.AddEnvironmentVariables();
-        configurationBuilder.AddUserSecrets<Program>();
     }
 
     public static T GetRequiredSetting<T>(this HostBuilderContext context)

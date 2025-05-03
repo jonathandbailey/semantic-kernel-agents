@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using System.Collections.Concurrent;
+using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
 using Todo.Core.Infrastructure;
 using Todo.Core.Settings;
@@ -8,7 +9,7 @@ namespace Todo.Core.Agents;
 public class AgentTemplateProvider(IAgentTemplateRepository agentTemplateRepository, IOptions<List<AgentSettings>> agentSettings) : IAgentTemplateProvider
 {
     private readonly List<AgentSettings> _agentSettings = agentSettings.Value;
-    private readonly Dictionary<AgentNames, PromptTemplateConfig> _agentTemplates = new();
+    private readonly ConcurrentDictionary<AgentNames, PromptTemplateConfig> _agentTemplates = new();
         
     public PromptTemplateConfig Get(AgentNames agentName)
     {
@@ -25,17 +26,18 @@ public class AgentTemplateProvider(IAgentTemplateRepository agentTemplateReposit
         {
             var templateConfig = await LoadAgentTemplate(agentSetting.Template);
 
-            _agentTemplates.Add(agentSetting.Name, templateConfig);
+            if (!_agentTemplates.TryAdd(agentSetting.Name, templateConfig))
+            {
+                throw new InvalidOperationException($"Failed to add template for agent: {agentSetting.Name}. It may already exist.");
+            }
         }
     }
 
     private async Task<PromptTemplateConfig> LoadAgentTemplate(string templateName)
     {
         var agentTemplate = await agentTemplateRepository.GetAgentTemplateAsync(templateName);
-
-        var templateConfig = KernelFunctionYaml.ToPromptTemplateConfig(agentTemplate);
-
-        return templateConfig;
+ 
+       return KernelFunctionYaml.ToPromptTemplateConfig(agentTemplate);
     }
 }
 
