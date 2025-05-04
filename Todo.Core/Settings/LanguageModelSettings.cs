@@ -9,4 +9,7 @@ public class LanguageModelSettings
     public string Endpoint { get; set; } = string.Empty;
 
     public string ServiceId { get; set; } = string.Empty;
+
+    public ModelTypes Type { get; set; }
+
 }
