@@ -11,6 +11,7 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
     <PackageReference Include="Microsoft.SemanticKernel" Version="1.48.0" />
     <PackageReference Include="Microsoft.SemanticKernel.Agents.Core" Version="1.48.0" />
+    <PackageReference Include="Microsoft.SemanticKernel.Connectors.AzureAIInference" Version="1.48.0-beta" />
     <PackageReference Include="Microsoft.SemanticKernel.Yaml" Version="1.48.0" />
   </ItemGroup>
 

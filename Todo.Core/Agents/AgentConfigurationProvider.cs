@@ -6,27 +6,29 @@ using Todo.Core.Settings;
 
 namespace Todo.Core.Agents;
 
-public class AgentTemplateProvider(IAgentTemplateRepository agentTemplateRepository, IOptions<List<AgentSettings>> agentSettings) : IAgentTemplateProvider
+public class AgentConfigurationProvider(IAgentTemplateRepository agentTemplateRepository, IOptions<List<AgentSettings>> agentSettings) : IAgentConfigurationProvider
 {
     private readonly List<AgentSettings> _agentSettings = agentSettings.Value;
-    private readonly ConcurrentDictionary<AgentNames, PromptTemplateConfig> _agentTemplates = new();
-        
-    public PromptTemplateConfig Get(AgentNames agentName)
+    private readonly ConcurrentDictionary<AgentNames, AgentConfiguration> _agentTemplates = new();
+
+    public AgentConfiguration GetConfiguration(AgentNames agentName)
     {
-        if (_agentTemplates.TryGetValue(agentName, out var templateConfig))
+        if (_agentTemplates.TryGetValue(agentName, out var agentConfiguration))
         {
-            return templateConfig;
+            return agentConfiguration;
         }
-        throw new KeyNotFoundException($"Agent template for {agentName} not found.");
+        throw new KeyNotFoundException($"Agent configuration for {agentName} not found.");
     }
 
-    public async Task LoadAgentTemplates()
+    public async Task Load()
     {
         foreach (var agentSetting in _agentSettings)
         {
             var templateConfig = await LoadAgentTemplate(agentSetting.Template);
 
-            if (!_agentTemplates.TryAdd(agentSetting.Name, templateConfig))
+            var configuration = new AgentConfiguration { Settings = agentSetting, Template = templateConfig };
+
+            if (!_agentTemplates.TryAdd(agentSetting.Name, configuration))
             {
                 throw new InvalidOperationException($"Failed to add template for agent: {agentSetting.Name}. It may already exist.");
             }
@@ -41,8 +43,8 @@ public class AgentTemplateProvider(IAgentTemplateRepository agentTemplateReposit
     }
 }
 
-public interface IAgentTemplateProvider
+public interface IAgentConfigurationProvider
 {
-    PromptTemplateConfig Get(AgentNames agentName);
-    Task LoadAgentTemplates();
+    Task Load();
+    AgentConfiguration GetConfiguration(AgentNames agentName);
 }

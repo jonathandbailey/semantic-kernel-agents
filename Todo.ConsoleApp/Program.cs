@@ -6,9 +6,9 @@ using Todo.ConsoleApp;
 using Todo.ConsoleApp.Extensions;
 using Todo.ConsoleApp.Settings;
 using Todo.ConsoleApp.Users;
-using Todo.Core;
 using Todo.Core.Agents;
 using Todo.Core.Infrastructure;
+using Todo.Core.Models;
 using Todo.Core.Services;
 using Todo.Core.Settings;
 using Todo.Core.Users;
@@ -33,13 +33,17 @@ builder.ConfigureServices((context, services) =>
     services.Configure<AzureStorageSettings>(context.GetRequiredSection<AzureStorageSettings>());
     
     services.AddSingleton<IAgentTemplateRepository, AgentTemplateRepository>();
-    services.AddSingleton<IAgentTemplateProvider, AgentTemplateProvider>();
+    services.AddSingleton<IAgentConfigurationProvider, AgentConfigurationProvider>();
 
     services.AddSingleton<IUser, User>();
    
     services.AddAgents(context.GetRequiredSetting<List<AgentSettings>>(Constants.AgentSettings));
-
-    services.AddSingleton(SemanticKernelBuilder.CreateKernel(context.GetRequiredSetting<List<LanguageModelSettings>>(Constants.LanguageModelSettings)));
+ 
+    services.AddSingleton(
+        SemanticKernelBuilder.CreateKernel(
+            context.GetRequiredSetting<List<LanguageModelSettings>>(Constants.LanguageModelSettings),
+        context.GetRequiredSetting<AzureAiServiceSettings>()
+        ));
     services.AddSingleton<TodoApplication>();
     services.AddSingleton<ITodoService, TodoService>();
 });
@@ -55,7 +59,7 @@ try
 
     using var cancellationTokenSource = new CancellationTokenSource();
 
-    await host.Services.GetRequiredService<IAgentTemplateProvider>().LoadAgentTemplates();
+    await host.Services.GetRequiredService<IAgentConfigurationProvider>().Load();
 
     await host.Services.GetRequiredService<TodoApplication>().RunAsync(cancellationTokenSource);
 

@@ -12,10 +12,5 @@ public static class AgentExtensions
         Verify.NotNull(agentSettings);
         
         services.AddKeyedSingleton<IAgent, TaskAgent>(AgentNames.TaskAgent);
-
-        foreach (var agentSetting in agentSettings)
-        {
-            services.AddKeyedSingleton<AgentSettings>(agentSetting.Name);
-        }
     }
 }

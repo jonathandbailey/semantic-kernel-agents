@@ -2,11 +2,11 @@
 using Todo.Core.Settings;
 using Todo.Core.Utilities;
 
-namespace Todo.Core;
+namespace Todo.Core.Models;
 
 public static class SemanticKernelBuilder
 {
-    public static Kernel CreateKernel(List<LanguageModelSettings> modelSettings)
+    public static Kernel CreateKernel(List<LanguageModelSettings> modelSettings, AzureAiServiceSettings azureAiServiceSettings)
     {
         Verify.NotNull(modelSettings);
 
@@ -19,12 +19,21 @@ public static class SemanticKernelBuilder
                 case ModelTypes.AzureOpenAiChatCompletion:
                     kernelBuilder.AddAzureOpenAIChatCompletion(
                         deploymentName: settings.DeploymentName,
-                        apiKey: settings.ApiKey,
-                        endpoint: settings.Endpoint,
+                        apiKey: azureAiServiceSettings.ApiKey,
+                        endpoint: azureAiServiceSettings.Endpoint,
                         serviceId: settings.ServiceId
                     );
                     break;
-      
+#pragma warning disable SKEXP0070
+                case ModelTypes.AzureAiInferenceChatCompletion:
+                    kernelBuilder.AddAzureAIInferenceChatCompletion(
+                        modelId: settings.ModelName,
+                        apiKey: azureAiServiceSettings.ApiKey,
+                        endpoint: new Uri(azureAiServiceSettings.Endpoint),
+                        serviceId: settings.ServiceId
+                    );
+                    break;
+
                 default:
                     throw new NotSupportedException($"Model type '{settings.Type}' is not supported.");
             }

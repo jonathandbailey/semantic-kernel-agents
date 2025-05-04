@@ -8,19 +8,22 @@ public static class SettingsExtensions
     public static void AddJsonFiles(this IConfigurationBuilder configurationBuilder, IHostEnvironment env)
     {
         configurationBuilder.AddJsonFile(Constants.AppSettings, optional: false, reloadOnChange: true);
-        configurationBuilder.AddJsonFile(string.Format(Constants.AppSettingsDevelopment, env.EnvironmentName), optional: true, reloadOnChange: true);
+        configurationBuilder.AddJsonFile(string.Format(Constants.AppSettingsDevelopment, env.EnvironmentName), optional: false, reloadOnChange: true);
     }
 
     public static T GetRequiredSetting<T>(this HostBuilderContext context)
     {
-        var section = context.Configuration.GetRequiredSection(typeof(T).Name);
-        
-        return section.Get<T>() ?? throw new InvalidOperationException($"Could not get configuration section {typeof(T).Name}.");
+        return GetRequiredSetting<T>(context, typeof(T).Name);
     }
 
     public static T GetRequiredSetting<T>(this HostBuilderContext context, string key)
     {
         var section = context.Configuration.GetRequiredSection(key);
+
+        if (!section.Exists())
+        {
+            throw new InvalidOperationException($"Configuration section '{key}' is missing.");
+        }
 
         return section.Get<T>() ?? throw new InvalidOperationException($"Could not get configuration section {typeof(T).Name}.");
     }

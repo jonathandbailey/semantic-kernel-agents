@@ -1,9 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
-using Todo.Core.Settings;
 using Todo.Core.Users;
 
 namespace Todo.Core.Agents;
@@ -18,22 +16,21 @@ public class TaskAgent : IAgent
 
     public TaskAgent(
         IUser user,
-        IAgentTemplateProvider agentTemplateProvider, 
-        Kernel kernel, 
-        [FromKeyedServices(AgentNames.TaskAgent)] AgentSettings settings,
+        IAgentConfigurationProvider agentConfigurationProvider, 
+        Kernel kernel,
         ILogger<TaskAgent> logger)
     {
         _user = user;
         _logger = logger;
-        
-        var templateConfig = agentTemplateProvider.Get(AgentName);
+       
+        var configuration = agentConfigurationProvider.GetConfiguration(AgentName);
 
         var promptExecutionSettings = new PromptExecutionSettings
         {
-            ServiceId = settings.ServiceId
+            ServiceId = configuration.Settings.ServiceId,
         };
 
-        _chatCompletionAgent = new ChatCompletionAgent(templateConfig, new KernelPromptTemplateFactory())
+        _chatCompletionAgent = new ChatCompletionAgent(configuration.Template, configuration.PromptTemplateFactory)
         {
             Kernel = kernel.Clone(),
             Arguments = new KernelArguments(promptExecutionSettings)
