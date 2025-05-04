@@ -2,5 +2,11 @@
 
 public class LanguageModelSettings
 {
-    public required List<AzureOpenAiSettings> AzureOpenAiSettings { get; set; }
+    public string DeploymentName { get; set; } = string.Empty;
+
+    public string ApiKey { get; set; } = string.Empty;
+
+    public string Endpoint { get; set; } = string.Empty;
+
+    public string ServiceId { get; set; } = string.Empty;
 }

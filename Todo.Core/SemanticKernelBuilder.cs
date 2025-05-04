@@ -6,19 +6,19 @@ namespace Todo.Core;
 
 public static class SemanticKernelBuilder
 {
-    public static Kernel CreateKernel(LanguageModelSettings modelSettings)
+    public static Kernel CreateKernel(List<LanguageModelSettings> modelSettings)
     {
         Verify.NotNull(modelSettings);
             
         var kernelBuilder = Kernel.CreateBuilder();
 
-        foreach (var azureOpenAiSettings in modelSettings.AzureOpenAiSettings)
+        foreach (var settings in modelSettings)
         {
             kernelBuilder.AddAzureOpenAIChatCompletion(
-                deploymentName: azureOpenAiSettings.DeploymentName,
-                apiKey: azureOpenAiSettings.ApiKey,
-                endpoint: azureOpenAiSettings.Endpoint,
-                serviceId: azureOpenAiSettings.ServiceId
+                deploymentName: settings.DeploymentName,
+                apiKey: settings.ApiKey,
+                endpoint: settings.Endpoint,
+                serviceId: settings.ServiceId
             );
         }
 

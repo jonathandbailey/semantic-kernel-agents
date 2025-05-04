@@ -14,5 +14,7 @@ public class Constants
 
     public const string AgentSettings = "AgentSettings";
 
+    public const string LanguageModelSettings = "LanguageModelSettings";
+
     public const string ChatCommandKey = "/chat";
 }

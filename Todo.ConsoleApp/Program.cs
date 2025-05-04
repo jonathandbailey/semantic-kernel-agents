@@ -39,7 +39,7 @@ builder.ConfigureServices((context, services) =>
    
     services.AddAgents(context.GetRequiredSetting<List<AgentSettings>>(Constants.AgentSettings));
 
-    services.AddSingleton(SemanticKernelBuilder.CreateKernel(context.GetRequiredSetting<LanguageModelSettings>()));
+    services.AddSingleton(SemanticKernelBuilder.CreateKernel(context.GetRequiredSetting<List<LanguageModelSettings>>(Constants.LanguageModelSettings)));
     services.AddSingleton<TodoApplication>();
     services.AddSingleton<ITodoService, TodoService>();
 });
@@ -62,5 +62,5 @@ try
 }
 catch (Exception exception)
 {
-    Console.WriteLine($"Failed to Start the Applicatoin : {exception.Message}");
+    Console.WriteLine($"Failed to Start the Application : {exception.Message}");
 }
