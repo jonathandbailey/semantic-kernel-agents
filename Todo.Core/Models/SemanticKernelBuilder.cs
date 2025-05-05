@@ -4,6 +4,8 @@ using Todo.Core.Utilities;
 
 namespace Todo.Core.Models;
 
+#pragma warning disable SKEXP0070
+
 public static class SemanticKernelBuilder
 {
     public static Kernel CreateKernel(List<LanguageModelSettings> modelSettings, AzureAiServiceSettings azureAiServiceSettings)
@@ -17,21 +19,11 @@ public static class SemanticKernelBuilder
             switch (settings.Type)
             {
                 case ModelTypes.AzureOpenAiChatCompletion:
-                    kernelBuilder.AddAzureOpenAIChatCompletion(
-                        deploymentName: settings.DeploymentName,
-                        apiKey: azureAiServiceSettings.ApiKey,
-                        endpoint: azureAiServiceSettings.Endpoint,
-                        serviceId: settings.ServiceId
-                    );
+                    AddAzureOpenAiChatCompletion(kernelBuilder, settings, azureAiServiceSettings);
                     break;
-#pragma warning disable SKEXP0070
+
                 case ModelTypes.AzureAiInferenceChatCompletion:
-                    kernelBuilder.AddAzureAIInferenceChatCompletion(
-                        modelId: settings.ModelName,
-                        apiKey: azureAiServiceSettings.ApiKey,
-                        endpoint: new Uri(azureAiServiceSettings.Endpoint),
-                        serviceId: settings.ServiceId
-                    );
+                    AddAzureAiInferenceChatCompletion(kernelBuilder, settings, azureAiServiceSettings);
                     break;
 
                 default:
@@ -40,5 +32,25 @@ public static class SemanticKernelBuilder
         }
 
         return kernelBuilder.Build();
+    }
+
+    private static void AddAzureOpenAiChatCompletion(IKernelBuilder kernelBuilder, LanguageModelSettings settings, AzureAiServiceSettings azureAiServiceSettings)
+    {
+        kernelBuilder.AddAzureOpenAIChatCompletion(
+            deploymentName: settings.DeploymentName,
+            apiKey: azureAiServiceSettings.ApiKey,
+            endpoint: azureAiServiceSettings.Endpoint,
+            serviceId: settings.ServiceId
+        );
+    }
+
+    private static void AddAzureAiInferenceChatCompletion(IKernelBuilder kernelBuilder, LanguageModelSettings settings, AzureAiServiceSettings azureAiServiceSettings)
+    {
+        kernelBuilder.AddAzureAIInferenceChatCompletion(
+            modelId: settings.ModelName,
+            apiKey: azureAiServiceSettings.ApiKey,
+            endpoint: new Uri(azureAiServiceSettings.Endpoint),
+            serviceId: settings.ServiceId
+        );
     }
 }
