@@ -3,15 +3,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Todo.ConsoleApp;
-using Todo.ConsoleApp.Extensions;
 using Todo.ConsoleApp.Settings;
 using Todo.ConsoleApp.Users;
 using Todo.Core.Agents;
-using Todo.Core.Infrastructure;
-using Todo.Core.Models;
-using Todo.Core.Services;
+using Todo.Core.Extensions;
 using Todo.Core.Settings;
 using Todo.Core.Users;
+
 
 var builder = Host.CreateDefaultBuilder(args);
 
@@ -31,21 +29,12 @@ builder.ConfigureServices((context, services) =>
 
     services.Configure<List<AgentSettings>>(context.Configuration.GetRequiredSection(Constants.AgentSettings));
     services.Configure<AzureStorageSettings>(context.GetRequiredSection<AzureStorageSettings>());
-    
-    services.AddSingleton<IAgentTemplateRepository, AgentTemplateRepository>();
-    services.AddSingleton<IAgentConfigurationProvider, AgentConfigurationProvider>();
+
+    services.AddCoreServices(context.Configuration);
 
     services.AddSingleton<IUser, User>();
-   
-    services.AddAgents(context.GetRequiredSetting<List<AgentSettings>>(Constants.AgentSettings));
- 
-    services.AddSingleton(
-        SemanticKernelBuilder.CreateKernel(
-            context.GetRequiredSetting<List<LanguageModelSettings>>(Constants.LanguageModelSettings),
-        context.GetRequiredSetting<AzureAiServiceSettings>()
-        ));
+       
     services.AddSingleton<TodoApplication>();
-    services.AddSingleton<ITodoService, TodoService>();
 });
 
 builder.ConfigureLogging(logging =>

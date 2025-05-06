@@ -28,6 +28,18 @@ public static class SettingsExtensions
         return section.Get<T>() ?? throw new InvalidOperationException($"Could not get configuration section {typeof(T).Name}.");
     }
 
+    public static T GetRequiredSetting<T>(this IConfiguration configuration, string key)
+    {
+        var section = configuration.GetRequiredSection(key);
+
+        if (!section.Exists())
+        {
+            throw new InvalidOperationException($"Configuration section '{key}' is missing.");
+        }
+
+        return section.Get<T>() ?? throw new InvalidOperationException($"Could not get configuration section {typeof(T).Name}.");
+    }
+
     public static IConfigurationSection GetRequiredSection<T>(this HostBuilderContext context)
     {
         return context.Configuration.GetRequiredSection(typeof(T).Name);
@@ -36,6 +48,15 @@ public static class SettingsExtensions
     public static string GetRequiredValue(this HostBuilderContext context, string key)
     {
         var settingsValue =  context.Configuration.GetValue<string>(key);
+
+        return string.IsNullOrEmpty(settingsValue)
+            ? throw new InvalidOperationException($"Could not get configuration value {key}.")
+            : settingsValue;
+    }
+
+    public static string GetRequiredValue(this IConfiguration configuration, string key)
+    {
+        var settingsValue = configuration.GetValue<string>(key);
 
         return string.IsNullOrEmpty(settingsValue)
             ? throw new InvalidOperationException($"Could not get configuration value {key}.")

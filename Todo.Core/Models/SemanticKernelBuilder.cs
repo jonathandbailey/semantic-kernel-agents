@@ -1,4 +1,6 @@
-﻿using Microsoft.SemanticKernel;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.SemanticKernel;
+using Todo.Core.Extensions;
 using Todo.Core.Settings;
 using Todo.Core.Utilities;
 
@@ -8,9 +10,14 @@ namespace Todo.Core.Models;
 
 public static class SemanticKernelBuilder
 {
-    public static Kernel CreateKernel(List<LanguageModelSettings> modelSettings, AzureAiServiceSettings azureAiServiceSettings)
+    public static Kernel CreateKernel(IConfiguration configuration)
     {
-        Verify.NotNull(modelSettings);
+        Verify.NotNull(configuration);
+
+        var modelSettings =
+            configuration.GetRequiredSetting<List<LanguageModelSettings>>(SettingsConstants.LanguageModelSettings);
+
+        var azureAiServiceSettings = configuration.GetRequiredSetting<AzureAiServiceSettings>();
 
         var kernelBuilder = Kernel.CreateBuilder();
 
