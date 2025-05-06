@@ -16,9 +16,7 @@ public static class SemanticKernelBuilder
 
         var modelSettings =
             configuration.GetRequiredSetting<List<LanguageModelSettings>>(SettingsConstants.LanguageModelSettings);
-
-        var azureAiServiceSettings = configuration.GetRequiredSetting<AzureAiServiceSettings>();
-
+       
         var kernelBuilder = Kernel.CreateBuilder();
 
         foreach (var settings in modelSettings)
@@ -26,11 +24,11 @@ public static class SemanticKernelBuilder
             switch (settings.Type)
             {
                 case ModelTypes.AzureOpenAiChatCompletion:
-                    AddAzureOpenAiChatCompletion(kernelBuilder, settings, azureAiServiceSettings);
+                    AddAzureOpenAiChatCompletion(kernelBuilder, settings);
                     break;
 
                 case ModelTypes.AzureAiInferenceChatCompletion:
-                    AddAzureAiInferenceChatCompletion(kernelBuilder, settings, azureAiServiceSettings);
+                    AddAzureAiInferenceChatCompletion(kernelBuilder, settings);
                     break;
 
                 default:
@@ -41,22 +39,22 @@ public static class SemanticKernelBuilder
         return kernelBuilder.Build();
     }
 
-    private static void AddAzureOpenAiChatCompletion(IKernelBuilder kernelBuilder, LanguageModelSettings settings, AzureAiServiceSettings azureAiServiceSettings)
+    private static void AddAzureOpenAiChatCompletion(IKernelBuilder kernelBuilder, LanguageModelSettings settings)
     {
         kernelBuilder.AddAzureOpenAIChatCompletion(
             deploymentName: settings.DeploymentName,
-            apiKey: azureAiServiceSettings.ApiKey,
-            endpoint: azureAiServiceSettings.Endpoint,
+            apiKey: settings.ApiKey,
+            endpoint: settings.Endpoint,
             serviceId: settings.ServiceId
         );
     }
 
-    private static void AddAzureAiInferenceChatCompletion(IKernelBuilder kernelBuilder, LanguageModelSettings settings, AzureAiServiceSettings azureAiServiceSettings)
+    private static void AddAzureAiInferenceChatCompletion(IKernelBuilder kernelBuilder, LanguageModelSettings settings)
     {
         kernelBuilder.AddAzureAIInferenceChatCompletion(
             modelId: settings.ModelName,
-            apiKey: azureAiServiceSettings.ApiKey,
-            endpoint: new Uri(azureAiServiceSettings.Endpoint),
+            apiKey: settings.ApiKey,
+            endpoint: new Uri(settings.Endpoint),
             serviceId: settings.ServiceId
         );
     }
