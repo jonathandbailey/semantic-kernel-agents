@@ -24,11 +24,8 @@ builder.ConfigureServices((context, services) =>
 {
     services.AddApplicationInsightsTelemetryWorkerService(options =>
     {
-        options.ConnectionString = context.GetRequiredValue(Constants.ApplicationInsights);
+        options.ConnectionString = context.GetRequiredValue(SettingsConstants.ApplicationInsights);
     });
-
-    services.Configure<List<AgentSettings>>(context.Configuration.GetRequiredSection(Constants.AgentSettings));
-    services.Configure<AzureStorageSettings>(context.GetRequiredSection<AzureStorageSettings>());
 
     services.AddCoreServices(context.Configuration);
 

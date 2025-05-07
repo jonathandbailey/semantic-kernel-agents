@@ -20,4 +20,9 @@ public static class SettingsExtensions
     {
         return GetRequiredSetting<T>(configuration, typeof(T).Name);
     }
+
+    public static IConfigurationSection GetRequiredSection<T>(this IConfiguration configuration)
+    {
+        return configuration.GetRequiredSection(typeof(T).Name);
+    }
 }
