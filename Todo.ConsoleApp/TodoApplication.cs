@@ -1,19 +1,13 @@
-﻿using Todo.ConsoleApp.Settings;
-using Todo.Core.Services;
+﻿using Todo.ConsoleApp.Commands;
+using Todo.ConsoleApp.Settings;
 
 namespace Todo.ConsoleApp;
 
-public class TodoApplication(ITodoService todoService)
+public class TodoApplication(ICommandDispatcher commandManager)
 {
-    private readonly Dictionary<string, Func<string, Task>> _commands = new()
-    {
-        { Constants.ExitCommandKey, async _ => await Task.CompletedTask }
-    };
-
     public async Task RunAsync(CancellationTokenSource cancellationTokenSource)
     {
-        _commands[Constants.ExitCommandKey] = async _ => await cancellationTokenSource.CancelAsync();
-        _commands[Constants.ChatCommandKey] = async input => await todoService.Chat(input);
+        commandManager.Initialize(cancellationTokenSource);
 
         while (!cancellationTokenSource.IsCancellationRequested)
         {
@@ -23,13 +17,7 @@ public class TodoApplication(ITodoService todoService)
 
             if (string.IsNullOrEmpty(input)) continue;
 
-            if (_commands.TryGetValue(input, out var command))
-            {
-                await command(input);
-                continue;
-            }
-
-            await _commands[Constants.ChatCommandKey](input);
+            await commandManager.ExecuteCommandAsync(input);
         }
     }
 }

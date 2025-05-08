@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Todo.ConsoleApp;
+using Todo.ConsoleApp.Commands;
 using Todo.ConsoleApp.Settings;
 using Todo.ConsoleApp.Users;
 using Todo.Core.Agents;
@@ -22,6 +23,7 @@ builder.ConfigureAppConfiguration((hostingContext, config) =>
 
 builder.ConfigureServices((context, services) =>
 {
+
     services.AddApplicationInsightsTelemetryWorkerService(options =>
     {
         options.ConnectionString = context.GetRequiredValue(SettingsConstants.ApplicationInsights);
@@ -32,6 +34,7 @@ builder.ConfigureServices((context, services) =>
     services.AddSingleton<IUser, User>();
        
     services.AddSingleton<TodoApplication>();
+    services.AddSingleton<ICommandDispatcher, CommandDispatcher>();
 });
 
 builder.ConfigureLogging(logging =>
