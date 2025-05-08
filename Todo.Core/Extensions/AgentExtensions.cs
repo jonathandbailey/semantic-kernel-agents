@@ -7,6 +7,6 @@ public static class AgentExtensions
 {
     public static void AddAgents(this IServiceCollection services)
     {
-        services.AddKeyedSingleton<IAgent, TaskAgent>(AgentNames.TaskAgent);
+        services.AddKeyedScoped<IAgent, TaskAgent>(AgentNames.TaskAgent);
     }
 }

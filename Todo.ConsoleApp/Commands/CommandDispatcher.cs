@@ -1,17 +1,17 @@
-﻿using MediatR;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Todo.ConsoleApp.Settings;
 using Todo.Core.Messaging;
 
 namespace Todo.ConsoleApp.Commands;
 
-public class CommandDispatcher(IMediator mediator) : ICommandDispatcher
+public class CommandDispatcher(IServiceScopeFactory scopeFactory) : ICommandDispatcher
 {
     private readonly Dictionary<string, Func<string, Task>> _commands = new();
 
     public void Initialize(CancellationTokenSource cancellationTokenSource)
     {
         _commands[Constants.ExitCommandKey] = async _ => await cancellationTokenSource.CancelAsync();
-        _commands[Constants.ChatCommandKey] = async input => await mediator.Publish(new UserMessage(input));
+        _commands[Constants.ChatCommandKey] = async input => await Chat(input);
     }
     
     public async Task ExecuteCommandAsync(string input)
@@ -23,6 +23,15 @@ public class CommandDispatcher(IMediator mediator) : ICommandDispatcher
         }
 
         await _commands[Constants.ChatCommandKey](input);
+    }
+
+    private async Task Chat(string input)
+    {
+        using var scope = scopeFactory.CreateScope();
+
+        var publisher = scope.ServiceProvider.GetRequiredService<IMessagePublisher>();
+
+        await publisher.Publish(new UserMessage(input));
     }
 }
 

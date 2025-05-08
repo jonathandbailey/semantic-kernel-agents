@@ -5,11 +5,8 @@ using Microsoft.Extensions.Logging;
 using Todo.ConsoleApp;
 using Todo.ConsoleApp.Commands;
 using Todo.ConsoleApp.Settings;
-using Todo.ConsoleApp.Users;
-using Todo.Core.Agents;
 using Todo.Core.Extensions;
 using Todo.Core.Settings;
-using Todo.Core.Users;
 
 
 var builder = Host.CreateDefaultBuilder(args);
@@ -30,8 +27,6 @@ builder.ConfigureServices((context, services) =>
     });
 
     services.AddCoreServices(context.Configuration);
-
-    services.AddSingleton<IUser, User>();
        
     services.AddSingleton<TodoApplication>();
     services.AddSingleton<ICommandDispatcher, CommandDispatcher>();
@@ -49,9 +44,7 @@ try
     var host = builder.Build();
 
     using var cancellationTokenSource = new CancellationTokenSource();
-
-    await host.Services.GetRequiredService<IAgentConfigurationProvider>().Load();
-
+   
     await host.Services.GetRequiredService<TodoApplication>().RunAsync(cancellationTokenSource);
 
 }

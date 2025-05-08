@@ -6,6 +6,7 @@ using Todo.Core.Messaging;
 using Todo.Core.Models;
 using Todo.Core.Services;
 using Todo.Core.Settings;
+using Todo.Core.Users;
 
 namespace Todo.Core.Extensions
 {
@@ -19,18 +20,23 @@ namespace Todo.Core.Extensions
             services.Configure<List<AgentSettings>>(options =>
                 configuration.GetSection(SettingsConstants.AgentSettings).Bind(options));
 
-            services.AddSingleton<IAgentTemplateRepository, AgentTemplateRepository>();
-            services.AddSingleton<IAgentConfigurationProvider, AgentConfigurationProvider>();
+            services.AddScoped<IAgentTemplateRepository, AgentTemplateRepository>();
+            services.AddScoped<IAgentConfigurationProvider, AgentConfigurationProvider>();
+
+
+            services.AddScoped<IAgentProvider, AgentProvider>();
+
+            services.AddScoped<IUser, User>();
 
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(IAgent).Assembly));
 
-            services.AddSingleton<IMessagePublisher, MessagePublisher>();
+            services.AddScoped<IMessagePublisher, MessagePublisher>();
 
             services.AddSingleton(SemanticKernelBuilder.CreateKernel(configuration));
 
             services.AddAgents();
 
-            services.AddSingleton<ITodoService, TodoService>();
+            services.AddScoped<ITodoService, TodoService>();
         }
     }
 }
