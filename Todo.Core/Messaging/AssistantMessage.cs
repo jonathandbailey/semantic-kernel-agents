@@ -1,6 +1,6 @@
 ﻿namespace Todo.Core.Messaging
 {
-    public class UserMessage(string message) : IMessage
+    public class AssistantMessage(string message) : IMessage
     {
         public string Message { get; } = message;
     }

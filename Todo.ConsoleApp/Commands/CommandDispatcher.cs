@@ -11,7 +11,7 @@ public class CommandDispatcher(IMediator mediator) : ICommandDispatcher
     public void Initialize(CancellationTokenSource cancellationTokenSource)
     {
         _commands[Constants.ExitCommandKey] = async _ => await cancellationTokenSource.CancelAsync();
-        _commands[Constants.ChatCommandKey] = async input => await mediator.Publish(new UserMessage { Message = input});
+        _commands[Constants.ChatCommandKey] = async input => await mediator.Publish(new UserMessage(input));
     }
     
     public async Task ExecuteCommandAsync(string input)
