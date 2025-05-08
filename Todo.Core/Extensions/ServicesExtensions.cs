@@ -21,6 +21,8 @@ namespace Todo.Core.Extensions
             services.AddSingleton<IAgentTemplateRepository, AgentTemplateRepository>();
             services.AddSingleton<IAgentConfigurationProvider, AgentConfigurationProvider>();
 
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(IAgent).Assembly));
+
             services.AddSingleton(SemanticKernelBuilder.CreateKernel(configuration));
 
             services.AddAgents();

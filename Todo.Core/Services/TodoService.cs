@@ -1,17 +1,18 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using Todo.Core.Agents;
+using Todo.Core.Messaging;
 
 namespace Todo.Core.Services;
 
-public class TodoService([FromKeyedServices(AgentNames.TaskAgent)] IAgent agent) : ITodoService
+public class TodoService([FromKeyedServices(AgentNames.TaskAgent)] IAgent agent) : ITodoService, INotificationHandler<UserMessage>
 {
-    public async Task Chat(string userInput)
+    public async Task Handle(UserMessage notification, CancellationToken cancellationToken)
     {
-        await agent.Chat(userInput);
+        await agent.Chat(notification.Message);
     }
 }
 
 public interface ITodoService
 {
-    Task Chat(string userInput);
 }

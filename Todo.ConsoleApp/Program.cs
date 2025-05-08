@@ -35,6 +35,8 @@ builder.ConfigureServices((context, services) =>
        
     services.AddSingleton<TodoApplication>();
     services.AddSingleton<ICommandDispatcher, CommandDispatcher>();
+
+    services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(TodoApplication).Assembly));
 });
 
 builder.ConfigureLogging(logging =>
