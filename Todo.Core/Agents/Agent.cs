@@ -32,18 +32,18 @@ public class Agent : IAgent
         };
     }
 
-    public async Task<IEnumerable<string>> InvokeAsync(string userInput)
+    public async Task<AgentTask> InvokeAsync(AgentTask agentTask)
     {
         try
         {
-            var responses = new List<string>();
-            
+            var userInput = agentTask.History.First().Message;
+
             await foreach (ChatMessageContent response in _chatCompletionAgent.InvokeAsync(new ChatMessageContent(AuthorRole.User, userInput)))
             {
-                responses.Add(response.Content!);
+              agentTask.Artifacts.Add(new AgentArtifact() {Message = response.Content!});  
             }
 
-            return responses;
+            return agentTask;
         }
         catch (Exception exception)
         {

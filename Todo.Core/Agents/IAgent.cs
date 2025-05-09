@@ -2,5 +2,5 @@
 
 public interface IAgent
 {
-    Task<IEnumerable<string>> InvokeAsync(string userInput);
+    Task<AgentTask> InvokeAsync(AgentTask agentTask);
 }
