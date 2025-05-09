@@ -1,15 +1,16 @@
 ﻿using MediatR;
 using Todo.Core.Agents;
+using Todo.Core.Communication;
 using Todo.Core.Messaging;
 using Todo.Core.Middleware;
 
 namespace Todo.Core.Services;
 
-public class TodoService(IMessagePublisher publisher, IAgentProvider agentProvider, IAgentConfigurationProvider agentConfigurationProvider) : ITodoService, INotificationHandler<UserMessage>
+public class TodoService(IMessagePublisher publisher, IAgentProvider agentProvider) : ITodoService, INotificationHandler<UserMessage>
 {
     public async Task Handle(UserMessage notification, CancellationToken cancellationToken)
     {
-        await agentConfigurationProvider.Load();
+        await agentProvider.Build();
 
         var agent = agentProvider.Get();
 

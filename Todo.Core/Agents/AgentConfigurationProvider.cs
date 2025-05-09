@@ -9,9 +9,9 @@ namespace Todo.Core.Agents;
 public class AgentConfigurationProvider(IAgentTemplateRepository agentTemplateRepository, IOptions<List<AgentSettings>> agentSettings) : IAgentConfigurationProvider
 {
     private readonly List<AgentSettings> _agentSettings = agentSettings.Value;
-    private readonly ConcurrentDictionary<AgentNames, AgentConfiguration> _agentTemplates = new();
+    private readonly ConcurrentDictionary<string, AgentConfiguration> _agentTemplates = new();
 
-    public AgentConfiguration GetConfiguration(AgentNames agentName)
+    public AgentConfiguration GetConfiguration(string agentName)
     {
         if (_agentTemplates.TryGetValue(agentName, out var agentConfiguration))
         {
@@ -46,5 +46,5 @@ public class AgentConfigurationProvider(IAgentTemplateRepository agentTemplateRe
 public interface IAgentConfigurationProvider
 {
     Task Load();
-    AgentConfiguration GetConfiguration(AgentNames agentName);
+    AgentConfiguration GetConfiguration(string agentName);
 }

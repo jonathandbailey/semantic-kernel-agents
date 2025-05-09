@@ -2,13 +2,14 @@
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
+using Todo.Core.Communication;
 
 namespace Todo.Core.Agents;
 
 public class Agent : IAgent
 {
     private readonly ILogger<Agent> _logger;
-    private const AgentNames AgentName = AgentNames.TaskAgent;
+    private const string AgentName = AgentNames.TaskAgent;
     
     private readonly ChatCompletionAgent _chatCompletionAgent;
 

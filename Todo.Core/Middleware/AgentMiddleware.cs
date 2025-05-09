@@ -1,4 +1,5 @@
 ﻿using Todo.Core.Agents;
+using Todo.Core.Communication;
 
 namespace Todo.Core.Middleware
 {

@@ -1,4 +1,4 @@
-﻿namespace Todo.Core.Agents
+﻿namespace Todo.Core.Communication
 {
     public class AgentTask
     {

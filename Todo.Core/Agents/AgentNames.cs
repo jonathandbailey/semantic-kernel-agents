@@ -1,6 +1,6 @@
 ﻿namespace Todo.Core.Agents;
 
-public enum AgentNames
+public static class AgentNames
 {
-    TaskAgent
+    public const string TaskAgent = "TaskAgent";
 }
