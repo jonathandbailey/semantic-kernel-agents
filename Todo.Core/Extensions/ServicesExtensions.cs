@@ -21,20 +21,16 @@ namespace Todo.Core.Extensions
                 configuration.GetSection(SettingsConstants.AgentSettings).Bind(options));
 
             services.AddScoped<IAgentTemplateRepository, AgentTemplateRepository>();
-            services.AddScoped<IAgentConfigurationProvider, AgentConfigurationProvider>();
-
-
+         
             services.AddScoped<IAgentProvider, AgentProvider>();
-
+    
             services.AddScoped<IUser, User>();
 
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(IAgent).Assembly));
 
             services.AddScoped<IMessagePublisher, MessagePublisher>();
 
-            services.AddSingleton(SemanticKernelBuilder.CreateKernel(configuration));
-
-            services.AddAgents();
+            services.AddScoped( _=> SemanticKernelBuilder.CreateKernel(configuration));
 
             services.AddScoped<ITodoService, TodoService>();
         }
