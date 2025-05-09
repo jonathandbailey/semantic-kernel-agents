@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using Microsoft.SemanticKernel;
 using Todo.Core.Settings;
 using Todo.Core.Infrastructure;
+using Todo.Core.Middleware;
 
 namespace Todo.Core.Agents;
 public class AgentProvider(Kernel kernel, IAgentTemplateRepository agentTemplateRepository, IOptions<List<AgentSettings>> agentSettings) : IAgentProvider
@@ -16,7 +17,9 @@ public class AgentProvider(Kernel kernel, IAgentTemplateRepository agentTemplate
         {
             var configuration = await Load(agentSetting);
         
-            if (!_agents.TryAdd(agentSetting.Name, new Agent(configuration, kernel)))
+            var agent = BuildAgentMiddleware(configuration);
+
+            if (!_agents.TryAdd(agentSetting.Name, agent))
             {
                 throw new InvalidOperationException($"Failed to add agent: {agentSetting.Name}. It may already exist.");
             }
@@ -25,10 +28,11 @@ public class AgentProvider(Kernel kernel, IAgentTemplateRepository agentTemplate
     
     public IAgent Get()
     {
-        if (_agents.TryGetValue(AgentNames.TaskAgent, out var agentConfiguration))
+        if (_agents.TryGetValue(AgentNames.TaskAgent, out var agent))
         {
-            return agentConfiguration;
+            return agent;
         }
+        
         throw new KeyNotFoundException($"Agent not found.");
     }
 
@@ -44,6 +48,17 @@ public class AgentProvider(Kernel kernel, IAgentTemplateRepository agentTemplate
         var agentTemplate = await agentTemplateRepository.GetAgentTemplateAsync(templateName);
 
         return KernelFunctionYaml.ToPromptTemplateConfig(agentTemplate);
+    }
+
+    private AgentDelegateWrapper BuildAgentMiddleware(AgentConfiguration configuration)
+    {
+        var agentBuild = new AgentMiddlewareBuilder();
+
+        var agent = new Agent(configuration, kernel);
+
+        agentBuild.Use(new AgentMiddleware(agent));
+
+        return new AgentDelegateWrapper(agentBuild.Build());
     }
 }
 

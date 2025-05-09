@@ -2,7 +2,6 @@
 using Todo.Core.Agents;
 using Todo.Core.Communication;
 using Todo.Core.Messaging;
-using Todo.Core.Middleware;
 
 namespace Todo.Core.Services;
 
@@ -13,18 +12,12 @@ public class TodoService(IMessagePublisher publisher, IAgentProvider agentProvid
         await agentProvider.Build();
 
         var agent = agentProvider.Get();
-
-        var agentBuild = new AgentMiddlewareBuilder();
-
-        agentBuild.Use(new AgentMiddleware(agent));
-
-        var agentMiddleware = agentBuild.Build();
-
+        
         var agentTask = new AgentTask();
 
         agentTask.History.Add(new AgentMessage() {Message = notification.Message});
     
-        var responses = await agentMiddleware(agentTask);
+        var responses = await agent.InvokeAsync(agentTask);
 
         foreach (var response in responses.Artifacts)
         {
@@ -35,4 +28,4 @@ public class TodoService(IMessagePublisher publisher, IAgentProvider agentProvid
 
 public interface ITodoService
 {
-}
+} 
