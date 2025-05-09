@@ -2,5 +2,5 @@
 
 public interface IAgent
 {
-    Task Chat(string userInput);
+    Task<IEnumerable<string>> InvokeAsync(string userInput);
 }

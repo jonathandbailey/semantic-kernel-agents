@@ -2,25 +2,20 @@
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
-using Todo.Core.Messaging;
 
 namespace Todo.Core.Agents;
 
-public class TaskAgent : IAgent
+public class Agent : IAgent
 {
-    private readonly IMessagePublisher _messagePublisher;
-    private readonly ILogger<TaskAgent> _logger;
+    private readonly ILogger<Agent> _logger;
     private const AgentNames AgentName = AgentNames.TaskAgent;
     
     private readonly ChatCompletionAgent _chatCompletionAgent;
 
-    public TaskAgent(
-        IMessagePublisher messagePublisher,
-        IAgentConfigurationProvider agentConfigurationProvider, 
+    public Agent(IAgentConfigurationProvider agentConfigurationProvider, 
         Kernel kernel,
-        ILogger<TaskAgent> logger)
+        ILogger<Agent> logger)
     {
-        _messagePublisher = messagePublisher;
         _logger = logger;
        
         var configuration = agentConfigurationProvider.GetConfiguration(AgentName);
@@ -37,14 +32,18 @@ public class TaskAgent : IAgent
         };
     }
 
-    public async Task Chat(string userInput)
+    public async Task<IEnumerable<string>> InvokeAsync(string userInput)
     {
         try
         {
+            var responses = new List<string>();
+            
             await foreach (ChatMessageContent response in _chatCompletionAgent.InvokeAsync(new ChatMessageContent(AuthorRole.User, userInput)))
             {
-                await _messagePublisher.Publish(new AssistantMessage(response.Content!));
+                responses.Add(response.Content!);
             }
+
+            return responses;
         }
         catch (Exception exception)
         {
