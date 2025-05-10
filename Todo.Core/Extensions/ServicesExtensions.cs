@@ -23,6 +23,8 @@ namespace Todo.Core.Extensions
             services.AddScoped<IAgentTemplateRepository, AgentTemplateRepository>();
          
             services.AddScoped<IAgentProvider, AgentProvider>();
+
+            services.AddScoped<IAgentDiscovery, AgentDiscovery>();
     
             services.AddScoped<IUser, User>();
 
