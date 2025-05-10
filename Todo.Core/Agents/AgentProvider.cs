@@ -28,12 +28,12 @@ public class AgentProvider(Kernel kernel, IAgentTemplateRepository agentTemplate
     
     public IAgent Get()
     {
-        if (_agents.TryGetValue(AgentNames.TaskAgent, out var agent))
+        if (_agents.TryGetValue(AgentNames.OrchestratorAgent, out var agent))
         {
             return agent;
         }
         
-        throw new KeyNotFoundException($"Agent not found.");
+        throw new KeyNotFoundException($"Agent not found: {AgentNames.OrchestratorAgent}");
     }
 
     private async Task<AgentConfiguration> Load(AgentSettings agentSetting)

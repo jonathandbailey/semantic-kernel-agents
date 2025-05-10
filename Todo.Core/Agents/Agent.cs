@@ -29,7 +29,7 @@ public class Agent : IAgent
 
         await foreach (ChatMessageContent response in _chatCompletionAgent.InvokeAsync(new ChatMessageContent(AuthorRole.User, userInput)))
         {
-          agentTask.Artifacts.Add(new AgentArtifact() {Message = response.Content!});  
+            agentTask.Artifacts.Add(new AgentArtifact() {Message = response.Content!});  
         }
 
         return agentTask;
