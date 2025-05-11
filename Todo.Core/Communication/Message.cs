@@ -1,6 +1,4 @@
-﻿using Todo.Core.Agents;
-
-namespace Todo.Core.Communication
+﻿namespace Todo.Core.Communication
 {
     public class Message
     {

@@ -25,7 +25,7 @@ namespace Todo.Core.Extensions
             services.AddScoped<IAgentProvider, AgentProvider>();
 
             services.AddScoped<IAgentDiscovery, AgentDiscovery>();
-    
+          
             services.AddScoped<IUser, User>();
 
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(IAgent).Assembly));

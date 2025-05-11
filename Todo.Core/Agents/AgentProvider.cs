@@ -4,9 +4,13 @@ using Microsoft.SemanticKernel;
 using Todo.Core.Settings;
 using Todo.Core.Infrastructure;
 using Todo.Core.Middleware;
+using Todo.Core.Plugins;
 
 namespace Todo.Core.Agents;
-public class AgentProvider(Kernel kernel, IAgentTemplateRepository agentTemplateRepository, IOptions<List<AgentSettings>> agentSettings) : IAgentProvider
+public class AgentProvider(
+    Kernel kernel, 
+    IAgentTemplateRepository agentTemplateRepository, 
+    IOptions<List<AgentSettings>> agentSettings) : IAgentProvider
 {
     private readonly ConcurrentDictionary<string, IAgentTaskManager> _agents = new();
     private readonly List<AgentSettings> _agentSettings = agentSettings.Value;
@@ -54,7 +58,19 @@ public class AgentProvider(Kernel kernel, IAgentTemplateRepository agentTemplate
     {
         var agentBuild = new AgentMiddlewareBuilder();
 
-        var agent = new Agent(configuration, kernel);
+        var agentKernel = kernel.Clone();
+
+        foreach (var name in configuration.Settings.Plugins)
+        {
+            switch (name)
+            {
+                case "TaskPlugin":
+                    agentKernel.Plugins.AddFromObject(new TaskPlugin(this));
+                    break;
+            }
+        }
+
+        var agent = new Agent(configuration, agentKernel);
 
         agentBuild.Use(new AgentMiddleware(agent));
 

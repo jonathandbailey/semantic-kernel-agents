@@ -15,7 +15,8 @@ public class Agent : IAgent
         var promptExecutionSettings = new PromptExecutionSettings
         {
             ServiceId = configuration.Settings.ServiceId,
-            
+            FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
+
         };
 
         _chatCompletionAgent = new ChatCompletionAgent(configuration.Template, configuration.PromptTemplateFactory)
