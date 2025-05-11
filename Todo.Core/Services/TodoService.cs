@@ -13,11 +13,13 @@ public class TodoService(IMessagePublisher publisher, IAgentProvider agentProvid
 
         var agent = agentProvider.Get();
         
-        var agentTask = new AgentTask();
+        var agentTaskManager = new AgentTaskManager(agent);
 
-        agentTask.History.Add(new AgentMessage {Message = notification.Message});
-    
-        var response = await agent.InvokeAsync(new ChatCompletionRequest {Message = notification.Message});
+        var sendTaskRequest = new SendTaskRequest();
+
+        sendTaskRequest.Parameters.Message.Parts.Add(new TextPart {Text = notification.Message});
+
+        var response = await agentTaskManager.SendTask(sendTaskRequest);
 
         await publisher.Publish(new AssistantMessage(response.Message));
     }
