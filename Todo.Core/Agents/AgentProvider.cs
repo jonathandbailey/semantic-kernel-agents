@@ -8,7 +8,7 @@ using Todo.Core.Middleware;
 namespace Todo.Core.Agents;
 public class AgentProvider(Kernel kernel, IAgentTemplateRepository agentTemplateRepository, IOptions<List<AgentSettings>> agentSettings) : IAgentProvider
 {
-    private readonly ConcurrentDictionary<string, IAgent> _agents = new();
+    private readonly ConcurrentDictionary<string, IAgentTaskManager> _agents = new();
     private readonly List<AgentSettings> _agentSettings = agentSettings.Value;
 
     public async Task Build()
@@ -19,16 +19,16 @@ public class AgentProvider(Kernel kernel, IAgentTemplateRepository agentTemplate
         
             var agent = BuildAgentMiddleware(configuration);
 
-            if (!_agents.TryAdd(agentSetting.Name, agent))
+            if (!_agents.TryAdd(agentSetting.Name, new AgentTaskManager(agent)))
             {
                 throw new InvalidOperationException($"Failed to add agent: {agentSetting.Name}. It may already exist.");
             }
         }
     }
     
-    public IAgent Get()
+    public IAgentTaskManager GetTaskManager(string name)
     {
-        if (_agents.TryGetValue(AgentNames.OrchestratorAgent, out var agent))
+        if (_agents.TryGetValue(name, out var agent))
         {
             return agent;
         }
@@ -64,6 +64,6 @@ public class AgentProvider(Kernel kernel, IAgentTemplateRepository agentTemplate
 
 public interface IAgentProvider
 {
-    IAgent Get();
+    IAgentTaskManager GetTaskManager(string name);
     Task Build();
 }

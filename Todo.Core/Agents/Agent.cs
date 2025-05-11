@@ -15,12 +15,13 @@ public class Agent : IAgent
         var promptExecutionSettings = new PromptExecutionSettings
         {
             ServiceId = configuration.Settings.ServiceId,
+            
         };
 
         _chatCompletionAgent = new ChatCompletionAgent(configuration.Template, configuration.PromptTemplateFactory)
         {
             Kernel = kernel.Clone(),
-            Arguments = new KernelArguments(promptExecutionSettings)
+            Arguments = new KernelArguments(promptExecutionSettings) 
         };
     }
 

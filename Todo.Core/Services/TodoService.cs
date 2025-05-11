@@ -10,10 +10,8 @@ public class TodoService(IMessagePublisher publisher, IAgentProvider agentProvid
     public async Task Handle(UserMessage notification, CancellationToken cancellationToken)
     {
         await agentProvider.Build();
-
-        var agent = agentProvider.Get();
         
-        var agentTaskManager = new AgentTaskManager(agent);
+        var agentTaskManager = agentProvider.GetTaskManager(AgentNames.OrchestratorAgent);
 
         var sendTaskRequest = new SendTaskRequest();
 
