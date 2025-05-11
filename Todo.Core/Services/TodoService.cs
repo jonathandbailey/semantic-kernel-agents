@@ -15,14 +15,11 @@ public class TodoService(IMessagePublisher publisher, IAgentProvider agentProvid
         
         var agentTask = new AgentTask();
 
-        agentTask.History.Add(new AgentMessage() {Message = notification.Message});
+        agentTask.History.Add(new AgentMessage {Message = notification.Message});
     
-        var responses = await agent.InvokeAsync(agentTask);
+        var response = await agent.InvokeAsync(new ChatCompletionRequest {Message = notification.Message});
 
-        foreach (var response in responses.Artifacts)
-        {
-            await publisher.Publish(new AssistantMessage(response.Message));
-        }
+        await publisher.Publish(new AssistantMessage(response.Message));
     }
 }
 

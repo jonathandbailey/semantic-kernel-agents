@@ -1,4 +1,5 @@
-﻿using Microsoft.SemanticKernel;
+﻿using System.Text;
+using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Todo.Core.Communication;
@@ -23,15 +24,15 @@ public class Agent : IAgent
         };
     }
 
-    public async Task<AgentTask> InvokeAsync(AgentTask agentTask)
+    public async Task<ChatCompletionResponse> InvokeAsync(ChatCompletionRequest request)
     {
-        var userInput = agentTask.History.First().Message;
-
-        await foreach (ChatMessageContent response in _chatCompletionAgent.InvokeAsync(new ChatMessageContent(AuthorRole.User, userInput)))
+        var stringBuilder = new StringBuilder();
+        
+        await foreach (ChatMessageContent response in _chatCompletionAgent.InvokeAsync(new ChatMessageContent(AuthorRole.User, request.Message)))
         {
-            agentTask.Artifacts.Add(new AgentArtifact() {Message = response.Content!});  
+            stringBuilder.AppendLine(response.Content);
         }
 
-        return agentTask;
+        return new ChatCompletionResponse { Message = stringBuilder.ToString() };
     }
 }

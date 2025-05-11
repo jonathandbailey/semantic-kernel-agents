@@ -28,9 +28,9 @@ namespace Todo.Core.Middleware
 
     public interface IAgentMiddleware
     {
-        Task<AgentTask> InvokeAsync(AgentTask context, AgentDelegate next);
+        Task<ChatCompletionResponse> InvokeAsync(ChatCompletionRequest context, AgentDelegate next);
     }
 
 
-    public delegate Task<AgentTask> AgentDelegate(AgentTask context);
+    public delegate Task<ChatCompletionResponse> AgentDelegate(ChatCompletionRequest request);
 }

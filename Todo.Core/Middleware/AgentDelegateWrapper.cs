@@ -5,9 +5,9 @@ namespace Todo.Core.Middleware
 {
     public class AgentDelegateWrapper(AgentDelegate agentDelegate) : IAgent
     {
-        public async Task<AgentTask> InvokeAsync(AgentTask agentTask)
+        public async Task<ChatCompletionResponse> InvokeAsync(ChatCompletionRequest request)
         {
-            return await agentDelegate(agentTask);
+            return await agentDelegate(request);
         }
     }
 }
