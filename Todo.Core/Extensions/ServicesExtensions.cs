@@ -24,6 +24,8 @@ namespace Todo.Core.Extensions
             services.AddScoped<IAgentProvider, AgentProvider>();
 
             services.AddScoped<IAgentDiscovery, AgentDiscovery>();
+
+            services.AddScoped<IChatHistoryRepository, ChatHistoryRepository>();
           
             services.AddScoped<IUser, User>();
 

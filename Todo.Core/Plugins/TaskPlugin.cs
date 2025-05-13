@@ -11,12 +11,15 @@ namespace Todo.Core.Plugins
         [Description("Sends instructions to an agent")]
         public async Task<string> SendTask(
          [Description("The name of the agent who will receive the message.")]   string agentName, 
-          [Description("The instructions for the agent.")]  string message)
+          [Description("The instructions for the agent.")]  string message,
+         [Description("ID of the current chat session.")] string sessionId)
         {
             var sendTaskRequest = new SendTaskRequest();
 
             sendTaskRequest.Parameters.Message.Parts.Add(new TextPart { Text = message });
 
+
+            sendTaskRequest.Parameters.SessionId = sessionId;
             var agentTaskManager = agentProvider.GetTaskManager(agentName);
 
             var response = await agentTaskManager.SendTask(sendTaskRequest);

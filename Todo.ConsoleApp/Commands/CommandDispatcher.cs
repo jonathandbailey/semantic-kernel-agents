@@ -39,7 +39,7 @@ public class CommandDispatcher(IServiceScopeFactory scopeFactory) : ICommandDisp
                     SessionId = Guid.NewGuid().ToString(),
                     Message = new Message
                     {
-                        Parts = [new TextPart { Text = input }]
+                        Parts = [new TextPart { Text = input }], Role = "user"
                     }
                 }
             });
