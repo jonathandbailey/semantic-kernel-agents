@@ -1,6 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using Todo.ConsoleApp.Settings;
-using Todo.Core.Messaging;
+using Todo.Core.Communication;
 
 namespace Todo.ConsoleApp.Commands;
 
@@ -29,9 +30,21 @@ public class CommandDispatcher(IServiceScopeFactory scopeFactory) : ICommandDisp
     {
         using var scope = scopeFactory.CreateScope();
 
-        var publisher = scope.ServiceProvider.GetRequiredService<IMessagePublisher>();
+        var publisher = scope.ServiceProvider.GetRequiredService<IMediator>();
 
-        await publisher.Publish(new UserMessage(input));
+        var response =   await publisher.Send(
+            new SendTaskRequest 
+                { Parameters  = new TaskSendParameters
+                {
+                    SessionId = Guid.NewGuid().ToString(),
+                    Message = new Message
+                    {
+                        Parts = [new TextPart { Text = input }]
+                    }
+                }
+            });
+
+        Console.WriteLine(response.Message);
     }
 }
 

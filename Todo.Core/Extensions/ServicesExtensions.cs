@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Todo.Core.Agents;
 using Todo.Core.Infrastructure;
-using Todo.Core.Messaging;
 using Todo.Core.Models;
 using Todo.Core.Services;
 using Todo.Core.Settings;
@@ -29,8 +28,6 @@ namespace Todo.Core.Extensions
             services.AddScoped<IUser, User>();
 
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(IAgent).Assembly));
-
-            services.AddScoped<IMessagePublisher, MessagePublisher>();
 
             services.AddScoped( _=> SemanticKernelBuilder.CreateKernel(configuration));
 

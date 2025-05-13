@@ -1,7 +1,0 @@
-﻿namespace Todo.Core.Messaging
-{
-    public class UserMessage(string message) : IMessage
-    {
-        public string Message { get; } = message;
-    }
-}
