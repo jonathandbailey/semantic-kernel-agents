@@ -65,7 +65,7 @@ public class AgentProvider(
             switch (name)
             {
                 case "TaskPlugin":
-                    agentKernel.Plugins.AddFromObject(new TaskPlugin(this));
+                    agentKernel.Plugins.AddFromObject(new TaskPlugin(this), "TaskPlugin");
                     break;
             }
         }

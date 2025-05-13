@@ -9,7 +9,9 @@ namespace Todo.Core.Plugins
     {
         [KernelFunction("send_task")]
         [Description("Sends instructions to an agent")]
-        public async Task SendTask(string agentName, string message)
+        public async Task<string> SendTask(
+         [Description("The name of the agent who will receive the message.")]   string agentName, 
+          [Description("The instructions for the agent.")]  string message)
         {
             var sendTaskRequest = new SendTaskRequest();
 
@@ -17,7 +19,9 @@ namespace Todo.Core.Plugins
 
             var agentTaskManager = agentProvider.GetTaskManager(agentName);
 
-            await agentTaskManager.SendTask(sendTaskRequest);
+            var response = await agentTaskManager.SendTask(sendTaskRequest);
+
+            return response.Message;
         }
     }
 }
