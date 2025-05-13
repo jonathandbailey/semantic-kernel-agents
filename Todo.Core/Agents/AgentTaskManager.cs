@@ -1,4 +1,6 @@
-﻿using Todo.Core.Communication;
+﻿using System.Text.Json;
+using Todo.Core.Communication;
+using TaskStatus = Todo.Core.Communication.TaskStatus;
 
 namespace Todo.Core.Agents;
 
@@ -8,9 +10,32 @@ public class AgentTaskManager(IAgent agent) : IAgentTaskManager
     {
         var textPart = request.Parameters.Message.Parts.First();
 
-        var response = await agent.InvokeAsync(new ChatCompletionRequest { Message = textPart.Text });
-            
-        return new SendTaskResponse { Message = response.Message };
+        var agentTask = new AgentTask
+        {
+            SessionId = request.Parameters.SessionId,
+            TaskId = Guid.NewGuid().ToString(),
+           
+        };
+
+        agentTask.History.Add(request.Parameters.Message);
+
+        var response = await agent.InvokeAsync(new ChatCompletionRequest { Message = textPart.Text, SessionId = request.Parameters.SessionId});
+    
+        var actionResponse = JsonSerializer.Deserialize<AgentActionResponse>(response.Message);
+        if (actionResponse?.Action == "User_Input_Required")
+        {
+            agentTask.Status = new TaskStatus
+            {
+                State = "User_Input_Required",
+                Message = new Message
+                {
+                    Role = "agent",
+                    Parts = [new TextPart { Text = actionResponse.Message }]
+                }
+            };
+        }
+
+        return new SendTaskResponse { Message = response.Message, Task = agentTask };
     }
 }
 

@@ -44,7 +44,7 @@ public class CommandDispatcher(IServiceScopeFactory scopeFactory) : ICommandDisp
                 }
             });
 
-        Console.WriteLine(response.Message);
+        Console.WriteLine(response.Task.Status.Message.Parts.First().Text);
     }
 }
 

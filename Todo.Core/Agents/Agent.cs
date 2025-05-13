@@ -35,6 +35,6 @@ public class Agent : IAgent
             stringBuilder.AppendLine(response.Content);
         }
 
-        return new ChatCompletionResponse { Message = stringBuilder.ToString() };
+        return new ChatCompletionResponse { Message = stringBuilder.ToString(), SessionId = request.SessionId };
     }
 }
