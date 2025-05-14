@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Todo.Core.Extensions;
 using Todo.Core.Settings;
@@ -10,7 +12,7 @@ namespace Todo.Core.Models;
 
 public static class SemanticKernelBuilder
 {
-    public static Kernel CreateKernel(IConfiguration configuration)
+    public static Kernel CreateKernel(IConfiguration configuration, ILoggerFactory loggerFactory)
     {
         Verify.NotNull(configuration);
 
@@ -18,6 +20,8 @@ public static class SemanticKernelBuilder
             configuration.GetRequiredSetting<List<LanguageModelSettings>>(SettingsConstants.LanguageModelSettings);
        
         var kernelBuilder = Kernel.CreateBuilder();
+
+        kernelBuilder.Services.AddSingleton(loggerFactory);
 
         foreach (var settings in modelSettings)
         {

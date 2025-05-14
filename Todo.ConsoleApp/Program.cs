@@ -6,6 +6,7 @@ using Todo.ConsoleApp;
 using Todo.ConsoleApp.Commands;
 using Todo.ConsoleApp.Settings;
 using Todo.Core.Extensions;
+using Todo.Core.Models;
 using Todo.Core.Settings;
 
 
@@ -25,8 +26,12 @@ builder.ConfigureServices((context, services) =>
     {
         options.ConnectionString = context.GetRequiredValue(SettingsConstants.ApplicationInsights);
     });
+    
+    var loggerFactory = AppOpenTelemetry.CreateLoggerFactory(
+        context.GetRequiredValue(SettingsConstants.ApplicationInsights),
+        context.Configuration.GetRequiredSetting<OpenTelemetrySettings>());
 
-    services.AddCoreServices(context.Configuration);
+    services.AddCoreServices(context.Configuration, loggerFactory);
        
     services.AddSingleton<TodoApplication>();
     services.AddSingleton<ICommandDispatcher, CommandDispatcher>();
@@ -44,11 +49,15 @@ try
     var host = builder.Build();
 
     using var cancellationTokenSource = new CancellationTokenSource();
-   
+
     await host.Services.GetRequiredService<TodoApplication>().RunAsync(cancellationTokenSource);
 
 }
 catch (Exception exception)
 {
     Console.WriteLine($"Failed to Start the Application : {exception.Message}");
+}
+finally
+{
+    AppOpenTelemetry.Dispose();
 }

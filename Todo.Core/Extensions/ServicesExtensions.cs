@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Todo.Core.Agents;
 using Todo.Core.Infrastructure;
 using Todo.Core.Models;
@@ -11,7 +12,8 @@ namespace Todo.Core.Extensions
 {
     public static class ServicesExtensions
     {
-        public static void AddCoreServices(this IServiceCollection services, IConfiguration configuration)
+        public static void AddCoreServices(this IServiceCollection services, IConfiguration configuration,
+            ILoggerFactory loggerFactory)
         {
             services.Configure<AzureStorageSettings>(options =>
                 configuration.GetSection(SettingsConstants.AzureStorageSettings).Bind(options));
@@ -31,7 +33,7 @@ namespace Todo.Core.Extensions
 
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(IAgent).Assembly));
 
-            services.AddScoped( _=> SemanticKernelBuilder.CreateKernel(configuration));
+            services.AddScoped( _=> SemanticKernelBuilder.CreateKernel(configuration, loggerFactory));
 
             services.AddScoped<ITodoService, TodoService>();
         }

@@ -9,8 +9,7 @@ using Todo.Core.Plugins;
 namespace Todo.Core.Agents;
 public class AgentProvider(
     Kernel kernel, 
-    IAgentTemplateRepository agentTemplateRepository, 
-    IChatHistoryRepository chatHistoryRepository,
+    IAgentTemplateRepository agentTemplateRepository,
     IOptions<List<AgentSettings>> agentSettings) : IAgentProvider
 {
     private readonly ConcurrentDictionary<string, IAgentTaskManager> _agents = new();
@@ -71,7 +70,7 @@ public class AgentProvider(
             }
         }
 
-        var agent = new Agent(configuration, agentKernel, chatHistoryRepository);
+        var agent = new Agent(configuration, agentKernel);
 
         agentBuild.Use(new AgentMiddleware(agent));
 
