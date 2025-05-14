@@ -56,6 +56,7 @@ try
 catch (Exception exception)
 {
     Console.WriteLine($"Failed to Start the Application : {exception.Message}");
+    Console.WriteLine($"Failed to Start the Application : {exception.StackTrace}");
 }
 finally
 {

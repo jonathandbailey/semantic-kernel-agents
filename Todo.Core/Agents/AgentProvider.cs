@@ -11,6 +11,7 @@ namespace Todo.Core.Agents;
 public class AgentProvider(
     Kernel kernel, 
     ILogger<Agent> logger,
+    ILogger<AgentTaskManager> taskManagerLogger,
     IAgentTemplateRepository agentTemplateRepository,
     IAgentChatHistoryProvider agentChatHistoryProvider,
     IOptions<List<AgentSettings>> agentSettings) : IAgentProvider
@@ -26,7 +27,7 @@ public class AgentProvider(
         
             var agent = BuildAgentMiddleware(configuration);
 
-            if (!_agents.TryAdd(agentSetting.Name, new AgentTaskManager(agent)))
+            if (!_agents.TryAdd(agentSetting.Name, new AgentTaskManager(agent, taskManagerLogger)))
             {
                 throw new InvalidOperationException($"Failed to add agent: {agentSetting.Name}. It may already exist.");
             }

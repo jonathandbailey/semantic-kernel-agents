@@ -1,8 +1,6 @@
-﻿using MediatR;
-
-namespace Todo.Core.Communication
+﻿namespace Todo.Core.Communication
 {
-    public class SendTaskRequest : IRequest<SendTaskResponse>
+    public class SendTaskRequest 
     {
         public TaskSendParameters Parameters { get; init; } = new TaskSendParameters();
     }
