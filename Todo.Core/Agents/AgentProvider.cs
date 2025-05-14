@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
+using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Todo.Core.Settings;
 using Todo.Core.Infrastructure;
@@ -9,6 +10,7 @@ using Todo.Core.Plugins;
 namespace Todo.Core.Agents;
 public class AgentProvider(
     Kernel kernel, 
+    ILogger<Agent> logger,
     IAgentTemplateRepository agentTemplateRepository,
     IAgentChatHistoryProvider agentChatHistoryProvider,
     IOptions<List<AgentSettings>> agentSettings) : IAgentProvider
@@ -71,7 +73,7 @@ public class AgentProvider(
             }
         }
 
-        var agent = new Agent(configuration, agentKernel, agentChatHistoryProvider);
+        var agent = new Agent(configuration, agentKernel, agentChatHistoryProvider,logger);
 
         agentBuild.Use(new AgentLoggingMiddleware(configuration.Settings.Name));
         agentBuild.Use(new AgentMiddleware(agent));

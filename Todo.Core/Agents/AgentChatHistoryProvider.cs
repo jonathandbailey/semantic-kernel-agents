@@ -19,27 +19,30 @@ namespace Todo.Core.Agents
 
             foreach (var chatMessageContent in messages)
             {
-                convertedMessages.Add(new Message
+                if (!string.IsNullOrEmpty(chatMessageContent.Content) && chatMessageContent.Role != AuthorRole.Tool)
                 {
-                    Role = chatMessageContent.Role.ToString(),
-                    Parts =
-                    [
-                        new TextPart
-                        {
-                            Text = chatMessageContent.Content!,
-                        }
-                    ]
-                });
+                    convertedMessages.Add(new Message
+                    {
+                        Role = chatMessageContent.Role.ToString(),
+                        Parts =
+                        [
+                            new TextPart
+                            {
+                                Text = chatMessageContent.Content
+                            }
+                        ]
+                    });
+                }
             }
 
             var json = JsonSerializer.Serialize(convertedMessages);
 
-            await chatHistoryRepository.SaveChatHistoryAsync($"{name}", json);
+            await chatHistoryRepository.SaveChatHistoryAsync($"{name}.json", json);
         }
 
         public async Task<ChatHistoryAgentThread> LoadChatHistoryAsync(string name)
         {
-            var json = await chatHistoryRepository.GetChatHistoryAsync(name);
+            var json = await chatHistoryRepository.GetChatHistoryAsync($"{name}.json");
             var messages = JsonSerializer.Deserialize<List<Message>>(json);
             var chatThread = new ChatHistoryAgentThread();
             

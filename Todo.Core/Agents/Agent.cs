@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
@@ -11,11 +12,13 @@ namespace Todo.Core.Agents;
 public class Agent : IAgent
 {
     private readonly IAgentChatHistoryProvider _agentChatHistoryProvider;
+    private readonly ILogger<Agent> _logger;
     private readonly ChatCompletionAgent _chatCompletionAgent;
 
-    public Agent(AgentConfiguration configuration, Kernel kernel, IAgentChatHistoryProvider agentChatHistoryProvider)
+    public Agent(AgentConfiguration configuration, Kernel kernel, IAgentChatHistoryProvider agentChatHistoryProvider, ILogger<Agent> logger)
     {
         _agentChatHistoryProvider = agentChatHistoryProvider;
+        _logger = logger;
         var promptExecutionSettings = new PromptExecutionSettings
         {
             ServiceId = configuration.Settings.ServiceId,
@@ -32,20 +35,28 @@ public class Agent : IAgent
     
     public async Task<ChatCompletionResponse> InvokeAsync(ChatCompletionRequest request)
     {
-        var stringBuilder = new StringBuilder();
-     
-        var agentThread = await _agentChatHistoryProvider.LoadChatHistoryAsync($"{_chatCompletionAgent.Name}-{request.SessionId}");
-
-        _chatCompletionAgent.Kernel.Data.Add("sessionId", request.SessionId);
-      
-        await foreach (ChatMessageContent response in _chatCompletionAgent.InvokeAsync(new ChatMessageContent(AuthorRole.User, request.Message), agentThread))
+        try
         {
-            stringBuilder.AppendLine(response.Content);
+            var stringBuilder = new StringBuilder();
+     
+            var agentThread = await _agentChatHistoryProvider.LoadChatHistoryAsync($"{request.SessionId} - [{_chatCompletionAgent.Name}]");
+
+            _chatCompletionAgent.Kernel.Data.Add("sessionId", request.SessionId);
+      
+            await foreach (ChatMessageContent response in _chatCompletionAgent.InvokeAsync(new ChatMessageContent(AuthorRole.User, request.Message), agentThread))
+            {
+                stringBuilder.AppendLine(response.Content);
+            }
+
+            await _agentChatHistoryProvider.SaveChatHistoryAsync(agentThread,
+                $"{request.SessionId} - [{_chatCompletionAgent.Name}]");
+
+            return new ChatCompletionResponse { Message = stringBuilder.ToString(), SessionId = request.SessionId };
         }
-
-        await _agentChatHistoryProvider.SaveChatHistoryAsync(agentThread,
-            $"{_chatCompletionAgent.Name}-{request.SessionId}");
-
-        return new ChatCompletionResponse { Message = stringBuilder.ToString(), SessionId = request.SessionId };
+        catch (Exception e)
+        {
+            _logger.LogError($"Unknown Error in Agent : {_chatCompletionAgent.Name} :{e.Message}", e);
+            throw;
+        }
     }
 }
