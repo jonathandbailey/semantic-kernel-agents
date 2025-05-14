@@ -72,6 +72,7 @@ public class AgentProvider(
 
         var agent = new Agent(configuration, agentKernel);
 
+        agentBuild.Use(new AgentLoggingMiddleware(configuration.Settings.Name));
         agentBuild.Use(new AgentMiddleware(agent));
 
         return new AgentDelegateWrapper(agentBuild.Build());

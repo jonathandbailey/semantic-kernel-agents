@@ -18,7 +18,7 @@ public static class AppOpenTelemetry
             .CreateDefault()
             .AddService(settings.ApplicationName);
 
-        AppContext.SetSwitch("Microsoft.SemanticKernel.Experimental.GenAI.EnableOTelDiagnosticsSensitive", true);
+       // AppContext.SetSwitch("Microsoft.SemanticKernel.Experimental.GenAI.EnableOTelDiagnosticsSensitive", true);
 
         var traceBuilder = Sdk.CreateTracerProviderBuilder();
 
