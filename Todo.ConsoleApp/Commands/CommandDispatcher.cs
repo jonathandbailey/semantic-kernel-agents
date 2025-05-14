@@ -9,6 +9,8 @@ public class CommandDispatcher(IServiceScopeFactory scopeFactory) : ICommandDisp
 {
     private readonly Dictionary<string, Func<string, Task>> _commands = new();
 
+    private readonly string _sessionId = Guid.NewGuid().ToString();
+
     public void Initialize(CancellationTokenSource cancellationTokenSource)
     {
         _commands[Constants.ExitCommandKey] = async _ => await cancellationTokenSource.CancelAsync();
@@ -36,7 +38,7 @@ public class CommandDispatcher(IServiceScopeFactory scopeFactory) : ICommandDisp
             new SendTaskRequest 
                 { Parameters  = new TaskSendParameters
                 {
-                    SessionId = Guid.NewGuid().ToString(),
+                    SessionId = _sessionId,
                     Message = new Message
                     {
                         Parts = [new TextPart { Text = input }], Role = "user"

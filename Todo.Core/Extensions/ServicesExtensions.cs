@@ -28,7 +28,8 @@ namespace Todo.Core.Extensions
             services.AddScoped<IAgentDiscovery, AgentDiscovery>();
 
             services.AddScoped<IChatHistoryRepository, ChatHistoryRepository>();
-          
+            services.AddScoped<IAgentChatHistoryProvider, AgentChatHistoryProvider>();
+
             services.AddScoped<IUser, User>();
 
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(IAgent).Assembly));

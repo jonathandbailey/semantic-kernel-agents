@@ -16,7 +16,8 @@ namespace Todo.Core.Plugins
             var sendTaskRequest = new SendTaskRequest();
 
             sendTaskRequest.Parameters.Message.Parts.Add(new TextPart { Text = message });
-         
+            sendTaskRequest.Parameters.SessionId = kernel.Data["sessionId"]?.ToString() ?? Guid.NewGuid().ToString();
+
             var agentTaskManager = agentProvider.GetTaskManager(agentName);
 
             var response = await agentTaskManager.SendTask(sendTaskRequest);

@@ -2,6 +2,7 @@
 using Azure.Storage.Blobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Text;
 using Todo.Core.Extensions;
 using Todo.Core.Settings;
 using Todo.Core.Utilities;
@@ -38,11 +39,8 @@ namespace Todo.Core.Infrastructure
                 var blobClient = _blobContainerClient.GetBlobClient(chatSessionId);
 
                 using var stream = new MemoryStream();
-                await using var writer = new StreamWriter(stream);
-             
-                await writer.WriteAsync(json);
-                stream.Position = 0;
-                await blobClient.UploadAsync(stream, overwrite: true);
+                using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(json));
+                await blobClient.UploadAsync(memoryStream, overwrite: true);
             }
             catch (RequestFailedException requestFailedException)
             {
@@ -64,6 +62,14 @@ namespace Todo.Core.Infrastructure
         {
             try
             {
+                var blobClient = _blobContainerClient.GetBlobClient(chatSessionId);
+                var exists = (await blobClient.ExistsAsync()).Value;
+
+                if (!exists)
+                {
+                    return "[]";
+                }
+
                 return await _blobContainerClient.DownloadBlobAsync(chatSessionId);
             }
             catch (RequestFailedException requestFailedException)

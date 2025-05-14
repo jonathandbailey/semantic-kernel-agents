@@ -10,10 +10,12 @@ namespace Todo.Core.Agents;
 
 public class Agent : IAgent
 {
+    private readonly IAgentChatHistoryProvider _agentChatHistoryProvider;
     private readonly ChatCompletionAgent _chatCompletionAgent;
 
-    public Agent(AgentConfiguration configuration, Kernel kernel)
+    public Agent(AgentConfiguration configuration, Kernel kernel, IAgentChatHistoryProvider agentChatHistoryProvider)
     {
+        _agentChatHistoryProvider = agentChatHistoryProvider;
         var promptExecutionSettings = new PromptExecutionSettings
         {
             ServiceId = configuration.Settings.ServiceId,
@@ -27,12 +29,12 @@ public class Agent : IAgent
             Arguments = new KernelArguments(promptExecutionSettings)
         };
     }
-
+    
     public async Task<ChatCompletionResponse> InvokeAsync(ChatCompletionRequest request)
     {
         var stringBuilder = new StringBuilder();
-
-        ChatHistoryAgentThread agentThread = new();
+     
+        var agentThread = await _agentChatHistoryProvider.LoadChatHistoryAsync($"{_chatCompletionAgent.Name}-{request.SessionId}");
 
         _chatCompletionAgent.Kernel.Data.Add("sessionId", request.SessionId);
       
@@ -40,7 +42,10 @@ public class Agent : IAgent
         {
             stringBuilder.AppendLine(response.Content);
         }
-     
+
+        await _agentChatHistoryProvider.SaveChatHistoryAsync(agentThread,
+            $"{_chatCompletionAgent.Name}-{request.SessionId}");
+
         return new ChatCompletionResponse { Message = stringBuilder.ToString(), SessionId = request.SessionId };
     }
 }

@@ -10,6 +10,7 @@ namespace Todo.Core.Agents;
 public class AgentProvider(
     Kernel kernel, 
     IAgentTemplateRepository agentTemplateRepository,
+    IAgentChatHistoryProvider agentChatHistoryProvider,
     IOptions<List<AgentSettings>> agentSettings) : IAgentProvider
 {
     private readonly ConcurrentDictionary<string, IAgentTaskManager> _agents = new();
@@ -70,7 +71,7 @@ public class AgentProvider(
             }
         }
 
-        var agent = new Agent(configuration, agentKernel);
+        var agent = new Agent(configuration, agentKernel, agentChatHistoryProvider);
 
         agentBuild.Use(new AgentLoggingMiddleware(configuration.Settings.Name));
         agentBuild.Use(new AgentMiddleware(agent));
