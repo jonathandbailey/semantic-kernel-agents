@@ -15,13 +15,11 @@ public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger) : 
         try
         {
             var textPart = request.Parameters.Message.Parts.First();
-
-           
           
             var response = await agent.InvokeAsync(new ChatCompletionRequest { Message = textPart.Text, SessionId = request.Parameters.SessionId});
     
             var actionResponse = JsonSerializer.Deserialize<AgentActionResponse>(response.Message);
-            
+           
             if (actionResponse?.Action == "User_Input_Required")
             {
                 agentTask.SetInputRequiredState(actionResponse.Message);
@@ -36,7 +34,7 @@ public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger) : 
         }
         catch (Exception e)
         {
-            logger.LogError($"Agent Task Manager : {e.Message}", e);
+            logger.LogError(e, $"Agent Task Manager : {e.Message}");
             
             agentTask.SetInputRequiredFailed("We are not able to process your request at this time!");
 

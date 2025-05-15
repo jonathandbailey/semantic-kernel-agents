@@ -31,6 +31,9 @@ builder.ConfigureServices((context, services) =>
         context.GetRequiredValue(SettingsConstants.ApplicationInsights),
         context.Configuration.GetRequiredSetting<OpenTelemetrySettings>());
 
+    services.AddSingleton(loggerFactory);
+    services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
+
     services.AddCoreServices(context.Configuration, loggerFactory);
        
     services.AddSingleton<TodoApplication>();
@@ -41,8 +44,9 @@ builder.ConfigureServices((context, services) =>
 
 builder.ConfigureLogging(logging =>
 {
-    logging.AddApplicationInsights();
+    logging.ClearProviders(); 
 });
+
 
 try
 {

@@ -41,7 +41,7 @@ public static class AppOpenTelemetry
                 options.IncludeFormattedMessage = true;
                 options.IncludeScopes = true;
             });
-            builder.SetMinimumLevel(LogLevel.Information);
+            builder.SetMinimumLevel(LogLevel.Trace);
         });
 
         return _loggerFactory;
