@@ -48,6 +48,21 @@ namespace Todo.Core.Extensions
             return agentTask;
         }
 
+        public static AgentTask SetInputRequiredFailed(this AgentTask agentTask, string text)
+        {
+            agentTask.Status = new AgentTaskStatus
+            {
+                State = AgentTaskState.Failed
+            };
+
+            agentTask.Artifacts.Add(new AgentArtifact
+            {
+                Parts = [new TextPart { Text = text }],
+            });
+
+            return agentTask;
+        }
+
         public static AgentTask SetCompletedState(this AgentTask agentTask, string text)
         {
             agentTask.Status = new AgentTaskStatus

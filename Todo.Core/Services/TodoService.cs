@@ -28,18 +28,24 @@ public class TodoService(IAgentProvider agentProvider) : ITodoService, IRequestH
 
         var response = await agentTaskManager.SendTask(sendTaskRequest);
 
-        if (response.Task.Status.State == "completed")
+        if (response.Task.Status.State == AgentTaskState.Completed)
         {
             return new UserResponse
                 { Message = response.Task.Artifacts.First().Parts.First().Text, SessionId = response.Task.SessionId };
         }
 
-        if (response.Task.Status.State == "input-required")
+        if (response.Task.Status.State == AgentTaskState.InputRequired)
         {
             return new UserResponse { Message = response.Task.Status.Message.Parts.First().Text, SessionId = response.Task.SessionId };
         }
-     
-        throw new InvalidOperationException("Invalid task state");
+
+        if (response.Task.Status.State == AgentTaskState.Failed)
+        {
+            return new UserResponse
+                { Message = response.Task.Artifacts.First().Parts.First().Text, SessionId = response.Task.SessionId };
+        }
+
+        throw new InvalidOperationException($"Invalid task state : {response.Task.Status.State}");
     }
 }
 

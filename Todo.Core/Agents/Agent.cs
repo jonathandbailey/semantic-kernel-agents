@@ -39,6 +39,8 @@ public class Agent : IAgent
         {
             var stringBuilder = new StringBuilder();
      
+            
+            //TODO : Chat History should be loaded in Middleware
             var agentThread = await _agentChatHistoryProvider.LoadChatHistoryAsync($"{request.SessionId} - [{_chatCompletionAgent.Name}]");
 
             _chatCompletionAgent.Kernel.Data.Add("sessionId", request.SessionId);
@@ -57,6 +59,8 @@ public class Agent : IAgent
         {
             _logger.LogError($"Unknown Error in Agent : {_chatCompletionAgent.Name} :{e.Message}", e);
             throw;
+            // TODO : Exception should not be thrown, could be handled in middleware
+            // TODO : Agent should update return value with an Error message
         }
     }
 }

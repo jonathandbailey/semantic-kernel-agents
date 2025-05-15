@@ -27,11 +27,13 @@ public class AgentChatHistoryProvider(IChatHistoryRepository chatHistoryReposito
 
         var json = JsonSerializer.Serialize(convertedMessages);
 
+        // TODO : Chat History Repository should take a list of messages and save them in a single blob
         await chatHistoryRepository.SaveChatHistoryAsync($"{name}.json", json);
     }
 
     public async Task<ChatHistoryAgentThread> LoadChatHistoryAsync(string name)
     {
+        //TODO : Chat History Should return a list of messages
         var json = await chatHistoryRepository.GetChatHistoryAsync($"{name}.json");
         var messages = JsonSerializer.Deserialize<List<Message>>(json);
         var chatThread = new ChatHistoryAgentThread();

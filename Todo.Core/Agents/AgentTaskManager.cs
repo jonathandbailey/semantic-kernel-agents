@@ -10,11 +10,13 @@ public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger) : 
 {
     public async Task<SendTaskResponse> SendTask(SendTaskRequest request)
     {
+        var agentTask = request.CreateAgentTask();
+
         try
         {
             var textPart = request.Parameters.Message.Parts.First();
 
-            var agentTask = request.CreateAgentTask();
+           
           
             var response = await agent.InvokeAsync(new ChatCompletionRequest { Message = textPart.Text, SessionId = request.Parameters.SessionId});
     
@@ -30,12 +32,16 @@ public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger) : 
                 agentTask.SetCompletedState(actionResponse.Message);
             }
 
-            return new SendTaskResponse { Message = response.Message, Task = agentTask };
+            return new SendTaskResponse { Task = agentTask };
         }
         catch (Exception e)
         {
             logger.LogError($"Agent Task Manager : {e.Message}", e);
-            throw;
+            
+            agentTask.SetInputRequiredFailed("We are not able to process your request at this time!");
+
+            return new SendTaskResponse {  Task = agentTask };
+
         }
     }
 }
