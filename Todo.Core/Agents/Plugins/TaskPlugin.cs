@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel;
 using Microsoft.SemanticKernel;
-using Todo.Core.Agents;
-using Todo.Core.Communication;
+using Todo.Core.Agents.A2A;
 
-namespace Todo.Core.Plugins
+namespace Todo.Core.Agents.Plugins
 {
     public class TaskPlugin(IAgentProvider agentProvider) 
     {

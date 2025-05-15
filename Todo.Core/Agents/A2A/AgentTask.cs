@@ -1,4 +1,4 @@
-﻿namespace Todo.Core.Communication
+﻿namespace Todo.Core.Agents.A2A
 {
     public class AgentTask
     {
@@ -10,6 +10,6 @@
 
         public string SessionId { get; init; } = string.Empty;
 
-        public TaskStatus Status { get; set; } = new TaskStatus();
+        public AgentTaskStatus Status { get; set; } = new AgentTaskStatus();
     }
 }

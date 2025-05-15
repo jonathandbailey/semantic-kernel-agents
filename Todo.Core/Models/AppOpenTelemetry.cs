@@ -17,9 +17,7 @@ public static class AppOpenTelemetry
         var resourceBuilder = ResourceBuilder
             .CreateDefault()
             .AddService(settings.ApplicationName);
-
-       // AppContext.SetSwitch("Microsoft.SemanticKernel.Experimental.GenAI.EnableOTelDiagnosticsSensitive", true);
-
+     
         var traceBuilder = Sdk.CreateTracerProviderBuilder();
 
         traceBuilder.SetResourceBuilder(resourceBuilder);

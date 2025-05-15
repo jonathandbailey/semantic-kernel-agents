@@ -1,4 +1,4 @@
-﻿namespace Todo.Core.Communication
+﻿namespace Todo.Core.Agents.A2A
 {
     public class AgentMessage
     {

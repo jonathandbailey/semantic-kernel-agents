@@ -1,6 +1,6 @@
-﻿namespace Todo.Core.Communication
+﻿namespace Todo.Core.Agents.A2A
 {
-    public class TaskStatus
+    public class AgentTaskStatus
     {
         public string State { get; set;  } = string.Empty;
 

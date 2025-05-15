@@ -1,4 +1,4 @@
-﻿using Todo.Core.Communication;
+﻿using Todo.Core.Agents.A2A;
 
 namespace Todo.Core.Agents
 {

@@ -33,9 +33,6 @@ namespace Todo.Core.Infrastructure
          
             try
             {
-                //create the blob if it doesn't exist
-                await _blobContainerClient.CreateIfNotExistsAsync();
-                
                 var blobClient = _blobContainerClient.GetBlobClient(chatSessionId);
 
                 using var stream = new MemoryStream();

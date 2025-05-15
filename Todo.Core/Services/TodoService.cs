@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Todo.Core.Agents;
-using Todo.Core.Communication;
+using Todo.Core.Agents.A2A;
 using Todo.Core.Users;
 
 namespace Todo.Core.Services;

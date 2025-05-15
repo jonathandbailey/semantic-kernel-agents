@@ -4,8 +4,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Todo.Core.Settings;
 using Todo.Core.Infrastructure;
-using Todo.Core.Middleware;
-using Todo.Core.Plugins;
+using Todo.Core.Agents.Middleware;
+using Todo.Core.Agents.Plugins;
 
 namespace Todo.Core.Agents;
 public class AgentProvider(
@@ -76,7 +76,7 @@ public class AgentProvider(
 
         var agent = new Agent(configuration, agentKernel, agentChatHistoryProvider,logger);
 
-        agentBuild.Use(new AgentLoggingMiddleware(configuration.Settings.Name));
+        agentBuild.Use(new AgentTraceMiddleware(configuration.Settings.Name));
         agentBuild.Use(new AgentMiddleware(agent));
 
         return new AgentDelegateWrapper(agentBuild.Build());

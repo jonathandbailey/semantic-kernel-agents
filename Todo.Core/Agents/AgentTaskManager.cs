@@ -1,7 +1,8 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using Todo.Core.Agents.A2A;
 using Todo.Core.Communication;
-using TaskStatus = Todo.Core.Communication.TaskStatus;
+using Todo.Core.Extensions;
 
 namespace Todo.Core.Agents;
 
@@ -13,43 +14,20 @@ public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger) : 
         {
             var textPart = request.Parameters.Message.Parts.First();
 
-            var agentTask = new AgentTask
-            {
-                SessionId = request.Parameters.SessionId,
-                TaskId = Guid.NewGuid().ToString(),
-           
-            };
-
-            agentTask.History.Add(request.Parameters.Message);
-
+            var agentTask = request.CreateAgentTask();
+          
             var response = await agent.InvokeAsync(new ChatCompletionRequest { Message = textPart.Text, SessionId = request.Parameters.SessionId});
     
             var actionResponse = JsonSerializer.Deserialize<AgentActionResponse>(response.Message);
             
             if (actionResponse?.Action == "User_Input_Required")
             {
-                agentTask.Status = new TaskStatus
-                {
-                    State = "input-required",
-                    Message = new Message
-                    {
-                        Role = "agent",
-                        Parts = [new TextPart { Text = actionResponse.Message }]
-                    }
-                };
+                agentTask.SetInputRequiredState(actionResponse.Message);
             }
 
             if (actionResponse?.Action == "Complete")
             {
-                agentTask.Status = new TaskStatus
-                {
-                    State = "completed"
-                };
-
-                agentTask.Artifacts.Add(new AgentArtifact
-                {
-                    Parts = [new TextPart { Text = actionResponse.Message }],
-                });
+                agentTask.SetCompletedState(actionResponse.Message);
             }
 
             return new SendTaskResponse { Message = response.Message, Task = agentTask };
