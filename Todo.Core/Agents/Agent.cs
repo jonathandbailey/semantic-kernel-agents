@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Todo.Core.Communication;
 
 namespace Todo.Core.Agents;
@@ -19,11 +20,11 @@ public class Agent : IAgent
     {
         _agentChatHistoryProvider = agentChatHistoryProvider;
         _logger = logger;
-        var promptExecutionSettings = new PromptExecutionSettings
+        var promptExecutionSettings = new OpenAIPromptExecutionSettings()
         {
             ServiceId = configuration.Settings.ServiceId,
-            FunctionChoiceBehavior = FunctionChoiceBehavior.Auto()
-
+            FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
+            Temperature = 0.0f
         };
 
         _chatCompletionAgent = new ChatCompletionAgent(configuration.Template, configuration.PromptTemplateFactory)
@@ -50,10 +51,12 @@ public class Agent : IAgent
                 stringBuilder.AppendLine(response.Content);
             }
 
+            var message = stringBuilder.ToString();
+
             await _agentChatHistoryProvider.SaveChatHistoryAsync(agentThread,
                 $"{request.SessionId} - [{_chatCompletionAgent.Name}]");
 
-            return new ChatCompletionResponse { Message = stringBuilder.ToString(), SessionId = request.SessionId };
+            return new ChatCompletionResponse { Message = message, SessionId = request.SessionId };
         }
         catch (Exception e)
         {

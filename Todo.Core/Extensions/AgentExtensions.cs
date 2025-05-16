@@ -67,13 +67,28 @@ namespace Todo.Core.Extensions
         {
             agentTask.Status = new AgentTaskStatus
             {
-                State = "completed"
+                State = AgentTaskState.Completed
             };
             agentTask.Artifacts.Add(new AgentArtifact
             {
                 Parts = [new TextPart { Text = text }],
             });
             return agentTask;
+        }
+
+        public static string ExtractText(this SendTaskResponse response)
+        {
+            if (response.Task.Status.State == AgentTaskState.InputRequired)
+            {
+                return response.Task.Status.Message.Parts.First().Text;
+            }
+
+            if (response.Task.Status.State == AgentTaskState.Completed)
+            {
+                return response.Task.Artifacts.First().Parts.First().Text;
+            }
+
+            throw new InvalidOperationException("The task state is not valid for extraction.");
         }
 
         public static AgentTask CreateAgentTask(this SendTaskRequest request)
