@@ -36,7 +36,7 @@ public class CommandDispatcher(IServiceScopeFactory scopeFactory) : ICommandDisp
 
         var response = await publisher.Send(new UserRequest { Message = input, SessionId = _sessionId});
            
-        Console.WriteLine(response.Message);
+        Console.WriteLine($"- " + response.Message);
     }
 }
 

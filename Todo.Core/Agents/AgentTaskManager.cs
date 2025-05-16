@@ -35,6 +35,11 @@ public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger) : 
                 agentTask.SetCompletedState(actionResponse.Message);
             }
 
+            if (actionResponse?.Action == "Error")
+            {
+                agentTask.SetInputRequiredFailed(actionResponse.Message);
+            }
+
             return new SendTaskResponse { Task = agentTask };
         }
         catch (Exception e)

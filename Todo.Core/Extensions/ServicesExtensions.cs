@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Todo.Core.Agents;
+using Todo.Core.Agents.Build;
 using Todo.Core.Infrastructure;
 using Todo.Core.Models;
 using Todo.Core.Services;
@@ -26,6 +27,8 @@ namespace Todo.Core.Extensions
             services.AddScoped<IAgentProvider, AgentProvider>();
 
             services.AddScoped<IAgentDiscovery, AgentDiscovery>();
+
+            services.AddScoped<IAgentFactory, AgentFactory>();
 
             services.AddScoped<IChatHistoryRepository, ChatHistoryRepository>();
             services.AddScoped<IAgentChatHistoryProvider, AgentChatHistoryProvider>();

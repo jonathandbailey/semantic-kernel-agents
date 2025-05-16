@@ -10,7 +10,7 @@ namespace Todo.Core.Agents;
 
 #pragma warning disable SKEXP0110
 
-public class Agent : IAgent
+public class Agent : AgentBase, IAgent
 {
     private readonly IAgentChatHistoryProvider _agentChatHistoryProvider;
     private readonly ILogger<Agent> _logger;
@@ -33,12 +33,12 @@ public class Agent : IAgent
 
         _chatCompletionAgent = new ChatCompletionAgent(configuration.Template, configuration.PromptTemplateFactory)
         {
-            Kernel = kernel.Clone(),
+            Kernel = kernel,
             Arguments = new KernelArguments(promptExecutionSettings)
         };
     }
-    
-    public async Task<ChatCompletionResponse> InvokeAsync(ChatCompletionRequest request)
+
+    public override async Task<ChatCompletionResponse> InvokeAsync(ChatCompletionRequest request)
     {
         try
         {
