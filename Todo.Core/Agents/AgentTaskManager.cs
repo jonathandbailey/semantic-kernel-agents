@@ -1,5 +1,6 @@
-﻿using System.Text.Json;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using System.Diagnostics;
+using System.Text.Json;
 using Todo.Core.Agents.A2A;
 using Todo.Core.Communication;
 using Todo.Core.Extensions;
@@ -8,8 +9,12 @@ namespace Todo.Core.Agents;
 
 public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger) : IAgentTaskManager
 {
+    private readonly ActivitySource _trace = new($"Todo.Agent.TaskManager.{agent.Name}");
+
     public async Task<SendTaskResponse> SendTask(SendTaskRequest request)
     {
+        using var activity = _trace.StartActivity($"TaskManager.{agent.Name}.{nameof(SendTask)}");
+
         var agentTask = request.CreateAgentTask();
 
         try

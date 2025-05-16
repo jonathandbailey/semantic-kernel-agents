@@ -79,7 +79,7 @@ public class AgentProvider(
         agentBuild.Use(new AgentTraceMiddleware(configuration.Settings.Name));
         agentBuild.Use(new AgentMiddleware(agent));
 
-        return new AgentDelegateWrapper(agentBuild.Build());
+        return new AgentDelegateWrapper(agentBuild.Build(), configuration.Settings.Name);
     }
 }
 

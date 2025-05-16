@@ -16,8 +16,12 @@ public class Agent : IAgent
     private readonly ILogger<Agent> _logger;
     private readonly ChatCompletionAgent _chatCompletionAgent;
 
+    public string Name { get; }
+
     public Agent(AgentConfiguration configuration, Kernel kernel, IAgentChatHistoryProvider agentChatHistoryProvider, ILogger<Agent> logger)
     {
+         Name = configuration.Settings.Name;
+
         _agentChatHistoryProvider = agentChatHistoryProvider;
         _logger = logger;
         var promptExecutionSettings = new OpenAIPromptExecutionSettings()
