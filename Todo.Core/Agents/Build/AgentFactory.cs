@@ -39,7 +39,7 @@ public class AgentFactory(
         var promptExecutionSettings = new OpenAIPromptExecutionSettings
         {
             ServiceId = serviceId,
-            FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
+            ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions,
             Temperature = 0.0f
         };
 
