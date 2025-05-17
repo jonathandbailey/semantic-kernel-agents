@@ -1,4 +1,6 @@
 ﻿using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.Agents;
+using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Todo.Core.Agents.Plugins;
 using Todo.Core.Infrastructure;
 using Todo.Core.Settings;
@@ -11,30 +13,41 @@ public class AgentFactory(
 {
     public async Task<IAgent> Create(AgentSettings agentSetting, IAgentProvider agentProvider)
     {
-        var configuration = await Load(agentSetting);
+        var agentKernel = kernel.Clone();
         
-        var clonedKernel = kernel.Clone();
-            
-        foreach (var name in configuration.Settings.Plugins)
+        foreach (var name in agentSetting.Plugins)
         {
             switch (name)
             {
                 case "TaskPlugin":
-                    clonedKernel.Plugins.AddFromObject(new TaskPlugin(agentProvider), "TaskPlugin");
+                    agentKernel.Plugins.AddFromObject(new TaskPlugin(agentProvider), "TaskPlugin");
                     break;
             }
         }
 
-        return new Agent(configuration, clonedKernel);
-    }
-
-    private async Task<AgentConfiguration> Load(AgentSettings agentSetting)
-    {
         var agentTemplate = await agentTemplateRepository.GetAgentTemplateAsync(agentSetting.Template);
 
         var templateConfig = KernelFunctionYaml.ToPromptTemplateConfig(agentTemplate);
 
-        return new AgentConfiguration { Settings = agentSetting, Template = templateConfig };
+        var chatCompletionAgent = Create(templateConfig, agentSetting.ServiceId, agentKernel);
+
+        return new Agent(chatCompletionAgent, agentSetting.Name);
+    }
+    
+    private ChatCompletionAgent Create(PromptTemplateConfig template, string serviceId, Kernel agentKernel)
+    {
+        var promptExecutionSettings = new OpenAIPromptExecutionSettings
+        {
+            ServiceId = serviceId,
+            FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
+            Temperature = 0.0f
+        };
+
+        return new ChatCompletionAgent(template, new KernelPromptTemplateFactory())
+        {
+            Kernel = agentKernel,
+            Arguments = new KernelArguments(promptExecutionSettings)
+        };
     }
    
 }

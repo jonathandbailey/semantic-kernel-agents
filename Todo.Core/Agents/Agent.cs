@@ -2,7 +2,6 @@
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Todo.Core.Communication;
 
 namespace Todo.Core.Agents;
@@ -15,22 +14,11 @@ public class Agent : AgentBase, IAgent
 
     public string Name { get; }
 
-    public Agent(AgentConfiguration configuration, Kernel kernel)
+    public Agent(ChatCompletionAgent chatCompletionAgent, string name)
     {
-        Name = configuration.Settings.Name;
+        Name = name;
 
-        var promptExecutionSettings = new OpenAIPromptExecutionSettings()
-        {
-            ServiceId = configuration.Settings.ServiceId,
-            FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
-            Temperature = 0.0f
-        };
-
-        _chatCompletionAgent = new ChatCompletionAgent(configuration.Template, configuration.PromptTemplateFactory)
-        {
-            Kernel = kernel,
-            Arguments = new KernelArguments(promptExecutionSettings)
-        };
+        _chatCompletionAgent = chatCompletionAgent;
     }
 
     public override async Task<ChatCompletionResponse> InvokeAsync(ChatCompletionRequest request)
