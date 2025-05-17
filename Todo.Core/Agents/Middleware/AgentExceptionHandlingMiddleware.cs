@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.SemanticKernel;
 using Todo.Core.Communication;
 
 namespace Todo.Core.Agents.Middleware
@@ -13,10 +14,17 @@ namespace Todo.Core.Agents.Middleware
 
                 return response;
             }
-            catch (Exception e)
+            catch (HttpOperationException exception)
             {
-                logger.LogError($"Unknown Error in Agent : {agentName} :{e.Message}", e);
-                throw;
+                logger.LogError($"HTTP Operation Error in Agent : {agentName} :{exception.Message}", exception);
+                throw new AgentException("An error occurred during HTTP operation.", exception, exception.StatusCode);
+            }
+            
+            catch (Exception e)
+            {   
+                
+                logger.LogError($"Unexpected error in Agent : {agentName} :{e.Message}", e);
+                throw new AgentException("An unexpected error occurred.", e);
             }
         }
     }

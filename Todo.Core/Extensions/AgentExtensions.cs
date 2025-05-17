@@ -125,6 +125,11 @@ namespace Todo.Core.Extensions
                 return response.Task.Artifacts.First().Parts.First().Text;
             }
 
+            if (response.Task.Status.State == AgentTaskState.Failed)
+            {
+                return response.Task.Artifacts.First().Parts.First().Text;
+            }
+
             throw new InvalidOperationException("The task state is not valid for extraction.");
         }
 
