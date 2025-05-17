@@ -25,17 +25,17 @@ public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger) : 
     
             var actionResponse = JsonSerializer.Deserialize<AgentActionResponse>(response.Message);
            
-            if (actionResponse?.Action == "User_Input_Required")
+            if (actionResponse?.Action == AgentTaskState.InputRequired)
             {
                 agentTask.SetInputRequiredState(actionResponse.Message);
             }
 
-            if (actionResponse?.Action == "Complete")
+            if (actionResponse?.Action == AgentTaskState.Completed)
             {
                 agentTask.SetCompletedState(actionResponse.Message);
             }
 
-            if (actionResponse?.Action == "Error")
+            if (actionResponse?.Action == AgentTaskState.Failed)
             {
                 agentTask.SetInputRequiredFailed(actionResponse.Message);
             }

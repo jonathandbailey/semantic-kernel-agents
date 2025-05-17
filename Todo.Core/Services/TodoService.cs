@@ -29,6 +29,7 @@ public class TodoService(IAgentProvider agentProvider) : ITodoService, IRequestH
 
         var response = await agentTaskManager.SendTask(sendTaskRequest);
 
+        //TODO This should be handled in the UI
         if (response.Task.Status.State == AgentTaskState.Completed)
         {
             return new UserResponse
