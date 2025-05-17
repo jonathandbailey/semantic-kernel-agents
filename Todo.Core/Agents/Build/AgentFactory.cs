@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.SemanticKernel;
+﻿using Microsoft.SemanticKernel;
 using Todo.Core.Agents.Plugins;
 using Todo.Core.Infrastructure;
 using Todo.Core.Settings;
@@ -7,10 +6,8 @@ using Todo.Core.Settings;
 namespace Todo.Core.Agents.Build;
 
 public class AgentFactory(
-    IAgentChatHistoryProvider agentChatHistoryProvider, 
     Kernel kernel, 
-    IAgentTemplateRepository agentTemplateRepository,
-    ILogger<Agent> logger) : IAgentFactory
+    IAgentTemplateRepository agentTemplateRepository) : IAgentFactory
 {
     public async Task<IAgent> Create(AgentSettings agentSetting, IAgentProvider agentProvider)
     {
@@ -28,7 +25,7 @@ public class AgentFactory(
             }
         }
 
-        return new Agent(configuration, clonedKernel, agentChatHistoryProvider, logger);
+        return new Agent(configuration, clonedKernel);
     }
 
     private async Task<AgentConfiguration> Load(AgentSettings agentSetting)

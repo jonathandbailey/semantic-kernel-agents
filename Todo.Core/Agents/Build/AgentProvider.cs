@@ -7,6 +7,8 @@ using Todo.Core.Agents.Middleware;
 namespace Todo.Core.Agents.Build;
 public class AgentProvider(
     ILogger<AgentTaskManager> taskManagerLogger,
+    IAgentChatHistoryProvider agentChatHistoryProvider,
+    ILogger<IAgent> agentLogger,
     IAgentFactory agentFactory,
     IOptions<List<AgentSettings>> agentSettings) : IAgentProvider
 {
@@ -42,7 +44,10 @@ public class AgentProvider(
 
         var agent = await agentFactory.Create(configuration, this);
 
+        agentBuild.Use(new AgentExceptionHandlingMiddleware(agentLogger, agent.Name));
         agentBuild.Use(new AgentTraceMiddleware(agent.Name));
+        agentBuild.Use(new AgentConversationHistoryMiddleware(agentChatHistoryProvider, agent.Name));
+        
         agentBuild.Use((IAgentMiddleware) agent);
 
         return new AgentDelegateWrapper(agentBuild.Build(), agent.Name);
