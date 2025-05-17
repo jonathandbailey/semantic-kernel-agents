@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Todo.ConsoleApp.Settings;
 using Todo.Core.Agents.A2A;
+using Todo.Core.Extensions;
 using Todo.Core.Users;
 
 namespace Todo.ConsoleApp.Commands;
@@ -35,7 +36,9 @@ public class CommandDispatcher(IServiceScopeFactory scopeFactory) : ICommandDisp
 
         var publisher = scope.ServiceProvider.GetRequiredService<IMediator>();
 
-        var response = await publisher.Send(new UserRequest { Message = input, SessionId = _sessionId});
+        var sendTaskRequest = AgentExtensions.CreateUserSendTaskRequest(_sessionId, input);
+
+        var response = await publisher.Send(new UserRequest { Message = input, SessionId = _sessionId, SendTaskRequest = sendTaskRequest});
 
         if (response.Task.Status.State == AgentTaskState.InputRequired)
         {
