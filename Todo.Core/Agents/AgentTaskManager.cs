@@ -24,21 +24,17 @@ public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger) : 
             var response = await agent.InvokeAsync(new ChatCompletionRequest { Message = textPart.Text, SessionId = request.Parameters.SessionId});
     
             var actionResponse = JsonSerializer.Deserialize<AgentActionResponse>(response.Message);
-           
-            if (actionResponse?.Action == AgentTaskState.InputRequired)
+
+            if (actionResponse == null)
             {
-                agentTask.SetInputRequiredState(actionResponse.Message);
+                logger.LogError($"{agent.Name} Task Manager failed to deserialize response from Agent.");
+
+                agentTask.SetInputRequiredFailed("We are not able to process your request at this time!");
+
+                return new SendTaskResponse { Task = agentTask };
             }
 
-            if (actionResponse?.Action == AgentTaskState.Completed)
-            {
-                agentTask.SetCompletedState(actionResponse.Message);
-            }
-
-            if (actionResponse?.Action == AgentTaskState.Failed)
-            {
-                agentTask.SetInputRequiredFailed(actionResponse.Message);
-            }
+            agentTask.SetTaskState(actionResponse);
 
             return new SendTaskResponse { Task = agentTask };
         }

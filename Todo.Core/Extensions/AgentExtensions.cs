@@ -1,6 +1,7 @@
 ﻿using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Todo.Core.Agents.A2A;
+using Todo.Core.Communication;
 using Todo.Core.Utilities;
 
 namespace Todo.Core.Extensions
@@ -31,6 +32,24 @@ namespace Todo.Core.Extensions
                     }
                 ]
             };
+        }
+
+        public static void SetTaskState(this AgentTask agentTask, AgentActionResponse actionResponse)
+        {
+            if (actionResponse.Action == AgentTaskState.InputRequired)
+            {
+                agentTask.SetInputRequiredState(actionResponse.Message);
+            }
+
+            if (actionResponse.Action == AgentTaskState.Completed)
+            {
+                agentTask.SetCompletedState(actionResponse.Message);
+            }
+
+            if (actionResponse.Action == AgentTaskState.Failed)
+            {
+                agentTask.SetInputRequiredFailed(actionResponse.Message);
+            }
         }
 
         public static AgentTask SetInputRequiredState(this AgentTask agentTask, string text)
