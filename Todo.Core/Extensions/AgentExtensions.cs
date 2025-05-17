@@ -34,6 +34,24 @@ namespace Todo.Core.Extensions
             };
         }
 
+        public static SendTaskRequest CreateUserSendTaskRequest(string sessionId, string messageText)
+        {
+            var sendTaskRequest = new SendTaskRequest
+            {
+                Parameters = new TaskSendParameters
+                {
+                    SessionId = sessionId,
+                    Message = new Message
+                    {
+                        Parts = [new TextPart { Text = messageText }],
+                        Role = "user"
+                    }
+                }
+            };
+
+            return sendTaskRequest;
+        }
+
         public static void SetTaskState(this AgentTask agentTask, AgentActionResponse actionResponse)
         {
             if (actionResponse.Action == AgentTaskState.InputRequired)
