@@ -6,12 +6,11 @@ namespace Todo.Core.Agents.Middleware
     {
         public async Task<ChatCompletionResponse> InvokeAsync(ChatCompletionRequest context, AgentDelegate next)
         {
-            context.ChatHistory = await agentChatHistoryProvider.LoadChatHistoryAsync($"{context.SessionId} - [{agentName}]");
+            context.ChatHistory = await agentChatHistoryProvider.LoadChatHistoryAsync(agentName, context.SessionId);
 
             var response = await next(context);
 
-            await agentChatHistoryProvider.SaveChatHistoryAsync(response.ChatHistory,
-                $"{context.SessionId} - [{agentName}]");
+            await agentChatHistoryProvider.SaveChatHistoryAsync(response.ChatHistory, agentName, context.SessionId);
 
             return response;
         }

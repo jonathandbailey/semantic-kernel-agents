@@ -1,5 +1,4 @@
 ﻿using Microsoft.SemanticKernel.Agents;
-using System.Text.Json;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Todo.Core.Extensions;
 using Todo.Core.Infrastructure;
@@ -11,7 +10,7 @@ namespace Todo.Core.Agents;
 
 public class AgentChatHistoryProvider(IChatHistoryRepository chatHistoryRepository) : IAgentChatHistoryProvider
 {
-    public async Task SaveChatHistoryAsync(ChatHistoryAgentThread agentThread, string name)
+    public async Task SaveChatHistoryAsync(ChatHistoryAgentThread agentThread, string agentName, string sessionId)
     {
         var messages = await agentThread.GetMessagesAsync().ToListAsync();
 
@@ -25,31 +24,31 @@ public class AgentChatHistoryProvider(IChatHistoryRepository chatHistoryReposito
             }
         }
 
-        var json = JsonSerializer.Serialize(convertedMessages);
-
-        // TODO : Chat History Repository should take a list of messages and save them in a single blob
-        await chatHistoryRepository.SaveChatHistoryAsync($"{name}.json", json);
+        await chatHistoryRepository.SaveChatHistoryAsync(GetFileName(sessionId, agentName), convertedMessages);
     }
 
-    public async Task<ChatHistoryAgentThread> LoadChatHistoryAsync(string name)
+    public async Task<ChatHistoryAgentThread> LoadChatHistoryAsync(string agentName, string sessionId)
     {
-        //TODO : Chat History Should return a list of messages
-        var json = await chatHistoryRepository.GetChatHistoryAsync($"{name}.json");
-        var messages = JsonSerializer.Deserialize<List<Message>>(json);
+        var messages = await chatHistoryRepository.GetChatHistoryAsync(GetFileName(sessionId, agentName));
+        
         var chatThread = new ChatHistoryAgentThread();
-            
-        if (messages != null)
-            foreach (var message in messages)
-            {
-                chatThread.ChatHistory.Add(message.ToChatMessageContent());
-            }
+       
+        foreach (var message in messages)
+        {
+            chatThread.ChatHistory.Add(message.ToChatMessageContent());
+        }
 
         return chatThread;
+    }
+
+    private static string GetFileName(string sessionId, string agentName)
+    {
+        return $"{sessionId} - [{agentName}].json";
     }
 }
 
 public interface IAgentChatHistoryProvider
 {
-    Task SaveChatHistoryAsync(ChatHistoryAgentThread agentThread, string name);
-    Task<ChatHistoryAgentThread> LoadChatHistoryAsync(string name);
+    Task<ChatHistoryAgentThread> LoadChatHistoryAsync(string agentName, string sessionId);
+    Task SaveChatHistoryAsync(ChatHistoryAgentThread agentThread, string agentName, string sessionId);
 }

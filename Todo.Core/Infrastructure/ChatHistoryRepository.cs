@@ -3,6 +3,8 @@ using Azure.Storage.Blobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Text;
+using System.Text.Json;
+using Todo.Core.Agents.A2A;
 using Todo.Core.Extensions;
 using Todo.Core.Settings;
 using Todo.Core.Utilities;
@@ -11,8 +13,8 @@ namespace Todo.Core.Infrastructure
 {
     public interface IChatHistoryRepository
     {
-        Task<string> GetChatHistoryAsync(string chatSessionId);
-        Task SaveChatHistoryAsync(string chatSessionId, string json);
+        Task<List<Message>> GetChatHistoryAsync(string name);
+        Task SaveChatHistoryAsync(string name, List<Message> messages);
     }
 
     public class ChatHistoryRepository : IChatHistoryRepository
@@ -26,14 +28,18 @@ namespace Todo.Core.Infrastructure
             var blobServiceClient = new BlobServiceClient(settings.Value.ConnectionString);
             _blobContainerClient = blobServiceClient.GetBlobContainerClient(settings.Value.ChatHistoryContainerName);
         }
-
-        public async Task SaveChatHistoryAsync(string chatSessionId, string json)
+    
+        public async Task SaveChatHistoryAsync(string name, List<Message> messages)
         {
-            Verify.NotNullOrWhiteSpace(json);
-         
+            Verify.NotNullOrWhiteSpace(name);
+
             try
             {
-                var blobClient = _blobContainerClient.GetBlobClient(chatSessionId);
+                var blobClient = _blobContainerClient.GetBlobClient(name);
+
+                var json = JsonSerializer.Serialize(messages);
+
+                Verify.NotNullOrWhiteSpace(json);
 
                 using var stream = new MemoryStream();
                 using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(json));
@@ -42,45 +48,53 @@ namespace Todo.Core.Infrastructure
             catch (RequestFailedException requestFailedException)
             {
                 _logger.LogError(requestFailedException,
-                    "Azure Request Failed to save chat history {json} to blob storage container {containerName} : {errorCode}",
-                    json, _blobContainerClient.Name, requestFailedException.ErrorCode);
+                    "Azure Request Failed to save chat history to blob storage container {containerName} : {errorCode}",
+                    _blobContainerClient.Name, requestFailedException.ErrorCode);
                 throw;
             }
             catch (Exception exception)
             {
                 _logger.LogError(exception,
-                    "Unknown Exception trying to save chat history {json} to blob storage container {containerName}",
-                    json, _blobContainerClient.Name);
+                    "Unknown Exception trying to save chat history to blob storage container {containerName}",
+                     _blobContainerClient.Name);
                 throw;
             }
         }
 
-        public async Task<string> GetChatHistoryAsync(string chatSessionId)
+        public async Task<List<Message>> GetChatHistoryAsync(string name)
         {
             try
             {
-                var blobClient = _blobContainerClient.GetBlobClient(chatSessionId);
+                var blobClient = _blobContainerClient.GetBlobClient(name);
                 var exists = (await blobClient.ExistsAsync()).Value;
 
                 if (!exists)
                 {
-                    return "[]";
+                    return [];
                 }
 
-                return await _blobContainerClient.DownloadBlobAsync(chatSessionId);
+                var blob = await _blobContainerClient.DownloadBlobAsync(name);
+
+                Verify.NotNullOrWhiteSpace(blob);
+
+                var messages = JsonSerializer.Deserialize<List<Message>>(blob);
+                
+                Verify.NotNull(messages);
+
+                return messages;
             }
             catch (RequestFailedException requestFailedException)
             {
                 _logger.LogError(requestFailedException,
-                    "Azure Request Failed to get chat history {chatSessionId} from blob storage container {containerName} : {errorCode}",
-                    chatSessionId, _blobContainerClient.Name, requestFailedException.ErrorCode);
+                    "Azure Request Failed to get chat history {name} from blob storage container {containerName} : {errorCode}",
+                    name, _blobContainerClient.Name, requestFailedException.ErrorCode);
                 throw;
             }
             catch (Exception exception)
             {
                 _logger.LogError(exception,
-                    "Unknown Exception trying to get chat history {chatSessionId} from blob storage container {containerName}",
-                    chatSessionId, _blobContainerClient.Name);
+                    "Unknown Exception trying to get chat history {name} from blob storage container {containerName}",
+                    name, _blobContainerClient.Name);
                 throw;
             }
         }
