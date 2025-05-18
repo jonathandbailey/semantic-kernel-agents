@@ -10,7 +10,8 @@ public class CommandDispatcher(IServiceScopeFactory scopeFactory) : ICommandDisp
 {
     private readonly Dictionary<string, Func<string, Task>> _commands = new();
 
-    private readonly string _sessionId = Guid.NewGuid().ToString();
+    private string _sessionId = string.Empty;
+    private string _taskId = string.Empty;
 
     public void Initialize(CancellationTokenSource cancellationTokenSource)
     {
@@ -35,11 +36,14 @@ public class CommandDispatcher(IServiceScopeFactory scopeFactory) : ICommandDisp
 
         var publisher = scope.ServiceProvider.GetRequiredService<IMediator>();
 
-        var sendTaskRequest = AgentExtensions.CreateUserSendTaskRequest(_sessionId, input);
+        var sendTaskRequest = AgentExtensions.CreateUserSendTaskRequest(_taskId, _sessionId, input);
 
-        var response = await publisher.Send(new UserRequest { Message = input, SessionId = _sessionId, SendTaskRequest = sendTaskRequest});
+        var response = await publisher.Send(new UserRequest { Message = input, SendTaskRequest = sendTaskRequest});
 
         Console.WriteLine($"{Constants.SystemCaret}{response.Task.ExtractTextBasedOnResponse()}");
+
+        _sessionId = response.Task.SessionId;
+        _taskId = response.Task.TaskId;
     }
 }
 

@@ -29,6 +29,7 @@ namespace Todo.Core.Extensions
             services.AddScoped<IAgentDiscovery, AgentDiscovery>();
 
             services.AddScoped<IAgentFactory, AgentFactory>();
+            services.AddScoped<IAgentTaskRepository, AgentTaskRepository>();
 
             services.AddScoped<IChatHistoryRepository, ChatHistoryRepository>();
             services.AddScoped<IAgentChatHistoryProvider, AgentChatHistoryProvider>();

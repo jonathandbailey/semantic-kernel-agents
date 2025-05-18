@@ -34,12 +34,13 @@ namespace Todo.Core.Extensions
             };
         }
 
-        public static SendTaskRequest CreateUserSendTaskRequest(string sessionId, string messageText)
+        public static SendTaskRequest CreateUserSendTaskRequest(string id, string sessionId, string messageText)
         {
             var sendTaskRequest = new SendTaskRequest
             {
                 Parameters = new TaskSendParameters
                 {
+                    Id = id,
                     SessionId = sessionId,
                     Message = new Message
                     {
@@ -137,7 +138,7 @@ namespace Todo.Core.Extensions
         {
             var agentTask = new AgentTask
             {
-                SessionId = request.Parameters.SessionId,
+                SessionId = Guid.NewGuid().ToString(),
                 TaskId = Guid.NewGuid().ToString(),
             };
 

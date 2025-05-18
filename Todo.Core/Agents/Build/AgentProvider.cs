@@ -3,11 +3,13 @@ using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using Todo.Core.Settings;
 using Todo.Core.Agents.Middleware;
+using Todo.Core.Infrastructure;
 
 namespace Todo.Core.Agents.Build;
 public class AgentProvider(
     ILogger<AgentTaskManager> taskManagerLogger,
     IAgentChatHistoryProvider agentChatHistoryProvider,
+    IAgentTaskRepository agentTaskRepository,
     ILogger<IAgent> agentLogger,
     IAgentFactory agentFactory,
     IOptions<List<AgentSettings>> agentSettings) : IAgentProvider
@@ -21,7 +23,7 @@ public class AgentProvider(
         {
             var agent = await BuildAgentMiddleware(agentSetting);
 
-            if (!_agents.TryAdd(agentSetting.Name, new AgentTaskManager(agent, taskManagerLogger)))
+            if (!_agents.TryAdd(agentSetting.Name, new AgentTaskManager(agent, taskManagerLogger, agentTaskRepository)))
             {
                 throw new InvalidOperationException($"Failed to add agent: {agentSetting.Name}. It may already exist.");
             }

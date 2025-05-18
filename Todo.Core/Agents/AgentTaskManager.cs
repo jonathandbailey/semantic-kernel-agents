@@ -4,18 +4,29 @@ using System.Text.Json;
 using Todo.Core.Agents.A2A;
 using Todo.Core.Communication;
 using Todo.Core.Extensions;
+using Todo.Core.Infrastructure;
 
 namespace Todo.Core.Agents;
 
-public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger) : IAgentTaskManager
+public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger, IAgentTaskRepository agentTaskRepository) : IAgentTaskManager
 {
     private readonly ActivitySource _trace = new($"Todo.Agent.TaskManager.{agent.Name}");
 
     public async Task<SendTaskResponse> SendTask(SendTaskRequest request)
     {
         using var activity = _trace.StartActivity($"TaskManager.{agent.Name}.{nameof(SendTask)}");
+  
+        AgentTask agentTask;
 
-        var agentTask = request.CreateAgentTask();
+        if (string.IsNullOrWhiteSpace(request.Parameters.Id))
+        {
+            agentTask = request.CreateAgentTask();
+        }
+        else
+        {
+            agentTask = await agentTaskRepository.LoadAsync(request.Parameters.Id);
+        }
+       
 
         try
         {
@@ -35,6 +46,8 @@ public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger) : 
             }
 
             agentTask.SetTaskState(actionResponse);
+
+            await agentTaskRepository.SaveAsync(agentTask);
 
             return new SendTaskResponse { Task = agentTask };
         }
