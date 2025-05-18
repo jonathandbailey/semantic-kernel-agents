@@ -23,7 +23,7 @@ namespace Todo.Core.Agents.Plugins
 
             var response = await agentTaskManager.SendTask(sendTaskRequest);
 
-            var text = response.ExtractText();
+            var text = response.ExtractTextBasedOnResponse();
 
             return text;
         }

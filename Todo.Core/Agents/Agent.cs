@@ -6,8 +6,6 @@ using Todo.Core.Communication;
 
 namespace Todo.Core.Agents;
 
-#pragma warning disable SKEXP0110
-
 public class Agent(ChatCompletionAgent chatCompletionAgent, string name) : AgentBase, IAgent
 {
     public string Name { get; } = name;

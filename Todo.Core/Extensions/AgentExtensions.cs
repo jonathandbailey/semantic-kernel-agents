@@ -70,7 +70,7 @@ namespace Todo.Core.Extensions
             }
         }
 
-        public static AgentTask SetInputRequiredState(this AgentTask agentTask, string text)
+        private static void SetInputRequiredState(this AgentTask agentTask, string text)
         {
             agentTask.Status = new AgentTaskStatus
             {
@@ -81,11 +81,9 @@ namespace Todo.Core.Extensions
                     Parts = [new TextPart { Text = text }]
                 }
             };
-
-            return agentTask;
         }
 
-        public static AgentTask SetInputRequiredFailed(this AgentTask agentTask, string text)
+        public static void SetInputRequiredFailed(this AgentTask agentTask, string text)
         {
             agentTask.Status = new AgentTaskStatus
             {
@@ -96,11 +94,9 @@ namespace Todo.Core.Extensions
             {
                 Parts = [new TextPart { Text = text }],
             });
-
-            return agentTask;
         }
 
-        public static AgentTask SetCompletedState(this AgentTask agentTask, string text)
+        private static void SetCompletedState(this AgentTask agentTask, string text)
         {
             agentTask.Status = new AgentTaskStatus
             {
@@ -110,24 +106,28 @@ namespace Todo.Core.Extensions
             {
                 Parts = [new TextPart { Text = text }],
             });
-            return agentTask;
         }
 
-        public static string ExtractText(this SendTaskResponse response)
+        public static string ExtractTextBasedOnResponse(this SendTaskResponse response)
         {
-            if (response.Task.Status.State == AgentTaskState.InputRequired)
+            return response.Task.ExtractTextBasedOnResponse();
+        }
+
+        public static string ExtractTextBasedOnResponse(this AgentTask task)
+        {
+            if (task.Status.State == AgentTaskState.InputRequired)
             {
-                return response.Task.Status.Message.Parts.First().Text;
+                return task.Status.Message.Parts.First().Text;
             }
 
-            if (response.Task.Status.State == AgentTaskState.Completed)
+            if (task.Status.State == AgentTaskState.Completed)
             {
-                return response.Task.Artifacts.First().Parts.First().Text;
+                return task.Artifacts.First().Parts.First().Text;
             }
 
-            if (response.Task.Status.State == AgentTaskState.Failed)
+            if (task.Status.State == AgentTaskState.Failed)
             {
-                return response.Task.Artifacts.First().Parts.First().Text;
+                return task.Artifacts.First().Parts.First().Text;
             }
 
             throw new InvalidOperationException("The task state is not valid for extraction.");
