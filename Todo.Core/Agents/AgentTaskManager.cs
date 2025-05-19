@@ -16,36 +16,17 @@ public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger, IA
     {
         using var activity = _trace.StartActivity($"TaskManager.{agent.Name}.{nameof(SendTask)}");
   
-        AgentTask agentTask;
-
-        if (string.IsNullOrWhiteSpace(request.Parameters.Id))
-        {
-            agentTask = request.CreateAgentTask();
-        }
-        else
-        {
-            agentTask = await agentTaskRepository.LoadAsync(request.Parameters.Id);
-        }
-       
+        var agentTask = await GetOrCreateAgentTask(request);
 
         try
         {
             var textPart = request.Parameters.Message.Parts.First();
           
             var response = await agent.InvokeAsync(new ChatCompletionRequest { Message = textPart.Text, SessionId = request.Parameters.SessionId});
-    
-            var actionResponse = JsonSerializer.Deserialize<AgentActionResponse>(response.Message);
 
-            if (actionResponse == null)
-            {
-                logger.LogError($"{agent.Name} Task Manager failed to deserialize response from Agent.");
+            var agentResponse = GetAgentResponse(response);
 
-                agentTask.SetInputRequiredFailed("We are not able to process your request at this time!");
-
-                return new SendTaskResponse { Task = agentTask };
-            }
-
-            agentTask.SetTaskState(actionResponse);
+            agentTask.SetTaskState(agentResponse);
 
             await agentTaskRepository.SaveAsync(agentTask);
 
@@ -53,13 +34,36 @@ public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger, IA
         }
         catch (Exception e)
         {
-            logger.LogError(e, $"Agent Task Manager : {e.Message}");
+            logger.LogError(e, $"{agent.Name} Task Manager : {e.Message}");
             
             agentTask.SetInputRequiredFailed("We are not able to process your request at this time!");
 
             return new SendTaskResponse {  Task = agentTask };
-
         }
+    }
+
+    private AgentActionResponse GetAgentResponse(ChatCompletionResponse chatCompletionResponse)
+    {
+        var agentResponse = JsonSerializer.Deserialize<AgentActionResponse>(chatCompletionResponse.Message);
+
+        if (agentResponse == null)
+        {
+            logger.LogError($"{agent.Name} Failed to deserialize agent response: {chatCompletionResponse.Message}");
+            
+            throw new AgentException($"{agent.Name} :Failed to deserialize agent response: {chatCompletionResponse.Message}");
+        }
+
+        return agentResponse;
+    }
+
+    private async Task<AgentTask> GetOrCreateAgentTask(SendTaskRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Parameters.Id))
+        {
+            return request.CreateAgentTask();
+        }
+        
+        return await agentTaskRepository.LoadAsync(request.Parameters.Id);
     }
 }
 
