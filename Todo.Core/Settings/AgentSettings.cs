@@ -8,5 +8,9 @@ public class AgentSettings
 
     public string ServiceId { get; set; } = string.Empty;
 
+    public string ToolCallBehavior { get; set; } = string.Empty;
+
+    public string Temperature { get; set; } = string.Empty;
+
     public List<string> Plugins { get; set; } = [];
 }

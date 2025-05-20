@@ -29,24 +29,34 @@ public class AgentFactory(
 
         var templateConfig = KernelFunctionYaml.ToPromptTemplateConfig(agentTemplate);
 
-        var chatCompletionAgent = Create(templateConfig, agentSetting.ServiceId, agentKernel);
+        var chatCompletionAgent = Create(templateConfig, agentSetting, agentKernel);
 
         return new Agent(chatCompletionAgent, agentSetting.Name);
     }
     
-    private ChatCompletionAgent Create(PromptTemplateConfig template, string serviceId, Kernel agentKernel)
+    private ChatCompletionAgent Create(PromptTemplateConfig template, AgentSettings agentSetting, Kernel agentKernel)
     {
         var promptExecutionSettings = new OpenAIPromptExecutionSettings
         {
-            ServiceId = serviceId,
-            ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions,
-            Temperature = 0.0f
+            ServiceId = agentSetting.ServiceId,
+            ToolCallBehavior = Get(agentSetting.ToolCallBehavior),
+            Temperature = double.Parse(agentSetting.Temperature)
+
         };
 
         return new ChatCompletionAgent(template, new KernelPromptTemplateFactory())
         {
             Kernel = agentKernel,
             Arguments = new KernelArguments(promptExecutionSettings)
+        };
+    }
+
+    private ToolCallBehavior Get(string toolCallBehavior)
+    {
+        return toolCallBehavior switch
+        {
+            "AutoInvokeKernelFunctions" => ToolCallBehavior.AutoInvokeKernelFunctions,
+            _ => throw new InvalidOperationException($"Tool Call Behavior not valid {toolCallBehavior}")
         };
     }
    
