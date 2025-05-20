@@ -22,6 +22,23 @@ namespace Todo.Core.Infrastructure
             _blobContainerClient = blobServiceClient.GetBlobContainerClient(settings.Value.AgentTaskContainerName);
         }
 
+        public async Task<bool> Exists(string taskId)
+        {
+            try
+            {
+                var blobClient = _blobContainerClient.GetBlobClient($"{taskId}.json");
+                var exists = (await blobClient.ExistsAsync()).Value;
+
+                return exists;
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, $"Failed to get verify if {taskId} exists from blob storage.");
+                throw;
+            }
+
+        }
+
         public async Task<AgentTask> LoadAsync(string taskId)
         {
             try
@@ -78,5 +95,6 @@ namespace Todo.Core.Infrastructure
     {
         Task<AgentTask> LoadAsync(string taskId);
         Task SaveAsync(AgentTask agentTask);
+        Task<bool> Exists(string taskId);
     }
 }

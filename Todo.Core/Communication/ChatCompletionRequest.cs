@@ -8,6 +8,8 @@ namespace Todo.Core.Communication
 
         public string SessionId { get; init; } = string.Empty;
 
+        public string TaskId { get; init; } = string.Empty;
+
         public  ChatHistoryAgentThread ChatHistory { get; set; } = new ChatHistoryAgentThread();
     }
 }

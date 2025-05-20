@@ -18,11 +18,14 @@ public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger, IA
   
         var agentTask = await GetOrCreateAgentTask(request);
 
+        activity?.SetTag("SessionId", agentTask.SessionId);
+        activity?.SetTag("Task Id", agentTask.TaskId);
+
         try
         {
             var textPart = request.Parameters.Message.Parts.First();
-          
-            var response = await agent.InvokeAsync(new ChatCompletionRequest { Message = textPart.Text, SessionId = request.Parameters.SessionId});
+
+            var response = await agent.InvokeAsync(new ChatCompletionRequest { Message = textPart.Text, SessionId = agentTask.SessionId, TaskId = agentTask.TaskId});
 
             var agentResponse = GetAgentResponse(response);
 
@@ -55,15 +58,36 @@ public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger, IA
 
         return agentResponse;
     }
-
+    
     private async Task<AgentTask> GetOrCreateAgentTask(SendTaskRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Parameters.Id))
         {
             return request.CreateAgentTask();
         }
+
+        if (await agentTaskRepository.Exists(request.Parameters.Id))
+        {
+            var agentTask = await agentTaskRepository.LoadAsync(request.Parameters.Id);
+
+            if (!string.IsNullOrEmpty(request.Parameters.SessionId))
+            {
+                agentTask.SessionId = request.Parameters.SessionId;
+            }
+
+            return agentTask;
+        }
         
-        return await agentTaskRepository.LoadAsync(request.Parameters.Id);
+        var newTask = request.CreateAgentTask();
+
+        newTask.TaskId = request.Parameters.Id;
+
+        if (!string.IsNullOrEmpty(request.Parameters.SessionId))
+        {
+            newTask.SessionId = request.Parameters.SessionId;
+        }
+
+        return newTask;
     }
 }
 
