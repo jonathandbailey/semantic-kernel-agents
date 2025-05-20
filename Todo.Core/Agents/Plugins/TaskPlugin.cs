@@ -6,13 +6,13 @@ using Todo.Core.Extensions;
 
 namespace Todo.Core.Agents.Plugins
 {
-    public class TaskPlugin(IAgentProvider agentProvider) 
+    public class TaskPlugin(IAgentProvider agentProvider) : IAgentPlugin
     {
         [KernelFunction("send_task_request")]
         [Description("Sends a Task request to an agent")]
         public async Task<string> SendTask(
          [Description("The name of the agent who will receive the Task Request.")]   string agentName, 
-          [Description("The request mmessage for the agent.")]  string message, Kernel kernel)
+          [Description("The request message for the agent.")]  string message, Kernel kernel)
         {
             var sendTaskRequest = new SendTaskRequest();
 
