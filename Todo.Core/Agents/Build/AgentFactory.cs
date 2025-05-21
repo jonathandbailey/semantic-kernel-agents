@@ -28,7 +28,7 @@ public class AgentFactory(
     {
         foreach (var name in agentSetting.Plugins)
         {
-            agentKernel.Plugins.AddFromObject(pluginFactory.Create(name, agentProvider), name);
+            agentKernel.Plugins.AddFromObject(pluginFactory.Create(name, agentProvider, agentSetting.Name), name);
         }
     }
 

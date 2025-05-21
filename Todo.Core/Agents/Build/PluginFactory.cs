@@ -4,13 +4,13 @@ namespace Todo.Core.Agents.Build
 {
     
 
-    public class PluginFactory : IPluginFactory
+    public class PluginFactory(IAgentStateStore agentStateStore) : IPluginFactory
     {
-        public IAgentPlugin Create(string name, IAgentProvider agentProvider)
+        public IAgentPlugin Create(string name, IAgentProvider agentProvider, string agentName)
         {
             return name switch
             {
-                "TaskPlugin" => new TaskPlugin(agentProvider),
+                "TaskPlugin" => new TaskPlugin(agentProvider, agentStateStore, agentName),
                 _ => throw new InvalidOperationException($"Plugin not found: {name}")
             };
         }
@@ -20,6 +20,6 @@ namespace Todo.Core.Agents.Build
 
     public interface IPluginFactory
     {
-        IAgentPlugin Create(string name, IAgentProvider agentProvider);
+        IAgentPlugin Create(string name, IAgentProvider agentProvider, string agentName);
     }
 }

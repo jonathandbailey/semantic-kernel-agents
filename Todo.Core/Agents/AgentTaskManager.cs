@@ -8,7 +8,7 @@ using Todo.Core.Infrastructure;
 
 namespace Todo.Core.Agents;
 
-public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger, IAgentTaskRepository agentTaskRepository) : IAgentTaskManager
+public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger, IAgentTaskRepository agentTaskRepository, IAgentStateStore agentStateStore) : IAgentTaskManager
 {
     private readonly ActivitySource _trace = new($"Todo.Agent.TaskManager.{agent.Name}");
 
@@ -23,6 +23,8 @@ public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger, IA
 
         try
         {
+            agentStateStore.Update(agent.Name, agentTask.SessionId, agentTask.TaskId);
+            
             var textPart = request.Parameters.Message.Parts.First();
 
             var response = await agent.InvokeAsync(new ChatCompletionRequest { Message = textPart.Text, SessionId = agentTask.SessionId, TaskId = agentTask.TaskId});

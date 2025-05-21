@@ -13,10 +13,7 @@ public class Agent(ChatCompletionAgent chatCompletionAgent, string name) : Agent
     public override async Task<ChatCompletionResponse> InvokeAsync(ChatCompletionRequest request)
     {
         var stringBuilder = new StringBuilder();
-  
-        chatCompletionAgent.Kernel.Data.Add("sessionId", request.SessionId);
-        chatCompletionAgent.Kernel.Data.Add("taskId", request.TaskId);
-
+ 
         await foreach (ChatMessageContent response in chatCompletionAgent.InvokeAsync(new ChatMessageContent(AuthorRole.User, request.Message), request.ChatHistory))
         {
             stringBuilder.Append(response.Content);

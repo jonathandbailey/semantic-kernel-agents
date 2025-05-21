@@ -27,6 +27,7 @@ namespace Todo.Core.Extensions
             services.AddScoped<IAgentProvider, AgentProvider>();
 
             services.AddScoped<IAgentDiscovery, AgentDiscovery>();
+            services.AddScoped<IAgentStateStore, AgentStateStore>();
 
             services.AddScoped<IAgentFactory, AgentFactory>();
             services.AddScoped<IPluginFactory, PluginFactory>();
