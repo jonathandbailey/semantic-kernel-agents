@@ -55,3 +55,4 @@ nunit-*.xml
 /.vs/Todo
 /.vs/ProjectEvaluation
 /Todo.sln.DotSettings.user
+/Todo.Api/Todo.Api.csproj.user
