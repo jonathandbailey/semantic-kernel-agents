@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Todo.Core.Agents;
+using Todo.Core.Agents.A2A;
 using Todo.Core.Agents.Build;
 using Todo.Core.Users;
 
@@ -16,6 +17,17 @@ public class TodoService(IAgentProvider agentProvider) : ITodoService, IRequestH
         var response = await agentTaskManager.SendTask(notification.SendTaskRequest);
 
         return new UserResponse { Task = response.Task };
+    }
+    
+    public async Task<AgentTask> Handle(SendTaskRequest sendTaskRequest)
+    {
+        await agentProvider.Build();
+
+        var agentTaskManager = agentProvider.GetTaskManager(AgentNames.OrchestratorAgent);
+
+        var response = await agentTaskManager.SendTask(sendTaskRequest);
+
+        return response.Task;
     }
 }
 

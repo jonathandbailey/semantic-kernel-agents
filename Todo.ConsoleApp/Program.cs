@@ -5,10 +5,8 @@ using Microsoft.Extensions.Logging;
 using Todo.ConsoleApp;
 using Todo.ConsoleApp.Commands;
 using Todo.ConsoleApp.Settings;
-using Todo.Core.Extensions;
 using Todo.Core.Models;
 using Todo.Core.Settings;
-
 
 var builder = Host.CreateDefaultBuilder(args);
 
@@ -21,32 +19,24 @@ builder.ConfigureAppConfiguration((hostingContext, config) =>
 
 builder.ConfigureServices((context, services) =>
 {
-
     services.AddApplicationInsightsTelemetryWorkerService(options =>
     {
         options.ConnectionString = context.GetRequiredValue(SettingsConstants.ApplicationInsights);
     });
-    
-    var loggerFactory = AppOpenTelemetry.CreateLoggerFactory(
-        context.GetRequiredValue(SettingsConstants.ApplicationInsights),
-        context.Configuration.GetRequiredSetting<OpenTelemetrySettings>());
 
-    services.AddSingleton(loggerFactory);
-    services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
+    services.AddHttpClient();
 
-    services.AddCoreServices(context.Configuration, loggerFactory);
-       
+    services.Configure<ChatClientSetting>(context.Configuration.GetSection("ChatClientSetting"));
+
+    services.AddSingleton<IHttpChatClient, HttpChatClient>();
     services.AddSingleton<TodoApplication>();
     services.AddSingleton<ICommandDispatcher, CommandDispatcher>();
-
-    services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(TodoApplication).Assembly));
 });
 
 builder.ConfigureLogging(logging =>
 {
     logging.ClearProviders(); 
 });
-
 
 try
 {

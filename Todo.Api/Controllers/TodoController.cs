@@ -1,15 +1,19 @@
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Todo.Core.Users;
 
 namespace Todo.Api.Controllers
 {
     [ApiController]
     [Route("api/todo")]
-    public class TodoController : ControllerBase
+    public class TodoController(IMediator mediator) : ControllerBase
     {
-        [HttpPost]
-        public Task<IActionResult> Send()
+        [HttpPost("send")]
+        public async Task<IActionResult> Send([FromBody] UserRequest userRequest)
         {
-            throw new NotImplementedException();
+            var response = await mediator.Send(userRequest);
+
+            return Ok(response);
         }
     }
 }
