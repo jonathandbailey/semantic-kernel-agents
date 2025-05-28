@@ -13,10 +13,5 @@ namespace Todo.Api.Hubs
                 await userHub.Clients.Client(connectionId).SendAsync("ReceiveMessage", payload);
             }
         }
-
-        public async Task RespondAsync<T>(T payload)
-        {
-            await userHub.Clients.All.SendAsync("ReceiveMessage", payload);
-        }
     }
 }

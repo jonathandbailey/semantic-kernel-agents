@@ -29,9 +29,4 @@ public class UserHub(IUserConnectionManager userConnectionManager) : Hub
 
         return base.OnDisconnectedAsync(exception);
     }
-
-    public async Task SendMessageToUser(string targetUserId, string message)
-    {
-        await Clients.All.SendAsync("ReceiveMessage", message);
-    }
 }
