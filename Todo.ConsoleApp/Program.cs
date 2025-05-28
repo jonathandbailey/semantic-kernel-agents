@@ -26,9 +26,10 @@ builder.ConfigureServices((context, services) =>
 
     services.AddHttpClient();
 
-    services.Configure<ChatClientSetting>(context.Configuration.GetSection("ChatClientSetting"));
+    services.Configure<ChatClientSetting>(context.Configuration.GetSection("ChatClientSettings"));
 
     services.AddSingleton<IHttpChatClient, HttpChatClient>();
+    services.AddSingleton<IHubConnectionClient, HubConnectionClient>();
     services.AddSingleton<TodoApplication>();
     services.AddSingleton<ICommandDispatcher, CommandDispatcher>();
 });

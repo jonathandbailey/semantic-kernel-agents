@@ -4,6 +4,6 @@
     {
         public string Role { get; set; } = string.Empty;
 
-        public List<TextPart> Parts { get; init; } = new List<TextPart>();
+        public List<TextPart> Parts { get; set; } = new List<TextPart>();
     }
 }

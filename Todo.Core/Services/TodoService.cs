@@ -2,11 +2,13 @@
 using Todo.Core.Agents;
 using Todo.Core.Agents.A2A;
 using Todo.Core.Agents.Build;
+using Todo.Core.Infrastructure;
+using Todo.Core.Interfaces;
 using Todo.Core.Users;
 
 namespace Todo.Core.Services;
 
-public class TodoService(IAgentProvider agentProvider) : ITodoService, IRequestHandler<UserRequest, UserResponse>
+public class TodoService(IAgentProvider agentProvider, IUserRepository userRepository, IUserMessageSender userMessageSender) : ITodoService, IRequestHandler<UserRequest, UserResponse>
 {   
     public async Task<UserResponse> Handle(UserRequest notification, CancellationToken cancellationToken)
     {
@@ -14,9 +16,15 @@ public class TodoService(IAgentProvider agentProvider) : ITodoService, IRequestH
       
         var agentTaskManager = agentProvider.GetTaskManager(AgentNames.OrchestratorAgent);
 
+        var user = await userRepository.Get(notification.UserId);
+
         var response = await agentTaskManager.SendTask(notification.SendTaskRequest);
 
-        return new UserResponse { Task = response.Task };
+        var payLoad = new UserResponse { Task = response.Task };
+
+        await userMessageSender.RespondAsync(payLoad, user.Id);
+
+        return payLoad;
     }
     
     public async Task<AgentTask> Handle(SendTaskRequest sendTaskRequest)

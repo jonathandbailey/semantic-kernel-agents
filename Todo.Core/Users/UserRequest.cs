@@ -7,6 +7,8 @@ namespace Todo.Core.Users
     {
         public string Message { get; set; } = string.Empty;
 
+        public Guid UserId { get; set; }
+
         public required SendTaskRequest SendTaskRequest { get; init; }
     }
 }

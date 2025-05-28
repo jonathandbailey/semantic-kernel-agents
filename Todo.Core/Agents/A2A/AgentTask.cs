@@ -2,9 +2,9 @@
 {
     public class AgentTask
     {
-        public List<Message> History {get; } = [];
+        public List<Message> History { get; set; } = new List<Message>();
 
-        public List<AgentArtifact> Artifacts { get; } = [];
+        public List<AgentArtifact> Artifacts { get; set; } = new List<AgentArtifact>();
 
         public string TaskId { get; set; } = string.Empty;
 

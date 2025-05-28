@@ -40,8 +40,6 @@ public class CommandDispatcher : ICommandDispatcher
         
         var userResponse = await _httpChatClient.Send(userRequest);
         
-        Console.WriteLine($"{Constants.SystemCaret}{userResponse.Task.ExtractTextBasedOnResponse()}");
-        
         _sessionId = userResponse.Task.SessionId;
         _taskId = userResponse.Task.TaskId;
     }

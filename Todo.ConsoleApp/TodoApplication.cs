@@ -5,7 +5,7 @@ using Todo.ConsoleApp.Settings;
 
 namespace Todo.ConsoleApp;
 
-public class TodoApplication(ICommandDispatcher commandManager) 
+public class TodoApplication(ICommandDispatcher commandManager, IHubConnectionClient hubConnectionClient) 
 {
     private readonly ActivitySource _trace = new($"Todo.ConsoleApp");
 
@@ -14,6 +14,8 @@ public class TodoApplication(ICommandDispatcher commandManager)
         using var activity = _trace.StartActivity($"Application.{nameof(TodoApplication)}");
 
         commandManager.Initialize(cancellationTokenSource);
+
+        await hubConnectionClient.InitializeStreamingConnectionAsync();
 
         while (!cancellationTokenSource.IsCancellationRequested)
         {
