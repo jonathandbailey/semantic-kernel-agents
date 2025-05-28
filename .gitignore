@@ -56,3 +56,5 @@ nunit-*.xml
 /.vs/ProjectEvaluation
 /Todo.sln.DotSettings.user
 /Todo.Api/Todo.Api.csproj.user
+/Todo.slnLaunch.user
+/.vs/CopilotSnapshots/43EFEDB1E2DD184287CF6BE615801E5B
