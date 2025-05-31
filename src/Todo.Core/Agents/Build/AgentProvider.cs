@@ -67,6 +67,7 @@ public class AgentProvider(
         agentBuild.Use(new AgentConversationHistoryMiddleware(agentChatHistoryProvider, agent.Name));
 
         agentBuild.Use((IAgentMiddleware)agent);
+        agentBuild.Use(new TerminationMiddleWare());
 
         return new AgentDelegateWrapper(agentBuild.Build(), agent.Name);
     }
@@ -82,6 +83,7 @@ public class AgentProvider(
         agentBuild.Use(new AgentConversationHistoryMiddleware(agentChatHistoryProvider, agent.Name));
 
         agentBuild.Use((IAgentMiddleware)agent);
+        agentBuild.Use(new TerminationMiddleWare());
 
         return new AgentDelegateWrapper(agentBuild.Build(), agent.Name);
     }

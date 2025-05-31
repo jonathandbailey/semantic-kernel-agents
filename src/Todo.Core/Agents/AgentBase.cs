@@ -8,7 +8,9 @@ namespace Todo.Core.Agents
 
         public async Task<AgentState> InvokeAsync(AgentState context, AgentDelegate next)
         {
-            return await InvokeAsync(context);
+            var response = await InvokeAsync(context);
+
+            return await next(response);
         }
     }
 }
