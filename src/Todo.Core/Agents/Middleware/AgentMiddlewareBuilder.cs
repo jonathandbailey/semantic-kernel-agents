@@ -1,6 +1,4 @@
-﻿using Todo.Core.Communication;
-
-namespace Todo.Core.Agents.Middleware;
+﻿namespace Todo.Core.Agents.Middleware;
 
 public class AgentMiddlewareBuilder
 {
@@ -28,8 +26,8 @@ public class AgentMiddlewareBuilder
 
 public interface IAgentMiddleware
 {
-    Task<ChatCompletionResponse> InvokeAsync(ChatCompletionRequest context, AgentDelegate next);
+    Task<AgentState> InvokeAsync(AgentState context, AgentDelegate next);
 }
 
 
-public delegate Task<ChatCompletionResponse> AgentDelegate(ChatCompletionRequest request);
+public delegate Task<AgentState> AgentDelegate(AgentState request);

@@ -1,9 +1,7 @@
-﻿using Todo.Core.Communication;
-
-namespace Todo.Core.Agents;
+﻿namespace Todo.Core.Agents;
 
 public interface IAgent
 {
-    public Task<ChatCompletionResponse> InvokeAsync(ChatCompletionRequest request);
+    public Task<AgentState> InvokeAsync(AgentState request);
     string Name { get; }
 }

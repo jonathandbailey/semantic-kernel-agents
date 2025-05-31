@@ -10,17 +10,19 @@ public class Agent(ChatCompletionAgent chatCompletionAgent, string name) : Agent
 {
     public string Name { get; } = name;
 
-    public override async Task<ChatCompletionResponse> InvokeAsync(ChatCompletionRequest request)
+    public override async Task<AgentState> InvokeAsync(AgentState request)
     {
         var stringBuilder = new StringBuilder();
  
-        await foreach (ChatMessageContent response in chatCompletionAgent.InvokeAsync(new ChatMessageContent(AuthorRole.User, request.Message), request.ChatHistory))
+        await foreach (ChatMessageContent response in chatCompletionAgent.InvokeAsync(new ChatMessageContent(AuthorRole.User, request.ChatCompletionRequest.Message), request.ChatCompletionRequest.ChatHistory))
         {
             stringBuilder.Append(response.Content);
         }
 
         var message = stringBuilder.ToString();
 
-        return new ChatCompletionResponse { Message = message, SessionId = request.SessionId, ChatHistory = request.ChatHistory};
+        request.ChatCompletionResponse = new ChatCompletionResponse { Message = message, SessionId = request.SessionId, ChatHistory = request.ChatCompletionRequest.ChatHistory};
+
+        return request;
     }
 }

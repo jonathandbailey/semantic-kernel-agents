@@ -43,6 +43,21 @@ public class AgentProvider(
    
     private async Task<AgentDelegateWrapper> BuildAgentMiddleware(AgentSettings configuration)
     {
+        if (configuration.Type == "Worker")
+        {
+            return await BuildAgentMiddlewareWorker(configuration);
+        }
+
+        if (configuration.Type == "Orchestration")
+        {
+            return await BuildAgentMiddlewareOrchestrator(configuration);
+        }
+
+        throw new ArgumentException($"Agent Type : {configuration.Type} is not recognized");
+    }
+
+    private async Task<AgentDelegateWrapper> BuildAgentMiddlewareWorker(AgentSettings configuration)
+    {
         var agentBuild = new AgentMiddlewareBuilder();
 
         var agent = await agentFactory.Create(configuration);
@@ -50,8 +65,23 @@ public class AgentProvider(
         agentBuild.Use(new AgentExceptionHandlingMiddleware(agentLogger, agent.Name));
         agentBuild.Use(new AgentTraceMiddleware(agent.Name));
         agentBuild.Use(new AgentConversationHistoryMiddleware(agentChatHistoryProvider, agent.Name));
-        
-        agentBuild.Use((IAgentMiddleware) agent);
+
+        agentBuild.Use((IAgentMiddleware)agent);
+
+        return new AgentDelegateWrapper(agentBuild.Build(), agent.Name);
+    }
+
+    private async Task<AgentDelegateWrapper> BuildAgentMiddlewareOrchestrator(AgentSettings configuration)
+    {
+        var agentBuild = new AgentMiddlewareBuilder();
+
+        var agent = await agentFactory.Create(configuration);
+
+        agentBuild.Use(new AgentExceptionHandlingMiddleware(agentLogger, agent.Name));
+        agentBuild.Use(new AgentTraceMiddleware(agent.Name));
+        agentBuild.Use(new AgentConversationHistoryMiddleware(agentChatHistoryProvider, agent.Name));
+
+        agentBuild.Use((IAgentMiddleware)agent);
 
         return new AgentDelegateWrapper(agentBuild.Build(), agent.Name);
     }

@@ -1,4 +1,6 @@
-﻿namespace Todo.Core.Agents;
+﻿using Todo.Core.Communication;
+
+namespace Todo.Core.Agents;
 
 public class AgentStateStore : IAgentStateStore
 {
@@ -10,10 +12,10 @@ public class AgentStateStore : IAgentStateStore
         {
             return agentState;
         }
-        return new AgentState { SessionId = Guid.NewGuid().ToString(), TaskId = Guid.NewGuid().ToString() };
+        return new AgentState { SessionId = Guid.NewGuid().ToString(), TaskId = Guid.NewGuid().ToString(), ChatCompletionRequest = new ChatCompletionRequest()};
     }
 
-    public void Update(string agentName, string sessionId, string taskId)
+    public AgentState Update(string agentName, string sessionId, string taskId)
     {
         if (_agentState.TryGetValue(agentName, out var agentState))
         {
@@ -22,13 +24,15 @@ public class AgentStateStore : IAgentStateStore
         }
         else
         {
-            _agentState[agentName] = new AgentState { SessionId = sessionId, TaskId = taskId };
+            _agentState[agentName] = new AgentState { SessionId = sessionId, TaskId = taskId, ChatCompletionRequest = new ChatCompletionRequest()};
         }
+
+        return _agentState[agentName];
     }
 }
 
 public interface IAgentStateStore
 {
     AgentState Get(string agentName);
-    void Update(string agentName, string sessionId, string taskId);
+    AgentState Update(string agentName, string sessionId, string taskId);
 }

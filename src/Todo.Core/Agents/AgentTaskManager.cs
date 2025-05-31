@@ -23,13 +23,16 @@ public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger, IA
 
         try
         {
-            agentStateStore.Update(agent.Name, agentTask.SessionId, agentTask.TaskId);
-            
+            var agentState = agentStateStore.Update(agent.Name, agentTask.SessionId, agentTask.TaskId);
+        
             var textPart = request.Parameters.Message.Parts.First();
 
-            var response = await agent.InvokeAsync(new ChatCompletionRequest { Message = textPart.Text, SessionId = agentTask.SessionId, TaskId = agentTask.TaskId});
+            agentState.ChatCompletionRequest = new ChatCompletionRequest
+                { Message = textPart.Text, SessionId = agentTask.SessionId, TaskId = agentTask.TaskId };
 
-            var agentResponse = GetAgentResponse(response);
+           var response = await agent.InvokeAsync(agentState);
+
+            var agentResponse = GetAgentResponse(response.ChatCompletionResponse);
 
             agentTask.SetTaskState(agentResponse);
 
@@ -47,9 +50,9 @@ public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger, IA
         }
     }
 
-    private AgentActionResponse GetAgentResponse(ChatCompletionResponse chatCompletionResponse)
+    private AgentActionResponse GetAgentResponse(ChatCompletionResponse? chatCompletionResponse)
     {
-        var agentResponse = JsonSerializer.Deserialize<AgentActionResponse>(chatCompletionResponse.Message);
+        var agentResponse = JsonSerializer.Deserialize<AgentActionResponse>(chatCompletionResponse!.Message);
 
         if (agentResponse == null)
         {

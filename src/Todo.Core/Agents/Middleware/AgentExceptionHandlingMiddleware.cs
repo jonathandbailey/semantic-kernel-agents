@@ -1,12 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
-using Todo.Core.Communication;
 
 namespace Todo.Core.Agents.Middleware
 {
     public class AgentExceptionHandlingMiddleware(ILogger<IAgent> logger, string agentName) : IAgentMiddleware
     {
-        public async Task<ChatCompletionResponse> InvokeAsync(ChatCompletionRequest context, AgentDelegate next)
+        public async Task<AgentState> InvokeAsync(AgentState context, AgentDelegate next)
         {
             try
             {
