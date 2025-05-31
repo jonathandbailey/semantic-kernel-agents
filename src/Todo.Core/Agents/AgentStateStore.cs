@@ -1,4 +1,5 @@
-﻿using Todo.Core.Communication;
+﻿using Todo.Core.Agents.A2A;
+using Todo.Core.Communication;
 
 namespace Todo.Core.Agents;
 
@@ -12,10 +13,11 @@ public class AgentStateStore : IAgentStateStore
         {
             return agentState;
         }
-        return new AgentState { SessionId = Guid.NewGuid().ToString(), TaskId = Guid.NewGuid().ToString(), ChatCompletionRequest = new ChatCompletionRequest()};
+
+        throw new InvalidOperationException($"Agent state {agentName} does not exist.");
     }
 
-    public AgentState Update(string agentName, string sessionId, string taskId)
+    public AgentState Update(string agentName, string sessionId, string taskId, AgentTask agentTask)
     {
         if (_agentState.TryGetValue(agentName, out var agentState))
         {
@@ -24,7 +26,7 @@ public class AgentStateStore : IAgentStateStore
         }
         else
         {
-            _agentState[agentName] = new AgentState { SessionId = sessionId, TaskId = taskId, ChatCompletionRequest = new ChatCompletionRequest()};
+            _agentState[agentName] = new AgentState { SessionId = sessionId, TaskId = taskId, ChatCompletionRequest = new ChatCompletionRequest(),AgentTask = agentTask};
         }
 
         return _agentState[agentName];
@@ -34,5 +36,5 @@ public class AgentStateStore : IAgentStateStore
 public interface IAgentStateStore
 {
     AgentState Get(string agentName);
-    AgentState Update(string agentName, string sessionId, string taskId);
+    AgentState Update(string agentName, string sessionId, string taskId, AgentTask agentTask);
 }

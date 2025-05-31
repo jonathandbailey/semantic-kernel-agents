@@ -71,6 +71,24 @@ namespace Todo.Core.Extensions
             }
         }
 
+        public static void SetTaskState(this AgentTask agentTask, AgentTask remoteTask)
+        {
+            if (remoteTask.Status.State == AgentTaskState.InputRequired)
+            {
+                agentTask.SetInputRequiredState(remoteTask.ExtractTextBasedOnResponse());
+            }
+
+            if (remoteTask.Status.State == AgentTaskState.Completed)
+            {
+                agentTask.SetCompletedState(remoteTask.ExtractTextBasedOnResponse());
+            }
+
+            if (remoteTask.Status.State == AgentTaskState.Failed)
+            {
+                agentTask.SetInputRequiredFailed(remoteTask.ExtractTextBasedOnResponse());
+            }
+        }
+
         private static void SetInputRequiredState(this AgentTask agentTask, string text)
         {
             agentTask.Status = new AgentTaskStatus

@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Diagnostics;
-using System.Text.Json;
 using Todo.Core.Agents.A2A;
 using Todo.Core.Communication;
 using Todo.Core.Extensions;
@@ -23,22 +22,18 @@ public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger, IA
 
         try
         {
-            var agentState = agentStateStore.Update(agent.Name, agentTask.SessionId, agentTask.TaskId);
+            var agentState = agentStateStore.Update(agent.Name, agentTask.SessionId, agentTask.TaskId, agentTask);
         
             var textPart = request.Parameters.Message.Parts.First();
 
             agentState.ChatCompletionRequest = new ChatCompletionRequest
                 { Message = textPart.Text, SessionId = agentTask.SessionId, TaskId = agentTask.TaskId };
 
-           var response = await agent.InvokeAsync(agentState);
+            var response = await agent.InvokeAsync(agentState);
 
-            var agentResponse = GetAgentResponse(response.ChatCompletionResponse);
+            await agentTaskRepository.SaveAsync(response.AgentTask);
 
-            agentTask.SetTaskState(agentResponse);
-
-            await agentTaskRepository.SaveAsync(agentTask);
-
-            return new SendTaskResponse { Task = agentTask };
+            return new SendTaskResponse { Task = response.AgentTask };
         }
         catch (Exception e)
         {
@@ -48,20 +43,6 @@ public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger, IA
 
             return new SendTaskResponse {  Task = agentTask };
         }
-    }
-
-    private AgentActionResponse GetAgentResponse(ChatCompletionResponse? chatCompletionResponse)
-    {
-        var agentResponse = JsonSerializer.Deserialize<AgentActionResponse>(chatCompletionResponse!.Message);
-
-        if (agentResponse == null)
-        {
-            logger.LogError($"{agent.Name} Failed to deserialize agent response: {chatCompletionResponse.Message}");
-            
-            throw new AgentException($"{agent.Name} :Failed to deserialize agent response: {chatCompletionResponse.Message}");
-        }
-
-        return agentResponse;
     }
     
     private async Task<AgentTask> GetOrCreateAgentTask(SendTaskRequest request)

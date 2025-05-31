@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using Todo.Core.Settings;
 using Todo.Core.Agents.Middleware;
+using Todo.Core.Communication;
 using Todo.Core.Infrastructure;
 
 namespace Todo.Core.Agents.Build;
@@ -10,6 +11,7 @@ public class AgentProvider(
     ILogger<AgentTaskManager> taskManagerLogger,
     IAgentChatHistoryProvider agentChatHistoryProvider,
     IAgentTaskRepository agentTaskRepository,
+    IAgentPublisher publisher,
     ILogger<IAgent> agentLogger,
     IAgentStateStore agentStateStore,
     IAgentFactory agentFactory,
@@ -67,6 +69,8 @@ public class AgentProvider(
         agentBuild.Use(new AgentConversationHistoryMiddleware(agentChatHistoryProvider, agent.Name));
 
         agentBuild.Use((IAgentMiddleware)agent);
+        
+        agentBuild.Use(new AgentResponseMiddleware(agentLogger, agent.Name));
         agentBuild.Use(new TerminationMiddleWare());
 
         return new AgentDelegateWrapper(agentBuild.Build(), agent.Name);
@@ -83,6 +87,8 @@ public class AgentProvider(
         agentBuild.Use(new AgentConversationHistoryMiddleware(agentChatHistoryProvider, agent.Name));
 
         agentBuild.Use((IAgentMiddleware)agent);
+       
+        agentBuild.Use(new Agent2AgentMiddleWare(agentLogger, agent.Name, publisher));
         agentBuild.Use(new TerminationMiddleWare());
 
         return new AgentDelegateWrapper(agentBuild.Build(), agent.Name);

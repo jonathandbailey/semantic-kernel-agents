@@ -1,4 +1,5 @@
-﻿using Todo.Core.Communication;
+﻿using Todo.Core.Agents.A2A;
+using Todo.Core.Communication;
 
 namespace Todo.Core.Agents
 {
@@ -11,5 +12,7 @@ namespace Todo.Core.Agents
         public required ChatCompletionRequest ChatCompletionRequest { get; set; }
 
         public ChatCompletionResponse? ChatCompletionResponse { get; set; }
+
+        public required AgentTask AgentTask { get; set; }
     }
 }
