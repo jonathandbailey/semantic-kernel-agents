@@ -35,7 +35,7 @@ public class CommandDispatcher : ICommandDispatcher
    
     private async Task ChatViaApi(string input)
     {
-        var sendTaskRequest = AgentExtensions.CreateUserSendTaskRequest(_taskId, _sessionId, input);
+        var sendTaskRequest = AgentExtensions.CreateSendTaskRequest(_taskId, _sessionId, input);
         var userRequest = new UserRequest { Message = input, SendTaskRequest = sendTaskRequest };
         
         var userResponse = await _httpChatClient.Send(userRequest);

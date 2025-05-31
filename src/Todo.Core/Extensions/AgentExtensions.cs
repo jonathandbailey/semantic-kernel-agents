@@ -34,7 +34,7 @@ namespace Todo.Core.Extensions
             };
         }
 
-        public static SendTaskRequest CreateUserSendTaskRequest(string id, string sessionId, string messageText)
+        public static SendTaskRequest CreateSendTaskRequest(string id, string sessionId, string messageText)
         {
             var sendTaskRequest = new SendTaskRequest
             {
