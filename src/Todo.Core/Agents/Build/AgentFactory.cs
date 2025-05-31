@@ -11,11 +11,11 @@ public class AgentFactory(
     IPluginFactory pluginFactory,
     IAgentTemplateRepository agentTemplateRepository) : IAgentFactory
 {
-    public async Task<IAgent> Create(AgentSettings agentSetting, IAgentProvider agentProvider)
+    public async Task<IAgent> Create(AgentSettings agentSetting)
     {
         var agentKernel = kernel.Clone();
         
-        AddAgentFunctionsToKernel(agentSetting, agentProvider, agentKernel);
+        AddAgentFunctionsToKernel(agentSetting, agentKernel);
  
         var templateConfig = await CreateTemplateConfig(agentSetting.Template);
 
@@ -24,11 +24,11 @@ public class AgentFactory(
         return new Agent(chatCompletionAgent, agentSetting.Name);
     }
 
-    private void AddAgentFunctionsToKernel(AgentSettings agentSetting, IAgentProvider agentProvider, Kernel agentKernel)
+    private void AddAgentFunctionsToKernel(AgentSettings agentSetting, Kernel agentKernel)
     {
         foreach (var name in agentSetting.Plugins)
         {
-            agentKernel.Plugins.AddFromObject(pluginFactory.Create(name, agentProvider, agentSetting.Name), name);
+            agentKernel.Plugins.AddFromObject(pluginFactory.Create(name, agentSetting.Name), name);
         }
     }
 
@@ -70,5 +70,5 @@ public class AgentFactory(
 
 public interface IAgentFactory
 {
-   Task<IAgent> Create(AgentSettings configuration, IAgentProvider agentProvider);
+   Task<IAgent> Create(AgentSettings configuration);
 }

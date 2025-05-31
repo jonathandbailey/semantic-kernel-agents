@@ -1,7 +1,11 @@
-﻿namespace Todo.Core.Agents.A2A
+﻿using MediatR;
+
+namespace Todo.Core.Agents.A2A
 {
-    public class SendTaskRequest 
+    public class SendTaskRequest : IRequest<SendTaskResponse>
     {
+        public string AgentName { get; set; } = string.Empty;
+
         public TaskSendParameters Parameters { get; init; } = new TaskSendParameters();
     }
 }

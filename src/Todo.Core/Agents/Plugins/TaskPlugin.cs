@@ -2,11 +2,12 @@
 using Microsoft.SemanticKernel;
 using Todo.Core.Agents.A2A;
 using Todo.Core.Agents.Build;
+using Todo.Core.Communication;
 using Todo.Core.Extensions;
 
 namespace Todo.Core.Agents.Plugins
 {
-    public class TaskPlugin(IAgentProvider agentProvider, IAgentStateStore agentStateStore, string name) : IAgentPlugin
+    public class TaskPlugin(IAgentStateStore agentStateStore, string name, IAgentPublisher publisher) : IAgentPlugin
     {
         [KernelFunction("send_task_request")]
         [Description("Sends a Task request to an agent")]
@@ -19,10 +20,9 @@ namespace Todo.Core.Agents.Plugins
             sendTaskRequest.Parameters.Message.Parts.Add(new TextPart { Text = message });
             sendTaskRequest.Parameters.SessionId = agentStateStore.Get(name).SessionId;
             sendTaskRequest.Parameters.Id = agentStateStore.Get(name).TaskId;
-
-            var agentTaskManager = agentProvider.GetTaskManager(agentName);
-
-            var response = await agentTaskManager.SendTask(sendTaskRequest);
+            sendTaskRequest.AgentName = agentName;
+            
+            var response = await publisher.Send(sendTaskRequest);
 
             var text = response.ExtractTextBasedOnResponse();
 

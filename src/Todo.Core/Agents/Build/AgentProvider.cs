@@ -45,7 +45,7 @@ public class AgentProvider(
     {
         var agentBuild = new AgentMiddlewareBuilder();
 
-        var agent = await agentFactory.Create(configuration, this);
+        var agent = await agentFactory.Create(configuration);
 
         agentBuild.Use(new AgentExceptionHandlingMiddleware(agentLogger, agent.Name));
         agentBuild.Use(new AgentTraceMiddleware(agent.Name));
