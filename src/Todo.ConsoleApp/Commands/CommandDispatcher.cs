@@ -6,12 +6,12 @@ namespace Todo.ConsoleApp.Commands;
 
 public class CommandDispatcher : ICommandDispatcher
 {
-    private readonly IHttpChatClient _httpChatClient;
+    private readonly IChatClient _httpChatClient;
     private readonly Dictionary<string, Func<string, Task>> _commands = new();
     private string _sessionId = string.Empty;
     private string _taskId = string.Empty;
 
-    public CommandDispatcher(IHttpChatClient httpChatClient)
+    public CommandDispatcher(IChatClient httpChatClient)
     {
         _httpChatClient = httpChatClient;
     }

@@ -1,16 +1,20 @@
-﻿using System.Net.Http.Json;
+﻿using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Options;
-using Todo.Core.Users;
+using System.Net.Http.Json;
 using Todo.ConsoleApp.Settings;
+using Todo.Core.Extensions;
+using Todo.Core.Users;
 
 namespace Todo.ConsoleApp.Commands
 {
-    public class HttpChatClient : IHttpChatClient
+    public class ChatClient : IChatClient
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ChatClientSetting _settings;
+        private HubConnection? _hubConnection;
+        private TaskCompletionSource? _taskCompletionSource;
 
-        public HttpChatClient(IHttpClientFactory httpClientFactory, IOptions<ChatClientSetting> settings)
+        public ChatClient(IHttpClientFactory httpClientFactory, IOptions<ChatClientSetting> settings)
         {
             _httpClientFactory = httpClientFactory;
             _settings = settings.Value;
@@ -18,6 +22,8 @@ namespace Todo.ConsoleApp.Commands
 
         public async Task<UserResponse> Send(UserRequest userRequest)
         {
+            _taskCompletionSource = new TaskCompletionSource();
+            
             var client = _httpClientFactory.CreateClient();
             var url = _settings.BaseUrl.TrimEnd('/') + "/" + _settings.SendUrl.TrimStart('/');
             
@@ -29,13 +35,33 @@ namespace Todo.ConsoleApp.Commands
             {
                 throw new InvalidOperationException("Unable to Deserialize Response.");
             }
-            
+
+            await _taskCompletionSource.Task;
+
             return userResponse;
+        }
+
+        public async Task InitializeStreamingConnectionAsync()
+        {
+            _hubConnection = new HubConnectionBuilder()
+                .WithUrl(_settings.BaseUrl + _settings.HubUrl)
+                .WithAutomaticReconnect()
+                .Build();
+
+            _hubConnection.On<UserResponse>(_settings.PromptChannel, (message) =>
+            {
+                Console.WriteLine($"{Constants.SystemCaret}{message.Task.ExtractTextBasedOnResponse()}");
+
+                _taskCompletionSource?.SetResult();
+            });
+
+            await _hubConnection.StartAsync();
         }
     }
 
-    public interface IHttpChatClient
+    public interface IChatClient
     {
         Task<UserResponse> Send(UserRequest userRequest);
+        Task InitializeStreamingConnectionAsync();
     }
 }
