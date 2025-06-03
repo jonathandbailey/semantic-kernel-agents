@@ -8,24 +8,21 @@ namespace Todo.Core.Infrastructure.File;
 public class AgentTemplateFileRepository : IAgentTemplateRepository
 {
     private readonly ILogger<AgentTemplateFileRepository> _logger;
-    private readonly string _templateDirectory;
+    private readonly string _directoryPath;
 
-    public AgentTemplateFileRepository(IOptions<AzureStorageSettings> settings, ILogger<AgentTemplateFileRepository> logger)
+    public AgentTemplateFileRepository(IOptions<FileStorageSettings> settings, ILogger<AgentTemplateFileRepository> logger)
     {
-        _templateDirectory = settings.Value.AgentTemplatesContainerName;
         _logger = logger;
+
+        _directoryPath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}\{settings.Value.ApplicationName}\{settings.Value.TemplateFolder}";
     }
 
     public async Task<string> GetAgentTemplateAsync(string agentTemplateName)
     {
         Verify.NotNullOrWhiteSpace(agentTemplateName);
-            
-        var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-        var myAppFolder = Path.Combine(documentsPath, _templateDirectory);
 
-        var filePath = Path.Combine(myAppFolder, agentTemplateName);
-            
-            
+        var filePath = Path.Combine(_directoryPath, agentTemplateName);
+
         try
         {
             if (!System.IO.File.Exists(filePath))

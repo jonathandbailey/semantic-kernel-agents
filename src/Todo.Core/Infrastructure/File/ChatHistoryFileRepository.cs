@@ -12,15 +12,11 @@ namespace Todo.Core.Infrastructure.File
         private readonly ILogger<ChatHistoryFileRepository> _logger;
         private readonly string _directoryPath;
 
-        public ChatHistoryFileRepository(IOptions<AzureStorageSettings> settings, ILogger<ChatHistoryFileRepository> logger)
+        public ChatHistoryFileRepository(IOptions<FileStorageSettings> settings, ILogger<ChatHistoryFileRepository> logger)
         {
             _logger = logger;
-            _directoryPath = settings.Value.ChatHistoryContainerName;
-            
-            if (!Directory.Exists(_directoryPath))
-            {
-                Directory.CreateDirectory(_directoryPath);
-            }
+         
+            _directoryPath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)}\{settings.Value.ApplicationName}\{settings.Value.ChatHistoryFolder}";
         }
 
         public async Task SaveChatHistoryAsync(string name, List<Message> messages)
@@ -31,10 +27,7 @@ namespace Todo.Core.Infrastructure.File
             {
                 var json = JsonSerializer.Serialize(messages);
 
-                var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                var myAppFolder = Path.Combine(documentsPath, _directoryPath);
-
-                var filePath = Path.Combine(myAppFolder, name);
+                var filePath = Path.Combine(_directoryPath, name);
 
                 Verify.NotNullOrWhiteSpace(json);
                 await System.IO.File.WriteAllTextAsync(filePath, json);
@@ -52,11 +45,8 @@ namespace Todo.Core.Infrastructure.File
         {
             try
             {
-                var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                var myAppFolder = Path.Combine(documentsPath, _directoryPath);
+                var filePath = Path.Combine(_directoryPath, name);
 
-                var filePath = Path.Combine(myAppFolder, name);
-                
                 if (!System.IO.File.Exists(filePath))
                 {
                     return [];

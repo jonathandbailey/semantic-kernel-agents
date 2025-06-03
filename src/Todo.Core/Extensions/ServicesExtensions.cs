@@ -5,6 +5,7 @@ using Todo.Core.Agents;
 using Todo.Core.Agents.Build;
 using Todo.Core.Communication;
 using Todo.Core.Infrastructure;
+using Todo.Core.Infrastructure.File;
 using Todo.Core.Models;
 using Todo.Core.Services;
 using Todo.Core.Settings;
@@ -17,13 +18,18 @@ namespace Todo.Core.Extensions
         public static void AddCoreServices(this IServiceCollection services, IConfiguration configuration,
             ILoggerFactory loggerFactory)
         {
+
+
+            services.Configure<FileStorageSettings>(options =>
+                configuration.GetSection(SettingsConstants.FileStorageSettings).Bind(options));
+
             services.Configure<AzureStorageSettings>(options =>
                 configuration.GetSection(SettingsConstants.AzureStorageSettings).Bind(options));
 
             services.Configure<List<AgentSettings>>(options =>
                 configuration.GetSection(SettingsConstants.AgentSettings).Bind(options));
 
-            services.AddScoped<IAgentTemplateRepository, AgentTemplateRepository>();
+            services.AddScoped<IAgentTemplateRepository, AgentTemplateFileRepository>();
          
             services.AddScoped<IAgentProvider, AgentProvider>();
 
@@ -37,7 +43,7 @@ namespace Todo.Core.Extensions
 
             services.AddScoped<IAgentPublisher, AgentPublisher>();
 
-            services.AddScoped<IChatHistoryRepository, ChatHistoryRepository>();
+            services.AddScoped<IChatHistoryRepository, ChatHistoryFileRepository>();
             services.AddScoped<IAgentChatHistoryProvider, AgentChatHistoryProvider>();
 
             services.AddScoped<IUser, User>();
