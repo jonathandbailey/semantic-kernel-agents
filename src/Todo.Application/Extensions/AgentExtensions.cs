@@ -1,8 +1,8 @@
 ﻿using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
-using Todo.Application.Agents.A2A;
 using Todo.Application.Communication;
 using Todo.Application.Utilities;
+using Todo.Core.A2A;
 
 namespace Todo.Application.Extensions
 {

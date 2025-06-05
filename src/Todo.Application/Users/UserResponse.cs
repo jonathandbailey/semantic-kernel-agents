@@ -1,4 +1,4 @@
-﻿using Todo.Application.Agents.A2A;
+﻿using Todo.Core.A2A;
 
 namespace Todo.Application.Users
 {

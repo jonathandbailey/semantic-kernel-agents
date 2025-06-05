@@ -1,5 +1,5 @@
-﻿using Todo.Application.Agents.A2A;
-using Todo.Application.Communication;
+﻿using Todo.Application.Communication;
+using Todo.Core.A2A;
 
 namespace Todo.Application.Agents;
 

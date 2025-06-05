@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using Todo.Application.Agents;
-using Todo.Application.Agents.A2A;
 using Todo.Application.Agents.Build;
 using Todo.Application.Infrastructure;
 using Todo.Application.Interfaces;
 using Todo.Application.Users;
+using Todo.Core.A2A;
 
 namespace Todo.Application.Services;
 

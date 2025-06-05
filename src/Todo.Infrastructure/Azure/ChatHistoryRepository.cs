@@ -4,12 +4,10 @@ using Azure;
 using Azure.Storage.Blobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Todo.Application.Extensions;
-using Todo.Application.Settings;
-using Todo.Application.Utilities;
 using Todo.Core.A2A;
+using Todo.Infrastructure.Settings;
 
-namespace Todo.Application.Infrastructure;
+namespace Todo.Infrastructure.Azure;
 
 public class ChatHistoryRepository : IChatHistoryRepository
 {

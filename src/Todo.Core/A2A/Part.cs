@@ -1,4 +1,4 @@
-﻿namespace Todo.Application.Agents.A2A
+﻿namespace Todo.Core.A2A
 {
     public class TextPart
     {

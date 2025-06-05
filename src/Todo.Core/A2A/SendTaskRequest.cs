@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace Todo.Application.Agents.A2A
+namespace Todo.Core.A2A
 {
     public class SendTaskRequest : IRequest<SendTaskResponse>
     {

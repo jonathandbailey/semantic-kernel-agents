@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
 using Microsoft.Extensions.Logging;
-using Todo.Application.Agents.A2A;
 using Todo.Application.Communication;
 using Todo.Application.Extensions;
 using Todo.Application.Infrastructure;
+using Todo.Core.A2A;
 
 namespace Todo.Application.Agents;
 
