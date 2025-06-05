@@ -10,6 +10,6 @@ namespace Todo.Application.Communication
 
         public string TaskId { get; init; } = string.Empty;
 
-        public  ChatHistoryAgentThread ChatHistory { get; set; } = new ChatHistoryAgentThread();
+        public  ChatHistoryAgentThread ChatHistory { get; set; } = new();
     }
 }

@@ -3,7 +3,6 @@ using Todo.Application.Agents;
 using Todo.Application.Agents.Build;
 using Todo.Application.Interfaces;
 using Todo.Application.Users;
-using Todo.Core.A2A;
 using Todo.Infrastructure;
 
 namespace Todo.Application.Services;
@@ -25,17 +24,6 @@ public class TodoService(IAgentProvider agentProvider, IUserRepository userRepos
         await userMessageSender.RespondAsync(payLoad, user.Id);
 
         return payLoad;
-    }
-    
-    public async Task<AgentTask> Handle(SendTaskRequest sendTaskRequest)
-    {
-        await agentProvider.Build();
-
-        var agentTaskManager = agentProvider.GetTaskManager(AgentNames.OrchestratorAgent);
-
-        var response = await agentTaskManager.SendTask(sendTaskRequest);
-
-        return response.Task;
     }
 }
 
