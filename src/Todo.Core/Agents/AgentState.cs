@@ -1,7 +1,7 @@
-﻿using Todo.Core.Agents.A2A;
-using Todo.Core.Communication;
+﻿using Todo.Application.Agents.A2A;
+using Todo.Application.Communication;
 
-namespace Todo.Core.Agents
+namespace Todo.Application.Agents
 {
     public class AgentState
     {

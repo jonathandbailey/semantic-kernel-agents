@@ -5,7 +5,7 @@ VisualStudioVersion = 17.13.35818.85
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Todo.ConsoleApp", "Todo.ConsoleApp\Todo.ConsoleApp.csproj", "{5BAA0E09-0637-4608-9AE2-0A6F0D8BC700}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Todo.Core", "Todo.Core\Todo.Core.csproj", "{9F7629EB-86D4-4A9B-8AF8-EF21A51CA149}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Todo.Application", "Todo.Core\Todo.Application.csproj", "{9F7629EB-86D4-4A9B-8AF8-EF21A51CA149}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Todo.Api", "Todo.Api\Todo.Api.csproj", "{9080C357-4B83-4823-AF87-B21C8E9D7308}"
 EndProject

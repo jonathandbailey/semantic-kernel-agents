@@ -1,7 +1,7 @@
 ﻿using Microsoft.SemanticKernel;
-using Todo.Core.Settings;
+using Todo.Application.Settings;
 
-namespace Todo.Core.Agents;
+namespace Todo.Application.Agents;
 
 public class AgentConfiguration
 {

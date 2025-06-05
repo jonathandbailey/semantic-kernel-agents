@@ -1,7 +1,7 @@
 ﻿using MediatR;
-using Todo.Core.Agents.A2A;
+using Todo.Application.Agents.A2A;
 
-namespace Todo.Core.Users
+namespace Todo.Application.Users
 {
     public class UserRequest : IRequest<UserResponse>
     {

@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using Todo.Core.Interfaces;
+using Todo.Application.Interfaces;
 
 namespace Todo.Api.Hubs
 {

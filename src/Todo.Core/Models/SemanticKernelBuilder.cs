@@ -2,11 +2,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
-using Todo.Core.Extensions;
-using Todo.Core.Settings;
-using Todo.Core.Utilities;
+using Todo.Application.Extensions;
+using Todo.Application.Settings;
+using Todo.Application.Utilities;
 
-namespace Todo.Core.Models;
+namespace Todo.Application.Models;
 
 #pragma warning disable SKEXP0070
 

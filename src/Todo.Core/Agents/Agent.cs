@@ -2,9 +2,9 @@
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
-using Todo.Core.Communication;
+using Todo.Application.Communication;
 
-namespace Todo.Core.Agents;
+namespace Todo.Application.Agents;
 
 public class Agent(ChatCompletionAgent chatCompletionAgent, string name) : AgentBase, IAgent
 {

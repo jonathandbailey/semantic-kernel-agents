@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Todo.Core.Settings;
+using Todo.Application.Settings;
 
 namespace Todo.ConsoleApp.Settings;
 

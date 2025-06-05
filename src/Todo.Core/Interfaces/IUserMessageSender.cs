@@ -1,4 +1,4 @@
-﻿namespace Todo.Core.Interfaces;
+﻿namespace Todo.Application.Interfaces;
 
 public interface IUserMessageSender
 {

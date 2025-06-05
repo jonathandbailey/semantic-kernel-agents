@@ -1,6 +1,6 @@
-﻿using Todo.Core.Models;
+﻿using Todo.Application.Models;
 
-namespace Todo.Core.Settings;
+namespace Todo.Application.Settings;
 
 public class LanguageModelSettings
 {

@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using System.Net.Http.Json;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Options;
-using System.Net.Http.Json;
+using Todo.Application.Extensions;
+using Todo.Application.Users;
 using Todo.ConsoleApp.Settings;
-using Todo.Core.Extensions;
-using Todo.Core.Users;
 
 namespace Todo.ConsoleApp.Commands
 {

@@ -1,4 +1,4 @@
-﻿namespace Todo.Core.Settings;
+﻿namespace Todo.Application.Settings;
 
 public class SettingsConstants
 {

@@ -1,4 +1,4 @@
-namespace Todo.Core.Communication;
+namespace Todo.Application.Communication;
 
 public class AgentActionResponse
 {

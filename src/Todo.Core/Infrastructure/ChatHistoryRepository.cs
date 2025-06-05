@@ -1,15 +1,15 @@
-﻿using Azure;
+﻿using System.Text;
+using System.Text.Json;
+using Azure;
 using Azure.Storage.Blobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Text;
-using System.Text.Json;
-using Todo.Core.Agents.A2A;
-using Todo.Core.Extensions;
-using Todo.Core.Settings;
-using Todo.Core.Utilities;
+using Todo.Application.Agents.A2A;
+using Todo.Application.Extensions;
+using Todo.Application.Settings;
+using Todo.Application.Utilities;
 
-namespace Todo.Core.Infrastructure;
+namespace Todo.Application.Infrastructure;
 
 public class ChatHistoryRepository : IChatHistoryRepository
 {

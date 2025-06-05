@@ -1,10 +1,10 @@
 ﻿using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
-using Todo.Core.Infrastructure;
-using Todo.Core.Settings;
+using Todo.Application.Infrastructure;
+using Todo.Application.Settings;
 
-namespace Todo.Core.Agents.Build;
+namespace Todo.Application.Agents.Build;
 
 public class AgentFactory(
     Kernel kernel, 

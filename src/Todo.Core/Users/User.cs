@@ -1,4 +1,4 @@
-﻿namespace Todo.Core.Users
+﻿namespace Todo.Application.Users
 {
     public class User : IUser
     {

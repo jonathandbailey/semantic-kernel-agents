@@ -1,12 +1,12 @@
 ﻿using MediatR;
-using Todo.Core.Agents;
-using Todo.Core.Agents.A2A;
-using Todo.Core.Agents.Build;
-using Todo.Core.Infrastructure;
-using Todo.Core.Interfaces;
-using Todo.Core.Users;
+using Todo.Application.Agents;
+using Todo.Application.Agents.A2A;
+using Todo.Application.Agents.Build;
+using Todo.Application.Infrastructure;
+using Todo.Application.Interfaces;
+using Todo.Application.Users;
 
-namespace Todo.Core.Services;
+namespace Todo.Application.Services;
 
 public class TodoService(IAgentProvider agentProvider, IUserRepository userRepository, IUserMessageSender userMessageSender) : ITodoService, IRequestHandler<UserRequest, UserResponse>
 {   

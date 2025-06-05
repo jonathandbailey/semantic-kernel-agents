@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel;
 using Microsoft.SemanticKernel;
-using Todo.Core.Agents.Build;
-using Todo.Core.Communication;
-using Todo.Core.Extensions;
+using Todo.Application.Agents.Build;
+using Todo.Application.Communication;
+using Todo.Application.Extensions;
 
-namespace Todo.Core.Agents.Plugins
+namespace Todo.Application.Agents.Plugins
 {
     public class TaskPlugin(IAgentStateStore agentStateStore, string name, IAgentPublisher publisher) : IAgentPlugin
     {

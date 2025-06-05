@@ -1,4 +1,4 @@
-﻿namespace Todo.Core.Agents.A2A
+﻿namespace Todo.Application.Agents.A2A
 {
     public class SendTaskResponse
     {

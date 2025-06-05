@@ -1,7 +1,7 @@
-﻿using Todo.Core.Agents.Plugins;
-using Todo.Core.Communication;
+﻿using Todo.Application.Agents.Plugins;
+using Todo.Application.Communication;
 
-namespace Todo.Core.Agents.Build
+namespace Todo.Application.Agents.Build
 {
     
 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.SemanticKernel.Agents;
 
-namespace Todo.Core.Communication
+namespace Todo.Application.Communication
 {
     public class ChatCompletionRequest
     {

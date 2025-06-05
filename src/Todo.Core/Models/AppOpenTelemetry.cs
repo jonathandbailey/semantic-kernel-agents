@@ -3,9 +3,9 @@ using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using Todo.Core.Settings;
+using Todo.Application.Settings;
 
-namespace Todo.Core.Models;
+namespace Todo.Application.Models;
 
 public static class AppOpenTelemetry
 {

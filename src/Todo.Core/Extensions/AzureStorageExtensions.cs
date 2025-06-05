@@ -1,6 +1,6 @@
 ﻿using Azure.Storage.Blobs;
 
-namespace Todo.Core.Extensions;
+namespace Todo.Application.Extensions;
 
 public static class AzureStorageExtensions
 {

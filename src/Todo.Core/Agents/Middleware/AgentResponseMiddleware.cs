@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
-using System.Text.Json;
-using Todo.Core.Communication;
-using Todo.Core.Extensions;
+﻿using System.Text.Json;
+using Microsoft.Extensions.Logging;
+using Todo.Application.Communication;
+using Todo.Application.Extensions;
 
-namespace Todo.Core.Agents.Middleware
+namespace Todo.Application.Agents.Middleware
 {
     public class AgentResponseMiddleware(ILogger<IAgent> logger, string agentName) : IAgentMiddleware
     {

@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Todo.Core;
+namespace Todo.Application;
 
 public class AgentException : Exception
 {

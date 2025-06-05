@@ -1,10 +1,10 @@
 ﻿using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
-using Todo.Core.Agents.A2A;
-using Todo.Core.Communication;
-using Todo.Core.Utilities;
+using Todo.Application.Agents.A2A;
+using Todo.Application.Communication;
+using Todo.Application.Utilities;
 
-namespace Todo.Core.Extensions
+namespace Todo.Application.Extensions
 {
     public static class AgentExtensions
     {

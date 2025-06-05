@@ -1,4 +1,4 @@
-﻿namespace Todo.Core.Agents;
+﻿namespace Todo.Application.Agents;
 
 public static class AgentNames
 {

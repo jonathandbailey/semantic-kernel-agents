@@ -1,6 +1,6 @@
-﻿using Todo.ConsoleApp.Settings;
-using Todo.Core.Extensions;
-using Todo.Core.Users;
+﻿using Todo.Application.Extensions;
+using Todo.Application.Users;
+using Todo.ConsoleApp.Settings;
 
 namespace Todo.ConsoleApp.Commands;
 

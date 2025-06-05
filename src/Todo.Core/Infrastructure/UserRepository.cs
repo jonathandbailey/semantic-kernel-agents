@@ -1,6 +1,6 @@
-﻿using Todo.Core.Users;
+﻿using Todo.Application.Users;
 
-namespace Todo.Core.Infrastructure
+namespace Todo.Application.Infrastructure
 {
     public class UserRepository : IUserRepository
     {

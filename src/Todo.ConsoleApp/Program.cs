@@ -2,11 +2,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Todo.Application.Models;
+using Todo.Application.Settings;
 using Todo.ConsoleApp;
 using Todo.ConsoleApp.Commands;
 using Todo.ConsoleApp.Settings;
-using Todo.Core.Models;
-using Todo.Core.Settings;
 
 var builder = Host.CreateDefaultBuilder(args);
 

@@ -1,12 +1,12 @@
-﻿using Microsoft.Extensions.Options;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
-using Todo.Core.Settings;
-using Todo.Core.Agents.Middleware;
-using Todo.Core.Communication;
-using Todo.Core.Infrastructure;
+using Microsoft.Extensions.Options;
+using Todo.Application.Agents.Middleware;
+using Todo.Application.Communication;
+using Todo.Application.Infrastructure;
+using Todo.Application.Settings;
 
-namespace Todo.Core.Agents.Build;
+namespace Todo.Application.Agents.Build;
 public class AgentProvider(
     ILogger<AgentTaskManager> taskManagerLogger,
     IAgentChatHistoryProvider agentChatHistoryProvider,

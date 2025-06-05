@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Todo.Core.Settings;
-using Todo.Core.Utilities;
+using Todo.Application.Settings;
+using Todo.Application.Utilities;
 
-namespace Todo.Core.Infrastructure.File;
+namespace Todo.Application.Infrastructure.File;
 
 public class AgentTemplateFileRepository : IAgentTemplateRepository
 {

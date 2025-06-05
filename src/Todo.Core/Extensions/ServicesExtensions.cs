@@ -1,17 +1,17 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Todo.Core.Agents;
-using Todo.Core.Agents.Build;
-using Todo.Core.Communication;
-using Todo.Core.Infrastructure;
-using Todo.Core.Infrastructure.File;
-using Todo.Core.Models;
-using Todo.Core.Services;
-using Todo.Core.Settings;
-using Todo.Core.Users;
+using Todo.Application.Agents;
+using Todo.Application.Agents.Build;
+using Todo.Application.Communication;
+using Todo.Application.Infrastructure;
+using Todo.Application.Infrastructure.File;
+using Todo.Application.Models;
+using Todo.Application.Services;
+using Todo.Application.Settings;
+using Todo.Application.Users;
 
-namespace Todo.Core.Extensions
+namespace Todo.Application.Extensions
 {
     public static class ServicesExtensions
     {
