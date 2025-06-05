@@ -1,11 +1,10 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Todo.Application.Settings;
-using Todo.Application.Utilities;
 using Todo.Core.A2A;
+using Todo.Infrastructure.Azure;
 
-namespace Todo.Application.Infrastructure.File
+namespace Todo.Infrastructure.File
 {
     public class ChatHistoryFileRepository : IChatHistoryRepository
     {

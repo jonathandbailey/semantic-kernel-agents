@@ -1,4 +1,4 @@
-﻿namespace Todo.Application.Settings;
+﻿namespace Todo.Infrastructure.Azure;
 
 public class AzureStorageSettings
 {

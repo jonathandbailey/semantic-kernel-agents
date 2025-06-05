@@ -3,8 +3,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Todo.Application.Agents.Middleware;
 using Todo.Application.Communication;
-using Todo.Application.Infrastructure;
 using Todo.Application.Settings;
+using Todo.Infrastructure.Azure;
 
 namespace Todo.Application.Agents.Build;
 public class AgentProvider(

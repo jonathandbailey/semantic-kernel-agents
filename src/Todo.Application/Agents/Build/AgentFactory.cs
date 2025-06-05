@@ -1,8 +1,8 @@
 ﻿using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
-using Todo.Application.Infrastructure;
 using Todo.Application.Settings;
+using Todo.Infrastructure.Azure;
 
 namespace Todo.Application.Agents.Build;
 

@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Todo.Application.Settings;
-using Todo.Application.Utilities;
+using Todo.Infrastructure.Azure;
 
-namespace Todo.Application.Infrastructure.File;
+namespace Todo.Infrastructure.File;
 
 public class AgentTemplateFileRepository : IAgentTemplateRepository
 {

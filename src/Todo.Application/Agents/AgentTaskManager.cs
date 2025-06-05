@@ -2,8 +2,8 @@
 using Microsoft.Extensions.Logging;
 using Todo.Application.Communication;
 using Todo.Application.Extensions;
-using Todo.Application.Infrastructure;
 using Todo.Core.A2A;
+using Todo.Infrastructure.Azure;
 
 namespace Todo.Application.Agents;
 

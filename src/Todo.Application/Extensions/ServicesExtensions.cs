@@ -4,12 +4,13 @@ using Microsoft.Extensions.Logging;
 using Todo.Application.Agents;
 using Todo.Application.Agents.Build;
 using Todo.Application.Communication;
-using Todo.Application.Infrastructure;
-using Todo.Application.Infrastructure.File;
 using Todo.Application.Models;
 using Todo.Application.Services;
 using Todo.Application.Settings;
 using Todo.Core.Users;
+using Todo.Infrastructure;
+using Todo.Infrastructure.Azure;
+using Todo.Infrastructure.File;
 
 namespace Todo.Application.Extensions
 {

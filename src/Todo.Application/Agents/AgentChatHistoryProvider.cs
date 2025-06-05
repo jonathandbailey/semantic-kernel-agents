@@ -1,8 +1,8 @@
 ﻿using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Todo.Application.Extensions;
-using Todo.Application.Infrastructure;
 using Todo.Core.A2A;
+using Todo.Infrastructure.Azure;
 
 #pragma warning disable SKEXP0110
 

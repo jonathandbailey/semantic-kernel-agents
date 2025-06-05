@@ -5,7 +5,6 @@ using Azure.Storage.Blobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Todo.Core.A2A;
-using Todo.Infrastructure.Settings;
 
 namespace Todo.Infrastructure.Azure;
 

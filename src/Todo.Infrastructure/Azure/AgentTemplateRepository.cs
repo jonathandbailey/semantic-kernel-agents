@@ -2,11 +2,8 @@
 using Azure.Storage.Blobs;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Todo.Application.Extensions;
-using Todo.Application.Settings;
-using Todo.Application.Utilities;
 
-namespace Todo.Application.Infrastructure;
+namespace Todo.Infrastructure.Azure;
 
 public class AgentTemplateRepository : IAgentTemplateRepository
 {
