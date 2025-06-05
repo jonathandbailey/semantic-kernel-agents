@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Todo.Api.Extensions;
 using Todo.Application.Users;
 
+
 namespace Todo.Api.Controllers;
 
 [ApiController]

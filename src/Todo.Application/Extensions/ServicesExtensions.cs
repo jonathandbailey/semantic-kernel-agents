@@ -9,7 +9,7 @@ using Todo.Application.Infrastructure.File;
 using Todo.Application.Models;
 using Todo.Application.Services;
 using Todo.Application.Settings;
-using Todo.Application.Users;
+using Todo.Core.Users;
 
 namespace Todo.Application.Extensions
 {

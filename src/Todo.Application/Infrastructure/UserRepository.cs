@@ -1,4 +1,4 @@
-﻿using Todo.Application.Users;
+﻿using Todo.Core.Users;
 
 namespace Todo.Application.Infrastructure
 {
