@@ -1,18 +1,12 @@
-﻿using System.Diagnostics;
-using Todo.ConsoleApp.Commands;
+﻿using Todo.ConsoleApp.Commands;
 using Todo.ConsoleApp.Settings;
-
 
 namespace Todo.ConsoleApp;
 
 public class TodoApplication(ICommandDispatcher commandManager, IChatClient chatClient) 
 {
-    private readonly ActivitySource _trace = new($"Todo.ConsoleApp");
-
     public async Task RunAsync(CancellationTokenSource cancellationTokenSource)
     {
-        using var activity = _trace.StartActivity($"Application.{nameof(TodoApplication)}");
-
         commandManager.Initialize(cancellationTokenSource);
 
         await chatClient.InitializeStreamingConnectionAsync();

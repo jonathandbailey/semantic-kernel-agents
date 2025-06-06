@@ -1,8 +1,7 @@
 ﻿using System.Net.Http.Json;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Options;
-using Todo.Agents;
-using Todo.Application.Users;
+using Todo.ConsoleApp.Dto;
 using Todo.ConsoleApp.Settings;
 
 namespace Todo.ConsoleApp.Commands
@@ -19,18 +18,17 @@ namespace Todo.ConsoleApp.Commands
             _httpClientFactory = httpClientFactory;
             _settings = settings.Value;
         }
-
-        public async Task<UserResponse> Send(UserRequest userRequest)
+        public async Task<UserResponseDto> Send(UserRequestDto userRequest)
         {
             _taskCompletionSource = new TaskCompletionSource();
-            
+
             var client = _httpClientFactory.CreateClient();
             var url = _settings.BaseUrl.TrimEnd('/') + "/" + _settings.SendUrl.TrimStart('/');
-            
+
             var response = await client.PostAsJsonAsync(url, userRequest);
             response.EnsureSuccessStatusCode();
-            var userResponse = await response.Content.ReadFromJsonAsync<UserResponse>();
-            
+            var userResponse = await response.Content.ReadFromJsonAsync<UserResponseDto>();
+
             if (userResponse == null)
             {
                 throw new InvalidOperationException("Unable to Deserialize Response.");
@@ -48,9 +46,9 @@ namespace Todo.ConsoleApp.Commands
                 .WithAutomaticReconnect()
                 .Build();
 
-            _hubConnection.On<UserResponse>(_settings.PromptChannel, (message) =>
+            _hubConnection.On<UserResponseDto>(_settings.PromptChannel, (message) =>
             {
-                Console.WriteLine($"{Constants.SystemCaret}{message.Task.ExtractTextBasedOnResponse()}");
+                Console.WriteLine($"{Constants.SystemCaret}{message.Message}");
 
                 _taskCompletionSource?.SetResult();
             });
@@ -61,7 +59,7 @@ namespace Todo.ConsoleApp.Commands
 
     public interface IChatClient
     {
-        Task<UserResponse> Send(UserRequest userRequest);
         Task InitializeStreamingConnectionAsync();
+        Task<UserResponseDto> Send(UserRequestDto userRequest);
     }
 }

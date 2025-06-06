@@ -1,5 +1,4 @@
-﻿using Todo.Agents;
-using Todo.Application.Users;
+﻿using Todo.ConsoleApp.Dto;
 using Todo.ConsoleApp.Settings;
 
 namespace Todo.ConsoleApp.Commands;
@@ -35,13 +34,10 @@ public class CommandDispatcher : ICommandDispatcher
    
     private async Task ChatViaApi(string input)
     {
-        var sendTaskRequest = AgentExtensions.CreateSendTaskRequest(_taskId, _sessionId, input);
-        var userRequest = new UserRequest { SendTaskRequest = sendTaskRequest };
+        var userResponse = await _httpChatClient.Send(new UserRequestDto { Message = input, TaskId = _taskId, SessionId = _sessionId});
         
-        var userResponse = await _httpChatClient.Send(userRequest);
-        
-        _sessionId = userResponse.Task.SessionId;
-        _taskId = userResponse.Task.TaskId;
+        _sessionId = userResponse.SessionId;
+        _taskId = userResponse.TaskId;
     }
 }
 

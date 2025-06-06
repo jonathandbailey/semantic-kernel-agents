@@ -1,6 +1,8 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Todo.Agents;
 using Todo.Api.Extensions;
+using Todo.Application.Dto;
 using Todo.Application.Users;
 
 
@@ -11,11 +13,13 @@ namespace Todo.Api.Controllers;
 public class TodoController(IMediator mediator) : ControllerBase
 {
     [HttpPost("send")]
-    public async Task<IActionResult> Send([FromBody] UserRequest userRequest)
+    public async Task<IActionResult> Send([FromBody] UserRequestDto userRequest)
     {
-        userRequest.UserId = User.Id();
-            
-        var response = await mediator.Send(userRequest);
+        var response = await mediator.Send(new UserRequest
+        {
+            UserId = User.Id(), 
+            SendTaskRequest = AgentExtensions.CreateSendTaskRequest(userRequest.TaskId, userRequest.SessionId, userRequest.Message)
+        });
 
         return Ok(response);
     }

@@ -2,8 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Todo.Application.Models;
-using Todo.Application.Settings;
 using Todo.ConsoleApp;
 using Todo.ConsoleApp.Commands;
 using Todo.ConsoleApp.Settings;
@@ -19,11 +17,6 @@ builder.ConfigureAppConfiguration((hostingContext, config) =>
 
 builder.ConfigureServices((context, services) =>
 {
-    services.AddApplicationInsightsTelemetryWorkerService(options =>
-    {
-        options.ConnectionString = context.GetRequiredValue(SettingsConstants.ApplicationInsights);
-    });
-
     services.AddHttpClient();
 
     services.Configure<ChatClientSetting>(context.Configuration.GetSection("ChatClientSettings"));
@@ -50,8 +43,4 @@ try
 catch (Exception exception)
 {
     Console.WriteLine($"Failed to Start the Application : {exception.Message}");
-}
-finally
-{
-    AppOpenTelemetry.Dispose();
 }

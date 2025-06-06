@@ -1,15 +1,16 @@
 ﻿using MediatR;
 using Todo.Agents;
 using Todo.Agents.Build;
+using Todo.Application.Dto;
 using Todo.Application.Interfaces;
 using Todo.Application.Users;
 using Todo.Infrastructure;
 
 namespace Todo.Application.Services;
 
-public class TodoService(IAgentProvider agentProvider, IUserRepository userRepository, IUserMessageSender userMessageSender) : ITodoService, IRequestHandler<UserRequest, UserResponse>
+public class TodoService(IAgentProvider agentProvider, IUserRepository userRepository, IUserMessageSender userMessageSender) : ITodoService, IRequestHandler<UserRequest, UserResponseDto>
 {   
-    public async Task<UserResponse> Handle(UserRequest notification, CancellationToken cancellationToken)
+    public async Task<UserResponseDto> Handle(UserRequest notification, CancellationToken cancellationToken)
     {
         await agentProvider.Build();
       
@@ -19,7 +20,7 @@ public class TodoService(IAgentProvider agentProvider, IUserRepository userRepos
 
         var response = await agentTaskManager.SendTask(notification.SendTaskRequest);
 
-        var payLoad = new UserResponse { Task = response.Task };
+        var payLoad = new UserResponseDto { Message = response.Task.ExtractTextBasedOnResponse(), SessionId = response.Task.SessionId, TaskId = response.Task.TaskId };
 
         await userMessageSender.RespondAsync(payLoad, user.Id);
 
