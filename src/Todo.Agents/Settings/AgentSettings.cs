@@ -1,4 +1,4 @@
-﻿namespace Todo.Application.Settings;
+﻿namespace Todo.Agents.Settings;
 
 public class AgentSettings
 {

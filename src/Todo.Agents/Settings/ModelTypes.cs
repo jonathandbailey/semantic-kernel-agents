@@ -1,4 +1,4 @@
-﻿namespace Todo.Application.Models;
+﻿namespace Todo.Agents.Settings;
 
 public enum ModelTypes
 {

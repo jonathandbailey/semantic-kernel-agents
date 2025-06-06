@@ -1,4 +1,6 @@
-﻿namespace Todo.Application.Agents.Middleware
+﻿using Todo.Agents;
+
+namespace Todo.Application.Agents.Middleware
 {
     public  class AgentConversationHistoryMiddleware(IAgentChatHistoryProvider agentChatHistoryProvider, string agentName) : IAgentMiddleware
     {

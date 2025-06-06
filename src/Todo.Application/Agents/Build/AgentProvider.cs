@@ -1,9 +1,10 @@
 ﻿using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Todo.Agents;
+using Todo.Agents.Settings;
 using Todo.Application.Agents.Middleware;
 using Todo.Application.Communication;
-using Todo.Application.Settings;
 using Todo.Infrastructure.Azure;
 
 namespace Todo.Application.Agents.Build;

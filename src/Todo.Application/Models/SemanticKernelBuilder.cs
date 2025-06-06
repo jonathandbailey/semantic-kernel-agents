@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
+using Todo.Agents.Settings;
 using Todo.Application.Extensions;
 using Todo.Application.Settings;
 using Todo.Application.Utilities;

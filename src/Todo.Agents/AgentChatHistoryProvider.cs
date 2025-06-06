@@ -1,12 +1,11 @@
 ﻿using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
-using Todo.Application.Extensions;
 using Todo.Core.A2A;
 using Todo.Infrastructure.Azure;
 
 #pragma warning disable SKEXP0110
 
-namespace Todo.Application.Agents;
+namespace Todo.Agents;
 
 public class AgentChatHistoryProvider(IChatHistoryRepository chatHistoryRepository) : IAgentChatHistoryProvider
 {

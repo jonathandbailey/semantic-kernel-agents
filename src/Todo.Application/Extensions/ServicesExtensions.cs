@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Todo.Agents;
+using Todo.Agents.Settings;
 using Todo.Application.Agents;
 using Todo.Application.Agents.Build;
 using Todo.Application.Communication;
