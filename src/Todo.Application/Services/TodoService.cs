@@ -1,6 +1,6 @@
 ﻿using MediatR;
-using Todo.Application.Agents;
-using Todo.Application.Agents.Build;
+using Todo.Agents;
+using Todo.Agents.Build;
 using Todo.Application.Interfaces;
 using Todo.Application.Users;
 using Todo.Infrastructure;

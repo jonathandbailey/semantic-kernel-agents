@@ -4,7 +4,7 @@ using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Todo.Agents.Settings;
 using Todo.Infrastructure.Azure;
 
-namespace Todo.Application.Agents.Build;
+namespace Todo.Agents.Build;
 
 public class AgentFactory(
     Kernel kernel, 

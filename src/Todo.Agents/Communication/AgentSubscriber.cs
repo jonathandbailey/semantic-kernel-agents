@@ -1,8 +1,8 @@
 ﻿using MediatR;
-using Todo.Application.Agents.Build;
+using Todo.Agents.Build;
 using Todo.Core.A2A;
 
-namespace Todo.Application.Communication
+namespace Todo.Agents.Communication
 {
     public class AgentSubscriber(IAgentProvider agentProvider) : IRequestHandler<SendTaskRequest, SendTaskResponse>
     {

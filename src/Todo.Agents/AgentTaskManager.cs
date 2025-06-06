@@ -1,11 +1,9 @@
 ﻿using System.Diagnostics;
 using Microsoft.Extensions.Logging;
-using Todo.Application.Communication;
-using Todo.Application.Extensions;
 using Todo.Core.A2A;
 using Todo.Infrastructure.Azure;
 
-namespace Todo.Application.Agents;
+namespace Todo.Agents;
 
 public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger, IAgentTaskRepository agentTaskRepository, IAgentStateStore agentStateStore) : IAgentTaskManager
 {

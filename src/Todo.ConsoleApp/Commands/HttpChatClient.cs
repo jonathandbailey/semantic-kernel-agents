@@ -1,7 +1,7 @@
 ﻿using System.Net.Http.Json;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Options;
-using Todo.Application.Extensions;
+using Todo.Agents;
 using Todo.Application.Users;
 using Todo.ConsoleApp.Settings;
 

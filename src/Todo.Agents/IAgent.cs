@@ -1,4 +1,4 @@
-﻿namespace Todo.Application.Agents;
+﻿namespace Todo.Agents;
 
 public interface IAgent
 {

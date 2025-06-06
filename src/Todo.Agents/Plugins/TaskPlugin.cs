@@ -1,10 +1,9 @@
 ﻿using System.ComponentModel;
 using Microsoft.SemanticKernel;
-using Todo.Application.Agents.Build;
-using Todo.Application.Communication;
-using Todo.Application.Extensions;
+using Todo.Agents.Build;
+using Todo.Agents.Communication;
 
-namespace Todo.Application.Agents.Plugins
+namespace Todo.Agents.Plugins
 {
     public class TaskPlugin(IAgentStateStore agentStateStore, string name, IAgentPublisher publisher) : IAgentPlugin
     {
@@ -21,7 +20,7 @@ namespace Todo.Application.Agents.Plugins
             
             var response = await publisher.Send(sendTaskRequest);
 
-            var text = response.ExtractTextBasedOnResponse();
+            var text = AgentExtensions.ExtractTextBasedOnResponse(response);
 
             return text;
         }

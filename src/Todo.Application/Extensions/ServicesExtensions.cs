@@ -2,10 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Todo.Agents;
+using Todo.Agents.Build;
+using Todo.Agents.Communication;
 using Todo.Agents.Settings;
-using Todo.Application.Agents;
-using Todo.Application.Agents.Build;
-using Todo.Application.Communication;
 using Todo.Application.Models;
 using Todo.Application.Services;
 using Todo.Application.Settings;
@@ -51,7 +50,11 @@ namespace Todo.Application.Extensions
 
             services.AddScoped<IUser, User>();
 
-            services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(IAgent).Assembly));
+            services.AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssembly(typeof(IAgent).Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(TodoService).Assembly);
+            });
 
             services.AddScoped( _=> SemanticKernelBuilder.CreateKernel(configuration, loggerFactory));
 

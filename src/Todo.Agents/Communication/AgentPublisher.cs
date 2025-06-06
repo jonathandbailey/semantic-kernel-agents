@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Todo.Core.A2A;
 
-namespace Todo.Application.Communication
+namespace Todo.Agents.Communication
 {
     public class AgentPublisher(IMediator mediator) : IAgentPublisher
     {
