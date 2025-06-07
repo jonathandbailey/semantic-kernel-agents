@@ -31,6 +31,8 @@ builder.Services.AddCoreServices(builder.Configuration, loggerFactory);
 
 var app = builder.Build();
 
+app.Lifetime.ApplicationStopping.Register(AppOpenTelemetry.Dispose);
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
