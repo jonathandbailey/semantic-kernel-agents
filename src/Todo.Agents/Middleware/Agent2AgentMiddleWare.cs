@@ -12,7 +12,7 @@ namespace Todo.Agents.Middleware
             var agentTaskRequest = GetAgentResponse(context);
 
             var sendTaskRequest = AgentExtensions.CreateSendTaskRequest(context.TaskId,
-                context.TaskId, agentTaskRequest.Message);
+                context.SessionId, agentTaskRequest.Message);
 
             sendTaskRequest.AgentName = agentTaskRequest.AgentName;
 

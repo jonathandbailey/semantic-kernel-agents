@@ -1,7 +1,7 @@
 ﻿using Todo.ConsoleApp.Dto;
 using Todo.ConsoleApp.Settings;
 
-namespace Todo.ConsoleApp.Commands;
+namespace Todo.ConsoleApp.Services;
 
 public class CommandDispatcher : ICommandDispatcher
 {

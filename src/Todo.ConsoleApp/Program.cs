@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Todo.ConsoleApp;
-using Todo.ConsoleApp.Commands;
+using Todo.ConsoleApp.Services;
 using Todo.ConsoleApp.Settings;
 
 var builder = Host.CreateDefaultBuilder(args);

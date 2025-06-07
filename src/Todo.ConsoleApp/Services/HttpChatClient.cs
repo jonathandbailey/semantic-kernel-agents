@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using Todo.ConsoleApp.Dto;
 using Todo.ConsoleApp.Settings;
 
-namespace Todo.ConsoleApp.Commands
+namespace Todo.ConsoleApp.Services
 {
     public class ChatClient : IChatClient
     {
@@ -21,17 +21,20 @@ namespace Todo.ConsoleApp.Commands
         public async Task<UserResponseDto> Send(UserRequestDto userRequest)
         {
             _taskCompletionSource = new TaskCompletionSource();
+            
+            var url = $"{_settings.BaseUrl}{_settings.SendUrl}";
 
             var client = _httpClientFactory.CreateClient();
-            var url = _settings.BaseUrl.TrimEnd('/') + "/" + _settings.SendUrl.TrimStart('/');
-
+            
             var response = await client.PostAsJsonAsync(url, userRequest);
+            
             response.EnsureSuccessStatusCode();
+            
             var userResponse = await response.Content.ReadFromJsonAsync<UserResponseDto>();
 
             if (userResponse == null)
             {
-                throw new InvalidOperationException("Unable to Deserialize Response.");
+                throw new InvalidOperationException($"Failed to deserialize Response. Task Id : {userRequest.TaskId}, Session Id : {userRequest.SessionId}, Url : {url}");
             }
 
             await _taskCompletionSource.Task;

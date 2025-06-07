@@ -10,7 +10,7 @@ namespace Todo.Api.Hubs
             var connections = userConnectionManager.GetConnections(userId);
             foreach (var connectionId in connections)
             {
-                await userHub.Clients.Client(connectionId).SendAsync("ReceiveMessage", payload);
+                await userHub.Clients.Client(connectionId).SendAsync("user", payload);
             }
         }
     }
