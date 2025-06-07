@@ -1,4 +1,5 @@
 using Todo.Api.Hubs;
+using Todo.Api.Settings;
 using Todo.Application.Extensions;
 using Todo.Application.Interfaces;
 using Todo.Application.Models;
@@ -18,6 +19,8 @@ var loggerFactory = AppOpenTelemetry.CreateLoggerFactory(
     builder.Configuration.GetRequiredSetting<string>(SettingsConstants.ApplicationInsights),
     builder.Configuration.GetRequiredSetting<OpenTelemetrySettings>());
 
+builder.Services.Configure<HubSettings>(options => builder.Configuration.GetSection(SettingsConstants.HubSettings).Bind(options));
+
 builder.Services.AddSingleton(loggerFactory);
 builder.Services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
 
@@ -34,7 +37,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapHub<UserHub>("/hub");
+app.MapHub<UserHub>(builder.Configuration.GetRequiredSetting<string>(SettingsConstants.HubSettingsUrl));
 
 app.UseHttpsRedirection();
 

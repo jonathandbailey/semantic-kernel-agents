@@ -9,20 +9,30 @@ public class UserConnectionManager : IUserConnectionManager
     public void AddConnection(Guid userId, string connectionId)
     {
         var connections = UserConnections.GetOrAdd(userId, _ => []);
-        lock (connections) connections.Add(connectionId);
+        
+        lock (connections)
+        {
+            connections.Add(connectionId);
+        }
     }
 
     public void RemoveConnection(string connectionId)
     {
         foreach (var pair in UserConnections)
         {
-            if (pair.Value.Contains(connectionId))
+            if (!pair.Value.Contains(connectionId)) continue;
+            
+            lock (pair.Value)
             {
-                lock (pair.Value) pair.Value.Remove(connectionId);
-                if (pair.Value.Count == 0)
-                    UserConnections.TryRemove(pair.Key, out _);
-                break;
+                pair.Value.Remove(connectionId);
             }
+
+            if (pair.Value.Count == 0)
+            {
+                UserConnections.TryRemove(pair.Key, out _);
+            }
+                
+            break;
         }
     }
 
@@ -32,6 +42,7 @@ public class UserConnectionManager : IUserConnectionManager
         {
             return connections.ToList();
         }
+        
         return [];
     }
 }

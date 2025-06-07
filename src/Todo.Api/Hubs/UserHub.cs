@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 using Todo.Api.Extensions;
 
 namespace Todo.Api.Hubs;
@@ -8,9 +7,9 @@ public class UserHub(IUserConnectionManager userConnectionManager) : Hub
 {
     public override Task OnConnectedAsync()
     {
-        var userId = Context.User?.Id();
+        var userId = GetUserId();
 
-        if (userId != null)
+        if (userId.HasValue)
         {
             userConnectionManager.AddConnection(userId.Value, Context.ConnectionId);
         }
@@ -20,13 +19,18 @@ public class UserHub(IUserConnectionManager userConnectionManager) : Hub
 
     public override Task OnDisconnectedAsync(Exception? exception)
     {
-        var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier);
+        var userId = GetUserId();
 
-        if (userId != null && !string.IsNullOrEmpty(userId.Value))
+        if (userId.HasValue)
         {
             userConnectionManager.RemoveConnection(Context.ConnectionId);
         }
 
         return base.OnDisconnectedAsync(exception);
+    }
+
+    private Guid? GetUserId()
+    {
+       return Context.User?.Id();
     }
 }
