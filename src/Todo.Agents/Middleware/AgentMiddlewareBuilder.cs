@@ -26,7 +26,7 @@ public class AgentMiddlewareBuilder
 
 public interface IAgentMiddleware
 {
-    Task<AgentState> InvokeAsync(AgentState context, AgentDelegate next);
+    Task<AgentState> InvokeAsync(AgentState state, AgentDelegate next);
 }
 
 

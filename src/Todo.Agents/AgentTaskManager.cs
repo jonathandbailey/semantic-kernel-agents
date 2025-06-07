@@ -1,11 +1,13 @@
 ﻿using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.ChatCompletion;
 using Todo.Core.A2A;
 using Todo.Infrastructure.Azure;
 
 namespace Todo.Agents;
 
-public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger, IAgentTaskRepository agentTaskRepository, IAgentStateStore agentStateStore) : IAgentTaskManager
+public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger, IAgentTaskRepository agentTaskRepository) : IAgentTaskManager
 {
     private readonly ActivitySource _trace = new($"Todo.Agent.TaskManager.{agent.Name}");
 
@@ -20,14 +22,17 @@ public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger, IA
 
         try
         {
-            var agentState = agentStateStore.Update(agent.Name, agentTask.SessionId, agentTask.TaskId, agentTask);
-        
             var textPart = request.Parameters.Message.Parts.First();
 
-            agentState.ChatCompletionRequest = new ChatCompletionRequest
-                { Message = textPart.Text, SessionId = agentTask.SessionId, TaskId = agentTask.TaskId };
+            var agentState = new AgentState
+            {
+                Request = new ChatMessageContent(AuthorRole.User, textPart.Text),
+                AgentTask = agentTask,
+                SessionId = agentTask.SessionId,
+            };
 
             var response = await agent.InvokeAsync(agentState);
+
 
             await agentTaskRepository.SaveAsync(response.AgentTask);
 

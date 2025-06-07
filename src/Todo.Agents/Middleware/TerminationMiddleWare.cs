@@ -2,9 +2,9 @@
 {
     public class TerminationMiddleWare : IAgentMiddleware
     {
-        public Task<AgentState> InvokeAsync(AgentState context, AgentDelegate next)
+        public Task<AgentState> InvokeAsync(AgentState state, AgentDelegate next)
         {
-            return Task.FromResult(context);
+            return Task.FromResult(state);
         }
     }
 }

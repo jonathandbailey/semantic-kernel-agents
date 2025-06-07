@@ -2,6 +2,6 @@
 
 public interface IAgent
 {
-    public Task<AgentState> InvokeAsync(AgentState request);
+    public Task<AgentState> InvokeAsync(AgentState state);
     string Name { get; }
 }

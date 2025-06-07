@@ -13,7 +13,6 @@ public class AgentProvider(
     IAgentTaskRepository agentTaskRepository,
     IAgentPublisher publisher,
     ILogger<IAgent> agentLogger,
-    IAgentStateStore agentStateStore,
     IAgentFactory agentFactory,
     IOptions<List<AgentSettings>> agentSettings) : IAgentProvider
 {
@@ -26,7 +25,7 @@ public class AgentProvider(
         {
             var agent = await BuildAgentMiddleware(agentSetting);
 
-            if (!_agents.TryAdd(agentSetting.Name, new AgentTaskManager(agent, taskManagerLogger, agentTaskRepository, agentStateStore)))
+            if (!_agents.TryAdd(agentSetting.Name, new AgentTaskManager(agent, taskManagerLogger, agentTaskRepository)))
             {
                 throw new InvalidOperationException($"Failed to add agent: {agentSetting.Name}. It may already exist.");
             }

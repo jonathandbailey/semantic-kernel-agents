@@ -1,17 +1,12 @@
-﻿using Todo.Agents.Communication;
-using Todo.Agents.Plugins;
-
-namespace Todo.Agents.Build
+﻿namespace Todo.Agents.Build
 {
-    
-
-    public class PluginFactory(IAgentStateStore agentStateStore, IAgentPublisher publisher) : IPluginFactory
+  
+    public class PluginFactory : IPluginFactory
     {
         public IAgentPlugin Create(string name, string agentName)
         {
             return name switch
             {
-                "TaskPlugin" => new TaskPlugin(agentStateStore, agentName, publisher),
                 _ => throw new InvalidOperationException($"Plugin not found: {name}")
             };
         }

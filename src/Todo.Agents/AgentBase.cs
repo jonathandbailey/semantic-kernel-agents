@@ -4,11 +4,11 @@ namespace Todo.Agents
 {
     public abstract class AgentBase : IAgentMiddleware
     {
-        public abstract Task<AgentState> InvokeAsync(AgentState request);
+        public abstract Task<AgentState> InvokeAsync(AgentState state);
 
-        public async Task<AgentState> InvokeAsync(AgentState context, AgentDelegate next)
+        public async Task<AgentState> InvokeAsync(AgentState state, AgentDelegate next)
         {
-            var response = await InvokeAsync(context);
+            var response = await InvokeAsync(state);
 
             return await next(response);
         }

@@ -34,9 +34,7 @@ namespace Todo.Application.Extensions
             services.AddScoped<IAgentTemplateRepository, AgentTemplateFileRepository>();
          
             services.AddScoped<IAgentProvider, AgentProvider>();
-
-            services.AddScoped<IAgentStateStore, AgentStateStore>();
-
+        
             services.AddScoped<IAgentFactory, AgentFactory>();
             services.AddScoped<IPluginFactory, PluginFactory>();
 

@@ -7,20 +7,20 @@ namespace Todo.Agents.Middleware
 {
     public class Agent2AgentMiddleWare(ILogger<IAgent> logger, string agentName, IAgentPublisher publisher) : IAgentMiddleware
     {
-        public async Task<AgentState> InvokeAsync(AgentState context, AgentDelegate next)
+        public async Task<AgentState> InvokeAsync(AgentState state, AgentDelegate next)
         {
-            var agentTaskRequest = GetAgentResponse(context);
+            var agentTaskRequest = GetAgentResponse(state);
 
-            var sendTaskRequest = AgentExtensions.CreateSendTaskRequest(context.TaskId,
-                context.SessionId, agentTaskRequest.Message);
+            var sendTaskRequest = AgentExtensions.CreateSendTaskRequest(state.AgentTask.TaskId,
+                state.AgentTask.SessionId, agentTaskRequest.Message);
 
             sendTaskRequest.AgentName = agentTaskRequest.AgentName;
 
             var response = await publisher.Send(sendTaskRequest);
 
-            context.AgentTask.SetTaskState(response.Task);
+            state.AgentTask.SetTaskState(response.Task);
 
-            return await next(context);
+            return await next(state);
         }
 
         private AgentTaskRequest GetAgentResponse(AgentState state)

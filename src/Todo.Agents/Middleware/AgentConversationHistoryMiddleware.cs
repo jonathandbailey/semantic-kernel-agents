@@ -1,14 +1,20 @@
-﻿namespace Todo.Agents.Middleware
+﻿using Microsoft.SemanticKernel.Agents;
+
+namespace Todo.Agents.Middleware
 {
     public  class AgentConversationHistoryMiddleware(IAgentChatHistoryProvider agentChatHistoryProvider, string agentName) : IAgentMiddleware
     {
-        public async Task<AgentState> InvokeAsync(AgentState context, AgentDelegate next)
+        public async Task<AgentState> InvokeAsync(AgentState state, AgentDelegate next)
         {
-            context.ChatCompletionRequest.ChatHistory = await agentChatHistoryProvider.LoadChatHistoryAsync(agentName, context.SessionId);
+            var chatHistory = await agentChatHistoryProvider.LoadChatHistoryAsync(agentName, state.AgentTask.SessionId);
 
-            var response = await next(context);
+            state.Set("ChatHistory", chatHistory);
 
-            await agentChatHistoryProvider.SaveChatHistoryAsync(response.ChatCompletionResponse!.ChatHistory, agentName, context.SessionId);
+            var response = await next(state);
+
+            chatHistory = response.Get<ChatHistoryAgentThread>("ChatHistory");
+
+            await agentChatHistoryProvider.SaveChatHistoryAsync(chatHistory, agentName, state.AgentTask.SessionId);
 
             return response;
         }

@@ -6,11 +6,11 @@ namespace Todo.Agents.Middleware
 {
     public class AgentExceptionHandlingMiddleware(ILogger<IAgent> logger, string agentName) : IAgentMiddleware
     {
-        public async Task<AgentState> InvokeAsync(AgentState context, AgentDelegate next)
+        public async Task<AgentState> InvokeAsync(AgentState state, AgentDelegate next)
         {
             try
             {
-                var response = await next(context);
+                var response = await next(state);
 
                 return response;
             }

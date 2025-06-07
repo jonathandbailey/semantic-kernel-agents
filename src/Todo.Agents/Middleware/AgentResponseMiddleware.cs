@@ -7,13 +7,14 @@ namespace Todo.Agents.Middleware
 {
     public class AgentResponseMiddleware(ILogger<IAgent> logger, string agentName) : IAgentMiddleware
     {
-        public async Task<AgentState> InvokeAsync(AgentState context, AgentDelegate next)
+        public async Task<AgentState> InvokeAsync(AgentState state, AgentDelegate next)
         {
-            var response = GetAgentResponse(context.ChatCompletionResponse);
+          
+            var response = GetAgentResponse(state.ChatCompletionResponse);
 
-            context.AgentTask.SetTaskState(response);
+            state.AgentTask.SetTaskState(response);
 
-            return await next(context);
+            return await next(state);
         }
 
         private AgentActionResponse GetAgentResponse(ChatCompletionResponse? chatCompletionResponse)
