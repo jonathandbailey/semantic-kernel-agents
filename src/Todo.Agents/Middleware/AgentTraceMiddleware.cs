@@ -15,7 +15,7 @@ public class AgentTraceMiddleware(string agentName) : IAgentMiddleware
 
         var response = await next(state);
 
-        activity?.SetTag("Response", response.ChatCompletionResponse?.Message);
+        activity?.SetTag("Response", response.Responses.First().Content);
 
         return response;
     }

@@ -28,7 +28,6 @@ public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger, IA
             {
                 Request = new ChatMessageContent(AuthorRole.User, textPart.Text),
                 AgentTask = agentTask,
-                SessionId = agentTask.SessionId,
             };
 
             var response = await agent.InvokeAsync(agentState);

@@ -5,14 +5,10 @@ namespace Todo.Agents
 {
     public class AgentState
     {
-        public required string SessionId { get; set; }
-
         public required ChatMessageContent Request { get; init; }
 
         public List<ChatMessageContent> Responses { get; set; } = [];
-
-        public ChatCompletionResponse? ChatCompletionResponse { get; set; }
-
+    
         public required AgentTask AgentTask { get; init; }
 
         private Dictionary<string, object> Data { get; } = new();

@@ -25,13 +25,15 @@ namespace Todo.Agents.Middleware
 
         private AgentTaskRequest GetAgentResponse(AgentState state)
         {
-            var agentResponse = JsonSerializer.Deserialize<AgentTaskRequest>(state.ChatCompletionResponse?.Message!);
+            var message = state.Responses.First().Content;
+            
+            var agentResponse = JsonSerializer.Deserialize<AgentTaskRequest>(message!);
 
             if (agentResponse == null)
             {
-                logger.LogError($"{agentName} Failed to deserialize agent response: {state.ChatCompletionResponse?.Message!}");
+                logger.LogError($"{agentName} Failed to deserialize agent response: {message}");
 
-                throw new AgentException($"{agentName} :Failed to deserialize agent response: {state.ChatCompletionResponse?.Message!}");
+                throw new AgentException($"{agentName} :Failed to deserialize agent response: {message}");
             }
 
             return agentResponse;
