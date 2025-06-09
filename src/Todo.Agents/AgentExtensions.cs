@@ -167,3 +167,18 @@ public static class AgentExtensions
 
 
 }
+
+public static class AgentStateExtensions
+{
+    private const string AgentTaskTag = "AgentTask";
+
+    public static AgentTask AgentTask(this AgentState agentState)
+    {
+        return agentState.Get<AgentTask>(AgentTaskTag);
+    }
+
+    public static void AgentTask(this AgentState agentState, AgentTask agentTask)
+    {
+        agentState.Set(AgentTaskTag, agentTask);
+    }
+}

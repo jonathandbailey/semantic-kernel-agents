@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Todo.Agents.Communication;
+using Todo.Core.A2A;
 using Todo.Infrastructure;
 
 namespace Todo.Agents.Middleware
@@ -13,7 +14,9 @@ namespace Todo.Agents.Middleware
             {
                 var response = GetAgentResponse(chatMessageContent.Content!);
 
-                state.AgentTask.SetTaskState(response);
+                var agentTask = state.Get<AgentTask>("AgentTask");
+                
+                agentTask.SetTaskState(response);
             }
   
             return await next(state);

@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Todo.Agents.Communication;
+using Todo.Core.A2A;
 using Todo.Infrastructure;
 
 namespace Todo.Agents.Middleware
@@ -11,14 +12,16 @@ namespace Todo.Agents.Middleware
         {
             var agentTaskRequest = GetAgentResponse(state);
 
-            var sendTaskRequest = AgentExtensions.CreateSendTaskRequest(state.AgentTask.TaskId,
-                state.AgentTask.SessionId, agentTaskRequest.Message);
+            var agentTask = state.Get<AgentTask>("AgentTask");
+
+            var sendTaskRequest = AgentExtensions.CreateSendTaskRequest(agentTask.TaskId,
+                agentTask.SessionId, agentTaskRequest.Message);
 
             sendTaskRequest.AgentName = agentTaskRequest.AgentName;
 
             var response = await publisher.Send(sendTaskRequest);
 
-            state.AgentTask.SetTaskState(response.Task);
+            agentTask.SetTaskState(response.Task);
 
             return await next(state);
         }

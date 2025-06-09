@@ -1,5 +1,4 @@
 ﻿using Microsoft.SemanticKernel;
-using Todo.Core.A2A;
 
 namespace Todo.Agents
 {
@@ -8,8 +7,6 @@ namespace Todo.Agents
         public required ChatMessageContent Request { get; init; }
 
         public List<ChatMessageContent> Responses { get; set; } = [];
-    
-        public required AgentTask AgentTask { get; init; }
 
         private Dictionary<string, object> Data { get; } = new();
 

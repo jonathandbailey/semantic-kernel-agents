@@ -26,16 +26,18 @@ public class AgentTaskManager(IAgent agent, ILogger<AgentTaskManager> logger, IA
 
             var agentState = new AgentState
             {
-                Request = new ChatMessageContent(AuthorRole.User, textPart.Text),
-                AgentTask = agentTask,
+                Request = new ChatMessageContent(AuthorRole.User, textPart.Text)
             };
+
+            agentState.AgentTask(agentTask);
 
             var response = await agent.InvokeAsync(agentState);
 
+            agentTask = response.AgentTask();
 
-            await agentTaskRepository.SaveAsync(response.AgentTask);
+            await agentTaskRepository.SaveAsync(agentTask);
 
-            return new SendTaskResponse { Task = response.AgentTask };
+            return new SendTaskResponse { Task = agentTask };
         }
         catch (Exception e)
         {

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Todo.Core.A2A;
 
 namespace Todo.Agents.Middleware;
 
@@ -10,7 +11,9 @@ public class AgentTraceMiddleware(string agentName) : IAgentMiddleware
     {
         using var activity = _trace.StartActivity($"{agentName}.{nameof(InvokeAsync)}");
 
-        activity?.SetTag("SessionId", state.AgentTask.SessionId);
+        var agentTask = state.Get<AgentTask>("AgentTask");
+
+        activity?.SetTag("SessionId", agentTask.SessionId);
         activity?.SetTag("Request", state.Request.Content);
 
         var response = await next(state);
