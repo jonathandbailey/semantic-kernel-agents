@@ -21,11 +21,7 @@ public class TodoService(IAgentProvider agentProvider, IUserRepository userRepos
 
     private async Task<UserResponseDto> Execute(UserRequest notification)
     {
-        var orchestrator = await agentProvider.CreateOrchestrator(AgentNames.OrchestratorAgent);
-
-        var agentState = CreateOrchestrationState(notification);
-
-        var responseState = await orchestrator.InvokeAsync(agentState);
+        var responseState = await CreateAndCallOrchestrator(notification);
 
         var agentAction = GetAgentResponse(responseState);
 
@@ -38,18 +34,24 @@ public class TodoService(IAgentProvider agentProvider, IUserRepository userRepos
         var workResponse = GetAgentWorkerResponse(workerResponseState);
       
         var user = await userRepository.Get(notification.UserId);
-
-        var sessionId = agentWorkerState.GetSessionId();
-        var taskId = agentWorkerState.GetTaskId();
      
-        var payLoad = new UserResponseDto { Message = workResponse.Message, SessionId = sessionId, TaskId = taskId };
+        var payLoad = new UserResponseDto { Message = workResponse.Message, SessionId = agentWorkerState.GetSessionId(), TaskId = agentWorkerState.GetTaskId() };
 
         await userMessageSender.RespondAsync(payLoad, user.Id);
 
         return payLoad;
     }
 
-    private AgentState CreateWorkerState(AgentState orchestrationState, string message)
+    private async Task<AgentState> CreateAndCallOrchestrator(UserRequest userRequest)
+    {
+        var orchestrator = await agentProvider.Create(AgentNames.OrchestratorAgent);
+
+        var agentState = CreateOrchestrationState(userRequest);
+
+        return await orchestrator.InvokeAsync(agentState);
+    }
+
+    private static AgentState CreateWorkerState(AgentState orchestrationState, string message)
     {
         var taskId = orchestrationState.GetTaskId();
         var sessionId = orchestrationState.GetSessionId();
@@ -69,7 +71,7 @@ public class TodoService(IAgentProvider agentProvider, IUserRepository userRepos
         return state;
     }
 
-    private AgentState CreateOrchestrationState(UserRequest notification)
+    private static AgentState CreateOrchestrationState(UserRequest notification)
     {
         var state = new AgentState { Request = new ChatMessageContent(AuthorRole.User, notification.Message) };
 
@@ -86,7 +88,7 @@ public class TodoService(IAgentProvider agentProvider, IUserRepository userRepos
         return state;
     }
 
-    private AgentActionResponse GetAgentWorkerResponse(AgentState state)
+    private static AgentActionResponse GetAgentWorkerResponse(AgentState state)
     {
         var message = state.Responses.First().Content;
 
@@ -100,7 +102,7 @@ public class TodoService(IAgentProvider agentProvider, IUserRepository userRepos
         return agentResponse;
     }
 
-    private AgentTaskRequest GetAgentResponse(AgentState state)
+    private static AgentTaskRequest GetAgentResponse(AgentState state)
     {
         var message = state.Responses.First().Content;
 

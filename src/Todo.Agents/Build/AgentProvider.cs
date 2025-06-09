@@ -15,29 +15,11 @@ public class AgentProvider(
 {
     private readonly List<AgentSettings> _agentSettings = agentSettings.Value;
 
-    public async Task<IAgent> CreateOrchestrator(string name)
-    {
-        var agentBuild = new AgentMiddlewareBuilder();
-
-        var agent = await agentFactory.Create(_agentSettings.First(X => X.Name == name));
-
-        agentBuild.Use(new AgentExceptionHandlingMiddleware(agentLogger, agent.Name));
-        agentBuild.Use(new AgentTaskMiddleware(agentLogger, agentTaskRepository));
-        agentBuild.Use(new AgentTraceMiddleware(agent.Name));
-        agentBuild.Use(new AgentConversationHistoryMiddleware(agentChatHistoryProvider, agent.Name));
-
-        agentBuild.Use((IAgentMiddleware)agent);
-
-        agentBuild.Use(new TerminationMiddleWare());
-
-        return new AgentDelegateWrapper(agentBuild.Build(), agent.Name);
-    }
-
     public async Task<IAgent> Create(string name)
     {
         var agentBuild = new AgentMiddlewareBuilder();
 
-        var agent = await agentFactory.Create(_agentSettings.First(X => X.Name == name));
+        var agent = await agentFactory.Create(_agentSettings.First(x => x.Name == name));
 
         agentBuild.Use(new AgentExceptionHandlingMiddleware(agentLogger, agent.Name));
         agentBuild.Use(new AgentTaskMiddleware(agentLogger, agentTaskRepository));
@@ -55,6 +37,5 @@ public class AgentProvider(
 
 public interface IAgentProvider
 {
-    Task<IAgent> CreateOrchestrator(string name);
     Task<IAgent> Create(string name);
 }
