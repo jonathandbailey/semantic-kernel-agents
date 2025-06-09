@@ -165,19 +165,54 @@ public static class AgentExtensions
         return agentTask;
     }
 
+    public static AgentTask CreateAgentTask(string message)
+    {
+        var agentTask = new AgentTask
+        {
+            SessionId = Guid.NewGuid().ToString(),
+            TaskId = Guid.NewGuid().ToString(),
+        };
+
+        agentTask.History.Add(new Message { Parts = [new TextPart {Text = message}] });
+
+        return agentTask;
+    }
+
 
 }
 
 public static class AgentStateExtensions
 {
     private const string AgentTaskTag = "AgentTask";
+    private const string TaskIdTag = "TaskId";
+    private const string SessionIdTag = "SessionId";
 
-    public static AgentTask AgentTask(this AgentState agentState)
+    public static string GetTaskId(this AgentState agentState)
+    {
+        return agentState.GetOrDefault<string>(TaskIdTag);
+    }
+
+    public static void SetTaskId(this AgentState agentState, string taskId)
+    {
+        agentState.Set(TaskIdTag, taskId);
+    }
+
+    public static void SetSessionId(this AgentState agentState, string sessionId)
+    {
+        agentState.Set(SessionIdTag, sessionId);
+    }
+
+    public static string GetSessionId(this AgentState agentState)
+    {
+        return agentState.GetOrDefault<string>(SessionIdTag);
+    }
+
+    public static AgentTask GetAgentTask(this AgentState agentState)
     {
         return agentState.Get<AgentTask>(AgentTaskTag);
     }
 
-    public static void AgentTask(this AgentState agentState, AgentTask agentTask)
+    public static void Add(this AgentState agentState, AgentTask agentTask)
     {
         agentState.Set(AgentTaskTag, agentTask);
     }

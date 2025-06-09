@@ -22,7 +22,14 @@ namespace Todo.Api.Extensions
                 }
             };
 
-            return new UserRequest { UserId = userId, SendTaskRequest = sendTaskRequest };
+            return new UserRequest
+            {
+                UserId = userId, 
+                SendTaskRequest = sendTaskRequest,
+                Message = userRequestDto.Message,
+                SessionId = userRequestDto.SessionId,
+                TaskId = userRequestDto.TaskId
+            };
         }
     }
 }
