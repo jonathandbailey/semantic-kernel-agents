@@ -1,3 +1,4 @@
+using Todo.Api;
 using Todo.Api.Hubs;
 using Todo.Api.Settings;
 using Todo.Application.Extensions;
@@ -38,6 +39,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.MapHub<UserHub>(builder.Configuration.GetRequiredSetting<string>(SettingsConstants.HubSettingsUrl));
 
