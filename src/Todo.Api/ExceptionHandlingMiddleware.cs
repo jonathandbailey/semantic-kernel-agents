@@ -1,10 +1,12 @@
-﻿using System.Net;
-using System.Text.Json;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace Todo.Api;
 
 public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
 {
+    private const string ResponseContentType = "application/json";
+    private const string? AnErrorOccurredWhileProcessingYourRequest = "An error occurred while processing your request.";
+
     public async Task InvokeAsync(HttpContext context)
     {
         try
@@ -20,16 +22,26 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
 
     private static Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        var code = HttpStatusCode.InternalServerError;
-
-        var result = JsonSerializer.Serialize(new { error = exception.Message });
-        context.Response.ContentType = "application/json";
-
-        context.Response.StatusCode = exception switch
+        var statusCode = exception switch
         {
-            _ => (int)code
+            ArgumentNullException => StatusCodes.Status400BadRequest,
+            UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
+            KeyNotFoundException => StatusCodes.Status404NotFound,
+            _ => StatusCodes.Status500InternalServerError
         };
 
-        return context.Response.WriteAsync(result);
+        var problem = new ProblemDetails
+        {
+            Type = $"https://httpstatuses.io/{statusCode}",
+            Title = AnErrorOccurredWhileProcessingYourRequest,
+            Status = statusCode,
+            Detail = exception.Message,
+            Instance = context.Request.Path
+        };
+
+        context.Response.StatusCode = statusCode;
+        context.Response.ContentType = ResponseContentType;
+
+        return context.Response.WriteAsJsonAsync(problem);
     }
 }
