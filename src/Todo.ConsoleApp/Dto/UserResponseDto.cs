@@ -7,5 +7,9 @@
         public string Message { get; set; } = string.Empty;
 
         public string TaskId { get; set; } = string.Empty;
+
+        public bool HasError { get; set; } = false;
+
+        public string ErrorMessage { get; set; } = string.Empty;
     }
 }

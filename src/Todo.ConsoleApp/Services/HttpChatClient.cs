@@ -24,22 +24,33 @@ namespace Todo.ConsoleApp.Services
             
             var url = $"{_settings.BaseUrl}{_settings.SendUrl}";
 
-            var client = _httpClientFactory.CreateClient();
-            
-            var response = await client.PostAsJsonAsync(url, userRequest);
-            
-            response.EnsureSuccessStatusCode();
-            
-            var userResponse = await response.Content.ReadFromJsonAsync<UserResponseDto>();
-
-            if (userResponse == null)
+            try
             {
-                throw new InvalidOperationException($"Failed to deserialize Response. Task Id : {userRequest.TaskId}, Session Id : {userRequest.SessionId}, Url : {url}");
+                var client = _httpClientFactory.CreateClient();
+
+                var response = await client.PostAsJsonAsync(url, userRequest);
+
+                response.EnsureSuccessStatusCode();
+
+                var userResponse = await response.Content.ReadFromJsonAsync<UserResponseDto>();
+
+                if (userResponse == null)
+                {
+                    throw new InvalidOperationException(
+                        $"Failed to deserialize Response. Task Id : {userRequest.TaskId}, Session Id : {userRequest.SessionId}, Url : {url}");
+                }
+
+                return userResponse;
             }
-
-            await _taskCompletionSource.Task;
-
-            return userResponse;
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+                return new UserResponseDto { HasError = true, SessionId = userRequest.SessionId, TaskId = userRequest.TaskId};
+            }
+            finally
+            {
+                await _taskCompletionSource.Task;
+            }
         }
 
         public async Task InitializeStreamingConnectionAsync()
