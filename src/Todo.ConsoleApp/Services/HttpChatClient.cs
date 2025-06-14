@@ -1,55 +1,45 @@
-﻿using System.Net.Http.Json;
-using Microsoft.AspNetCore.SignalR.Client;
+﻿using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Options;
+using System.Net.Http.Json;
 using Todo.ConsoleApp.Dto;
 using Todo.ConsoleApp.Settings;
 
 namespace Todo.ConsoleApp.Services
 {
-    public class ChatClient : IChatClient
+    public class ChatClient(IHttpClientFactory httpClientFactory, IOptions<ChatClientSetting> settings)
+        : IChatClient
     {
-        private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ChatClientSetting _settings;
-        private HubConnection? _hubConnection;
-        private TaskCompletionSource? _taskCompletionSource;
+        private const string JsonPayloadCouldNotBeDeserialized = "The API was successful but the JSON payload could not be deserialized";
+        private const string ProblemDetailsCouldNotBeDeserialized = "An unknown error has occured. It's not possible to deserialize the Problem Details from the Server response.";
+        private const string LocalException = "An unknown error has occurred. Server Error Details are not available at this time. Local Exception : {0}";
 
-        public ChatClient(IHttpClientFactory httpClientFactory, IOptions<ChatClientSetting> settings)
-        {
-            _httpClientFactory = httpClientFactory;
-            _settings = settings.Value;
-        }
+        private readonly ChatClientSetting _settings = settings.Value;
+        private HubConnection? _hubConnection;
+
         public async Task<UserResponseDto> Send(UserRequestDto userRequest)
         {
-            _taskCompletionSource = new TaskCompletionSource();
-            
             var url = $"{_settings.BaseUrl}{_settings.SendUrl}";
 
             try
             {
-                var client = _httpClientFactory.CreateClient();
+                var client = httpClientFactory.CreateClient();
 
                 var response = await client.PostAsJsonAsync(url, userRequest);
 
-                response.EnsureSuccessStatusCode();
-
-                var userResponse = await response.Content.ReadFromJsonAsync<UserResponseDto>();
-
-                if (userResponse == null)
+                if (response.IsSuccessStatusCode)
                 {
-                    throw new InvalidOperationException(
-                        $"Failed to deserialize Response. Task Id : {userRequest.TaskId}, Session Id : {userRequest.SessionId}, Url : {url}");
+                    var userResponse = await response.Content.ReadFromJsonAsync<UserResponseDto>();
+
+                    return userResponse ?? CreateUserResponse(JsonPayloadCouldNotBeDeserialized, userRequest, true);
                 }
 
-                return userResponse;
+                var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetailsDto>();
+
+                return CreateUserResponse(problemDetails == null ? ProblemDetailsCouldNotBeDeserialized : problemDetails.Detail, userRequest, true);
             }
             catch (Exception exception)
             {
-                Console.WriteLine(exception);
-                return new UserResponseDto { HasError = true, SessionId = userRequest.SessionId, TaskId = userRequest.TaskId};
-            }
-            finally
-            {
-                await _taskCompletionSource.Task;
+                return CreateUserResponse(string.Format(LocalException, exception.Message), userRequest, true);
             }
         }
 
@@ -63,11 +53,15 @@ namespace Todo.ConsoleApp.Services
             _hubConnection.On<UserResponseDto>(_settings.PromptChannel, (message) =>
             {
                 Console.WriteLine($"{Constants.SystemCaret}{message.Message}");
-
-                _taskCompletionSource?.SetResult();
             });
 
             await _hubConnection.StartAsync();
+        }
+
+        private static UserResponseDto CreateUserResponse(string message, UserRequestDto userRequest, bool hasError)
+        {
+            return new UserResponseDto
+                { Message = message, HasError = hasError, SessionId = userRequest.SessionId, TaskId = userRequest.TaskId };
         }
     }
 
