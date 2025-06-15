@@ -21,7 +21,7 @@ public class AgentFactory(
 
         var chatCompletionAgent = CreateChatCompletionAgent(templateConfig, agentSetting, agentKernel);
 
-        return new Agent(chatCompletionAgent, agentSetting.Name);
+        return new Agent(chatCompletionAgent, agentSetting.Name, new AgentMessageHandler());
     }
 
     private void AddAgentFunctionsToKernel(AgentSettings agentSetting, Kernel agentKernel)

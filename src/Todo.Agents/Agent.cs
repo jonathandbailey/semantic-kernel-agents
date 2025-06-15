@@ -1,9 +1,11 @@
-﻿using Microsoft.SemanticKernel;
+﻿using System.Text;
+using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
+using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace Todo.Agents;
 
-public class Agent(ChatCompletionAgent chatCompletionAgent, string name) : AgentBase, IAgent
+public class Agent(ChatCompletionAgent chatCompletionAgent, string name, AgentMessageHandler agentMessageHandler) : AgentBase, IAgent
 {
     public string Name { get; } = name;
 
@@ -11,10 +13,15 @@ public class Agent(ChatCompletionAgent chatCompletionAgent, string name) : Agent
     {
         var chatHistory = state.Get<ChatHistoryAgentThread>("ChatHistory");
 
-        await foreach (ChatMessageContent response in chatCompletionAgent.InvokeAsync(state.Request, chatHistory))
+        var stringBuilder = new StringBuilder();
+
+        await foreach (var response in chatCompletionAgent.InvokeStreamingAsync(state.Request, chatHistory))
         {
-            state.Responses.Add(response);
+            stringBuilder.Append(await agentMessageHandler.Handle(response.Message));
         }
+
+        state.Responses.Add(new ChatMessageContent(AuthorRole.Assistant, stringBuilder.ToString()));
+
 
         return state;
     }
