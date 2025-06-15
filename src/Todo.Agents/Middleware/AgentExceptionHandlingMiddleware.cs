@@ -10,21 +10,24 @@ namespace Todo.Agents.Middleware
         {
             try
             {
-                var response = await next(state);
-
-                return response;
+                return await next(state);
             }
             catch (HttpOperationException exception)
             {
-                logger.LogError($"HTTP Operation Error in Agent : {agentName} :{exception.Message}", exception);
-                throw new AgentException("An error occurred during HTTP operation.", exception, exception.StatusCode);
+                var agentException = new AgentException("An error occurred during HTTP operation.", exception, exception.StatusCode);
+
+                logger.LogError($"HTTP Operation Error in Agent : {agentName} :{exception.Message}", agentException);
+                
+                throw agentException;
             }
             
             catch (Exception e)
             {   
-                
-                logger.LogError($"Unexpected error in Agent : {agentName} :{e.Message}", e);
-                throw new AgentException("An unexpected error occurred.", e);
+                var agentException =  new AgentException("An unexpected error occurred.", e);
+
+                logger.LogError($"Unexpected error in Agent : {agentName} :{e.Message}", agentException);
+
+                throw agentException;
             }
         }
     }
