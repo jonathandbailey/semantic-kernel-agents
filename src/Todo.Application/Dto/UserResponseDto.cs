@@ -7,5 +7,7 @@
         public string Message { get; set; } = string.Empty;
 
         public string TaskId { get; set; } = string.Empty;
+
+        public bool IsEndOfStream { get; set; } = false;
     }
 }

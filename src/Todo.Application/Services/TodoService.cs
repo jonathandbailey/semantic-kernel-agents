@@ -21,23 +21,26 @@ public class TodoService(IAgentProvider agentProvider, IUserRepository userRepos
 
     private async Task<UserResponseDto> Execute(UserRequest notification)
     {
+        var user = await userRepository.Get(notification.UserId);
+
         var responseState = await CreateAndCallOrchestrator(notification);
 
         var agentAction = GetAgentResponse(responseState);
 
-        var workerAgent = await agentProvider.Create(agentAction.AgentName);
+        var workerAgent = await agentProvider.Create(agentAction.AgentName, async (content, isEndOfStream) =>
+        {
+            
+                var payLoad = new UserResponseDto { Message = content.Content!, SessionId = responseState.GetSessionId(), TaskId = responseState.GetTaskId(), IsEndOfStream = isEndOfStream};
+
+                await userMessageSender.RespondAsync(payLoad, user.Id);
+            
+        });
 
         var agentWorkerState = CreateWorkerState(responseState, agentAction.Message);
 
         var workerResponseState = await workerAgent.InvokeAsync(agentWorkerState);
-
-        var workResponse = GetAgentWorkerResponse(workerResponseState);
-      
-        var user = await userRepository.Get(notification.UserId);
      
-        var payLoad = new UserResponseDto { Message = workResponse.Message, SessionId = agentWorkerState.GetSessionId(), TaskId = agentWorkerState.GetTaskId() };
-
-        await userMessageSender.RespondAsync(payLoad, user.Id);
+        var payLoad = new UserResponseDto { Message = workerResponseState.Responses.First().Content!, SessionId = agentWorkerState.GetSessionId(), TaskId = agentWorkerState.GetTaskId() };
 
         return payLoad;
     }
@@ -87,21 +90,7 @@ public class TodoService(IAgentProvider agentProvider, IUserRepository userRepos
 
         return state;
     }
-
-    private static AgentActionResponse GetAgentWorkerResponse(AgentState state)
-    {
-        var message = state.Responses.First().Content;
-
-        var agentResponse = JsonSerializer.Deserialize<AgentActionResponse>(message!);
-
-        if (agentResponse == null)
-        {
-            throw new AgentException($"Failed to deserialize agent response: {message}");
-        }
-
-        return agentResponse;
-    }
-
+   
     private static AgentTaskRequest GetAgentResponse(AgentState state)
     {
         var message = state.Responses.First().Content;

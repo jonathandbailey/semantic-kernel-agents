@@ -9,9 +9,15 @@ public class AgentMessageHandler : IAgentMessageHandler
     {
         return Task.FromResult(chatMessageContent.Content!);
     }
+
+    public Task<string> FlushMessages()
+    {
+        return Task.FromResult(string.Empty);
+    }
 }
 
 public interface IAgentMessageHandler
 {
     Task<string> Handle(StreamingChatMessageContent chatMessageContent);
+    Task<string> FlushMessages();
 }

@@ -5,7 +5,7 @@ using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace Todo.Agents;
 
-public class Agent(ChatCompletionAgent chatCompletionAgent, string name, AgentMessageHandler agentMessageHandler) : AgentBase, IAgent
+public class Agent(ChatCompletionAgent chatCompletionAgent, string name, IAgentMessageHandler agentMessageHandler) : AgentBase, IAgent
 {
     public string Name { get; } = name;
 
@@ -22,6 +22,7 @@ public class Agent(ChatCompletionAgent chatCompletionAgent, string name, AgentMe
 
         state.Responses.Add(new ChatMessageContent(AuthorRole.Assistant, stringBuilder.ToString()));
 
+        await agentMessageHandler.FlushMessages();
 
         return state;
     }

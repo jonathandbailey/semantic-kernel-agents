@@ -9,5 +9,7 @@
         public string TaskId { get; set; } = string.Empty;
 
         public bool HasError { get; set; } = false;
+
+        public bool IsEndOfStream { get; set; } = false;
     }
 }

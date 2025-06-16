@@ -24,6 +24,19 @@ public class AgentFactory(
         return new Agent(chatCompletionAgent, agentSetting.Name, new AgentMessageHandler());
     }
 
+    public async Task<IAgent> Create(AgentSettings agentSetting, Func<StreamingChatMessageContent, bool, Task> streamingMessageCallback)
+    {
+        var agentKernel = kernel.Clone();
+
+        AddAgentFunctionsToKernel(agentSetting, agentKernel);
+
+        var templateConfig = await CreateTemplateConfig(agentSetting.Template);
+
+        var chatCompletionAgent = CreateChatCompletionAgent(templateConfig, agentSetting, agentKernel);
+
+        return new Agent(chatCompletionAgent, agentSetting.Name, new AgentStreamingMessageHandler(streamingMessageCallback));
+    }
+
     private void AddAgentFunctionsToKernel(AgentSettings agentSetting, Kernel agentKernel)
     {
         foreach (var name in agentSetting.Plugins)
@@ -71,4 +84,5 @@ public class AgentFactory(
 public interface IAgentFactory
 {
    Task<IAgent> Create(AgentSettings configuration);
+   Task<IAgent> Create(AgentSettings agentSetting, Func<StreamingChatMessageContent, bool, Task> streamingMessageCallback);
 }

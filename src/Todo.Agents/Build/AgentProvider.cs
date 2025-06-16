@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.SemanticKernel;
 using Todo.Agents.Middleware;
 using Todo.Agents.Settings;
 using Todo.Infrastructure.Azure;
@@ -33,9 +34,28 @@ public class AgentProvider(
         return new AgentDelegateWrapper(agentBuild.Build(), agent.Name);
     }
 
+    public async Task<IAgent> Create(string name, Func<StreamingChatMessageContent, bool, Task> streamingMessageCallback)
+    {
+        var agentBuild = new AgentMiddlewareBuilder();
+
+        var agent = await agentFactory.Create(_agentSettings.First(x => x.Name == name), streamingMessageCallback);
+
+        agentBuild.Use(new AgentExceptionHandlingMiddleware(agentLogger, agent.Name));
+        agentBuild.Use(new AgentTaskMiddleware(agentLogger, agentTaskRepository));
+        agentBuild.Use(new AgentTraceMiddleware(agent.Name));
+        agentBuild.Use(new AgentConversationHistoryMiddleware(agentChatHistoryProvider, agent.Name));
+
+        agentBuild.Use((IAgentMiddleware)agent);
+
+        agentBuild.Use(new TerminationMiddleWare());
+
+        return new AgentDelegateWrapper(agentBuild.Build(), agent.Name);
+    }
+
 }
 
 public interface IAgentProvider
 {
     Task<IAgent> Create(string name);
+    Task<IAgent> Create(string name, Func<StreamingChatMessageContent, bool, Task> streamingMessageCallback);
 }

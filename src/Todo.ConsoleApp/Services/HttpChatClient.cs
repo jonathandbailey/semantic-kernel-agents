@@ -52,7 +52,12 @@ namespace Todo.ConsoleApp.Services
 
             _hubConnection.On<UserResponseDto>(_settings.PromptChannel, (message) =>
             {
-                Console.WriteLine($"{Constants.SystemCaret}{message.Message}");
+                Console.Write($"{message.Message}");
+
+                if (message.IsEndOfStream)
+                {
+                    Console.WriteLine();
+                }
             });
 
             await _hubConnection.StartAsync();
