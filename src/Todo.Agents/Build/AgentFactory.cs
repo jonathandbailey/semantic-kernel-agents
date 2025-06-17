@@ -13,26 +13,14 @@ public class AgentFactory(
 {
     public async Task<IAgent> Create(AgentSettings agentSetting)
     {
-        var agentKernel = kernel.Clone();
-        
-        AddAgentFunctionsToKernel(agentSetting, agentKernel);
- 
-        var templateConfig = await CreateTemplateConfig(agentSetting.Template);
-
-        var chatCompletionAgent = CreateChatCompletionAgent(templateConfig, agentSetting, agentKernel);
+        var chatCompletionAgent = await CreateChatCompletionAgent(agentSetting);
 
         return new Agent(chatCompletionAgent, agentSetting.Name, new AgentMessageHandler());
     }
 
     public async Task<IAgent> Create(AgentSettings agentSetting, Func<StreamingChatMessageContent, bool, Task> streamingMessageCallback)
     {
-        var agentKernel = kernel.Clone();
-
-        AddAgentFunctionsToKernel(agentSetting, agentKernel);
-
-        var templateConfig = await CreateTemplateConfig(agentSetting.Template);
-
-        var chatCompletionAgent = CreateChatCompletionAgent(templateConfig, agentSetting, agentKernel);
+        var chatCompletionAgent = await CreateChatCompletionAgent(agentSetting);
 
         return new Agent(chatCompletionAgent, agentSetting.Name, new AgentStreamingMessageHandler(streamingMessageCallback));
     }
@@ -45,8 +33,14 @@ public class AgentFactory(
         }
     }
 
-    private ChatCompletionAgent CreateChatCompletionAgent(PromptTemplateConfig template, AgentSettings agentSetting, Kernel agentKernel)
+    private async Task<ChatCompletionAgent> CreateChatCompletionAgent(AgentSettings agentSetting)
     {
+        var agentKernel = kernel.Clone();
+
+        AddAgentFunctionsToKernel(agentSetting, agentKernel);
+
+        var template = await CreateTemplateConfig(agentSetting.Template);
+
         var promptExecutionSettings = new OpenAIPromptExecutionSettings
         {
             ServiceId = agentSetting.ServiceId,
