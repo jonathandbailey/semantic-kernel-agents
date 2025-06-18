@@ -9,6 +9,7 @@ public class CommandDispatcher : ICommandDispatcher
     private readonly Dictionary<string, Func<string, Task>> _commands = new();
     private string _sessionId = string.Empty;
     private string _taskId = string.Empty;
+    private Guid _vacationPlanId = Guid.Empty;
 
     public CommandDispatcher(IChatClient httpChatClient)
     {
@@ -34,10 +35,11 @@ public class CommandDispatcher : ICommandDispatcher
    
     private async Task ChatViaApi(string input)
     {
-        var userResponse = await _httpChatClient.Send(new UserRequestDto { Message = input, TaskId = _taskId, SessionId = _sessionId});
+        var userResponse = await _httpChatClient.Send(new UserRequestDto { Message = input, TaskId = _taskId, SessionId = _sessionId, VacationPlanId = _vacationPlanId});
         
         _sessionId = userResponse.SessionId;
         _taskId = userResponse.TaskId;
+        _vacationPlanId = userResponse.VacationPlanId;
     }
 }
 

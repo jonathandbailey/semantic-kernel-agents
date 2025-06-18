@@ -1,18 +1,27 @@
 ﻿using Microsoft.SemanticKernel;
+using System.Text;
 
 namespace Todo.Agents;
 
 
 public class AgentMessageHandler : IAgentMessageHandler
 {
+    private readonly StringBuilder _buffer = new();
+
     public Task<string> Handle(StreamingChatMessageContent chatMessageContent)
     {
+        _buffer.Append(chatMessageContent.Content);
+
         return Task.FromResult(chatMessageContent.Content!);
     }
 
     public Task<string> FlushMessages()
     {
-        return Task.FromResult(string.Empty);
+        var content = _buffer.ToString();
+
+        _buffer.Clear();
+
+        return Task.FromResult(content);
     }
 }
 

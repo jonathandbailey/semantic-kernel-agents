@@ -39,6 +39,8 @@ namespace Todo.Application.Extensions
 
             services.AddScoped<IAgentTaskRepository, AgentTaskFileRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+
+            services.AddScoped<IVacationPlanRepository, VacationPlanFileRepository>();
      
             services.AddScoped<IChatHistoryRepository, ChatHistoryFileRepository>();
             services.AddScoped<IAgentChatHistoryProvider, AgentChatHistoryProvider>();

@@ -8,11 +8,14 @@ using Todo.Agents.Communication;
 using Todo.Application.Dto;
 using Todo.Application.Interfaces;
 using Todo.Application.Users;
+using Todo.Core.A2A;
+using Todo.Core.Vacations;
 using Todo.Infrastructure;
+using Todo.Infrastructure.File;
 
 namespace Todo.Application.Services;
 
-public class TodoService(IAgentProvider agentProvider, IUserRepository userRepository, IUserMessageSender userMessageSender) : ITodoService, IRequestHandler<UserRequest, UserResponseDto>
+public class TodoService(IAgentProvider agentProvider, IUserRepository userRepository, IUserMessageSender userMessageSender, IVacationPlanRepository vacationPlanRepository) : ITodoService, IRequestHandler<UserRequest, UserResponseDto>
 {   
     public async Task<UserResponseDto> Handle(UserRequest notification, CancellationToken cancellationToken)
     {
@@ -21,6 +24,8 @@ public class TodoService(IAgentProvider agentProvider, IUserRepository userRepos
 
     private async Task<UserResponseDto> Execute(UserRequest notification)
     {
+        var vacationPlan = await CreateOrLoadVacationPlan(notification.VacationPlanId);
+        
         var user = await userRepository.Get(notification.UserId);
 
         var responseState = await CreateAndCallOrchestrator(notification);
@@ -39,9 +44,41 @@ public class TodoService(IAgentProvider agentProvider, IUserRepository userRepos
 
         var workerResponseState = await workerAgent.InvokeAsync(agentWorkerState);
      
-        var payLoad = new UserResponseDto { Message = workerResponseState.Responses.First().Content!, SessionId = agentWorkerState.GetSessionId(), TaskId = agentWorkerState.GetTaskId() };
+        var payLoad = new UserResponseDto { Message = workerResponseState.Responses.First().Content!, SessionId = agentWorkerState.GetSessionId(), TaskId = agentWorkerState.GetTaskId(), VacationPlanId = vacationPlan.Id };
+
+        UpdateVacationPlanState(vacationPlan, agentWorkerState, agentAction);
+
+        await vacationPlanRepository.Save(vacationPlan);
 
         return payLoad;
+    }
+
+    private void UpdateVacationPlanState(VacationPlan vacationPlan, AgentState agentState,
+        AgentTaskRequest agentTaskRequest)
+    {
+        var agentTask = agentState.GetAgentTask();
+
+        if (agentTask.Status.State == AgentTaskState.Completed)
+        {
+            if (agentTaskRequest.AgentName == "TravelAgent")
+            {
+                vacationPlan.UpdateStageStatus(PlanStage.Travel, PlanStatus.Completed);
+            }
+        }
+    }
+
+    private async Task<VacationPlan> CreateOrLoadVacationPlan(Guid id)
+    {
+        if (id == Guid.Empty)
+        {
+            var vacationPlan = new VacationPlan(Guid.NewGuid(), PlanStatus.Open, "New Vacation Plan", "No description available.");
+
+            vacationPlan.AddStage(new TravelPlan(Guid.NewGuid(), "Travel Plan", "No description available", PlanStage.Travel, PlanStatus.Open));
+            
+            return vacationPlan;
+        }
+
+        return await vacationPlanRepository.Load(id);
     }
 
     private async Task<AgentState> CreateAndCallOrchestrator(UserRequest userRequest)

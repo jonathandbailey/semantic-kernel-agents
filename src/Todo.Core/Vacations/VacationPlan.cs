@@ -1,20 +1,54 @@
-﻿namespace Todo.Core.Vacations
+﻿using System.Text.Json.Serialization;
+
+namespace Todo.Core.Vacations
 {
     public class VacationPlan
     {
-        public PlanStatus Status { get; } = PlanStatus.Open;
+        public Guid Id { get; }
+        
+        public PlanStatus Status { get; }
 
-        public string Title { get; } = string.Empty;
+        public string Title { get; }
 
-        public string Description { get; } = string.Empty;
+        public string Description { get; }
 
-        private readonly List<IVacationPlanStage> _stages  = [];
+        public List<TravelPlan> Stages { get; } 
+        
 
-        public IReadOnlyCollection<IVacationPlanStage> Stages => _stages.AsReadOnly();
-
-        public VacationPlan()
+        [JsonConstructor]
+        public VacationPlan(Guid id, PlanStatus status, string title, string description, List<TravelPlan> stages)
         {
-            _stages.Add(new TravelPlan());
+            Status = status;
+            Title = title;
+            Description = description;
+            Id = id;
+            Stages = stages;
+        }
+
+        public VacationPlan(Guid id, PlanStatus status, string title, string description)
+        {
+            Status = status;
+            Title = title;
+            Description = description;
+            Id = id;
+            Stages = new List<TravelPlan>();
+        }
+
+        public void AddStage(TravelPlan stage)
+        {
+            Stages.Add(stage);
+        }
+
+        public void UpdateStageStatus(PlanStage planStage, PlanStatus status)
+        {
+            var stage = Stages.FirstOrDefault(x => x.Stage == planStage);
+
+            if (stage == null)
+            {
+                throw new ArgumentException($"Vacation Plan : {Title}, ({Id}) does not have a {planStage} stage.");
+            }
+
+            stage.UpdateStatus(status);
         }
     }
 }

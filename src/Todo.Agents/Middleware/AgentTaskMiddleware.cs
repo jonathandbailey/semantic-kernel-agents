@@ -17,6 +17,8 @@ public class AgentTaskMiddleware(ILogger<IAgent> logger, IAgentTaskRepository ag
             state = await next(state);
 
             agentTask = state.GetAgentTask();
+       
+            agentTask.UpdateTaskState(state);
 
             await agentTaskRepository.SaveAsync(agentTask);
 

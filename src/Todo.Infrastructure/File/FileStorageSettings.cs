@@ -9,5 +9,7 @@
         public string ChatHistoryFolder { get; set; } = string.Empty;
 
         public string AgentTaskFolder { get; set; } = string.Empty;
+
+        public string VacationPlanFolder { get; set; } = string.Empty;
     }
 }

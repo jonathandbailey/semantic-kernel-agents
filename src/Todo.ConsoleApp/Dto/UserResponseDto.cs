@@ -10,6 +10,8 @@
 
         public bool HasError { get; set; } = false;
 
+        public Guid VacationPlanId { get; set; } = Guid.Empty;
+
         public bool IsEndOfStream { get; set; } = false;
     }
 }

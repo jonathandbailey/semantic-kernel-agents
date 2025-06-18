@@ -3,6 +3,7 @@ using Microsoft.SemanticKernel.ChatCompletion;
 using Todo.Agents.Communication;
 using Todo.Core.A2A;
 using Todo.Infrastructure;
+using System.Text.RegularExpressions;
 
 namespace Todo.Agents;
 
@@ -178,7 +179,19 @@ public static class AgentExtensions
         return agentTask;
     }
 
-
+    public static AgentActionResponse? ParseStatusFromResponse(string response)
+    {
+        // Regex to match [status: value]
+        var match = Regex.Match(response, @"\[status:\s*(.*?)\]");
+        if (match.Success)
+        {
+            var action = match.Groups[1].Value.Trim();
+            // Remove the [status: ...] tag from the message
+            var message = Regex.Replace(response, @"\[status:\s*.*?\]\s*", "").Trim();
+            return new AgentActionResponse { Action = action, Message = message };
+        }
+        return null;
+    }
 }
 
 public static class AgentStateExtensions
@@ -215,5 +228,33 @@ public static class AgentStateExtensions
     public static void Add(this AgentState agentState, AgentTask agentTask)
     {
         agentState.Set(AgentTaskTag, agentTask);
+    }
+
+    public static void UpdateTaskState(this AgentTask agentTask, AgentState state)
+    {
+        var responses = state.ParseStatusesFromAgentStateResponses();
+
+        foreach (var agentActionResponse in responses)
+        {
+            agentTask.SetTaskState(agentActionResponse!);
+        }
+    }
+
+    public static List<AgentActionResponse?> ParseStatusesFromAgentStateResponses(this AgentState agentState)
+    {
+        var results = new List<AgentActionResponse?>();
+        foreach (var response in agentState.Responses)
+        {
+            if (!string.IsNullOrWhiteSpace(response.Content))
+            {
+                var parsed = AgentExtensions.ParseStatusFromResponse(response.Content);
+
+                if (parsed != null)
+                {
+                    results.Add(parsed);
+                }
+            }
+        }
+        return results;
     }
 }

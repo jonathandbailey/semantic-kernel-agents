@@ -20,9 +20,9 @@ public class Agent(ChatCompletionAgent chatCompletionAgent, string name, IAgentM
             stringBuilder.Append(await agentMessageHandler.Handle(response.Message));
         }
 
-        state.Responses.Add(new ChatMessageContent(AuthorRole.Assistant, stringBuilder.ToString()));
+        var content = await agentMessageHandler.FlushMessages();
 
-        await agentMessageHandler.FlushMessages();
+        state.Responses.Add(new ChatMessageContent(AuthorRole.Assistant, content));
 
         return state;
     }

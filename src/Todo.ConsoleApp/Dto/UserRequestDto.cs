@@ -7,5 +7,7 @@
         public string Message { get; init; } = string.Empty;
 
         public string TaskId { get; init; } = string.Empty;
+
+        public Guid VacationPlanId { get; set; } = Guid.Empty;
     }
 }
