@@ -37,7 +37,7 @@ namespace Todo.Application.Extensions
             services.AddScoped<IAgentFactory, AgentFactory>();
             services.AddScoped<IPluginFactory, PluginFactory>();
 
-            services.AddScoped<IAgentTaskRepository, AgentTaskRepository>();
+            services.AddScoped<IAgentTaskRepository, AgentTaskFileRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
      
             services.AddScoped<IChatHistoryRepository, ChatHistoryFileRepository>();

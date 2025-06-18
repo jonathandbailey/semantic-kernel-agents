@@ -29,10 +29,9 @@ public class TodoService(IAgentProvider agentProvider, IUserRepository userRepos
 
         var workerAgent = await agentProvider.Create(agentAction.AgentName, async (content, isEndOfStream) =>
         {
-            
-                var payLoad = new UserResponseDto { Message = content.Content!, SessionId = responseState.GetSessionId(), TaskId = responseState.GetTaskId(), IsEndOfStream = isEndOfStream};
+            var payLoad = new UserResponseDto { Message = content.Content!, SessionId = responseState.GetSessionId(), TaskId = responseState.GetTaskId(), IsEndOfStream = isEndOfStream};
 
-                await userMessageSender.RespondAsync(payLoad, user.Id);
+            await userMessageSender.RespondAsync(payLoad, user.Id);
             
         });
 
@@ -56,7 +55,7 @@ public class TodoService(IAgentProvider agentProvider, IUserRepository userRepos
 
     private static AgentState CreateWorkerState(AgentState orchestrationState, string message)
     {
-        var taskId = orchestrationState.GetTaskId();
+        var taskId = Guid.NewGuid().ToString();
         var sessionId = orchestrationState.GetSessionId();
         
         var state = new AgentState { Request = new ChatMessageContent(AuthorRole.User, message) };
