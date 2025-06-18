@@ -2,8 +2,10 @@
 
 namespace Todo.Agents
 {
-    public class AgentState
+    public class AgentState(string agentName)
     {
+        public string AgentName { get; } = agentName;
+
         public required ChatMessageContent Request { get; init; }
 
         public List<ChatMessageContent> Responses { get; set; } = [];
