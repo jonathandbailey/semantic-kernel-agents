@@ -4,23 +4,17 @@ using System.Text.Json;
 using Todo.Agents;
 using Todo.Agents.Build;
 using Todo.Agents.Communication;
-using Todo.Application.Dto;
-using Todo.Application.Interfaces;
 using Todo.Infrastructure;
 
 namespace Todo.Application.Services;
 
-public class OrchestrationService(IAgentProvider agentProvider, IUserMessageSender userMessageSender) : IOrchestrationService
+public class OrchestrationService(IAgentProvider agentProvider) : IOrchestrationService
 {
-    public async Task<AgentState> InvokeAsync(string sessionId, string message, Guid userId)
+    public async Task<AgentState> InvokeAsync(string sessionId, string message, Func<StreamingChatMessageContent, string, bool, Task> streamingMessageCallback)
     {
         var orchestrator = await agentProvider.Create(AgentNames.OrchestratorAgent);
 
-        var state = new AgentState(AgentNames.OrchestratorAgent) { Request = new ChatMessageContent(AuthorRole.User, message) };
-
-        state.SetTaskId(Guid.NewGuid().ToString());
-
-        state.SetSessionId(!string.IsNullOrWhiteSpace(sessionId) ? sessionId : Guid.NewGuid().ToString());
+        var state = CreateOrchestrationState(sessionId, message);
 
         state = await orchestrator.InvokeAsync(state);
 
@@ -28,10 +22,7 @@ public class OrchestrationService(IAgentProvider agentProvider, IUserMessageSend
 
         var workerAgent = await agentProvider.Create(agentAction.AgentName, async (content, isEndOfStream) =>
         {
-            var payLoad = new UserResponseDto { Message = content.Content!, SessionId = state.GetSessionId(), TaskId = state.GetTaskId(), IsEndOfStream = isEndOfStream };
-
-            await userMessageSender.RespondAsync(payLoad, userId);
-
+            await  streamingMessageCallback(content, sessionId, isEndOfStream);
         });
 
         var agentWorkerState = CreateWorkerState(state, agentAction);
@@ -53,6 +44,17 @@ public class OrchestrationService(IAgentProvider agentProvider, IUserMessageSend
         }
 
         return agentResponse;
+    }
+
+    private static AgentState CreateOrchestrationState(string sessionId, string message)
+    {
+        var state = new AgentState(AgentNames.OrchestratorAgent) { Request = new ChatMessageContent(AuthorRole.User, message) };
+
+        state.SetTaskId(Guid.NewGuid().ToString());
+
+        state.SetSessionId(!string.IsNullOrWhiteSpace(sessionId) ? sessionId : Guid.NewGuid().ToString());
+
+        return state;
     }
 
     private static AgentState CreateWorkerState(AgentState orchestrationState, AgentTaskRequest agentActionResponse)
@@ -78,5 +80,5 @@ public class OrchestrationService(IAgentProvider agentProvider, IUserMessageSend
 
 public interface IOrchestrationService
 {
-    Task<AgentState> InvokeAsync(string sessionId, string message, Guid userId);
+    Task<AgentState> InvokeAsync(string sessionId, string message, Func<StreamingChatMessageContent, string, bool, Task> streamingMessageCallback);
 }

@@ -14,6 +14,8 @@ public class VacationPlanService(IVacationPlanRepository vacationPlanRepository)
 
             vacationPlan.AddStage(new TravelPlan(Guid.NewGuid(), "Travel Plan", "No description available", PlanStage.Travel, PlanStatus.Open));
 
+            await vacationPlanRepository.Save(vacationPlan);
+
             return vacationPlan;
         }
 
