@@ -10,6 +10,8 @@ namespace Todo.Agents
 
         public List<ChatMessageContent> Responses { get; set; } = [];
 
+        public Dictionary<string, string> Arguments { get; set; } = [];
+
         private Dictionary<string, object> Data { get; } = new();
 
         public T Get<T>(string key)

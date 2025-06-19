@@ -15,7 +15,16 @@ public class Agent(ChatCompletionAgent chatCompletionAgent, string name, IAgentM
 
         var stringBuilder = new StringBuilder();
 
-        await foreach (var response in chatCompletionAgent.InvokeStreamingAsync(state.Request, chatHistory))
+        var kernelArguments = new KernelArguments();
+        
+        foreach (var argument in state.Arguments)
+        {
+            kernelArguments.Add(argument.Key, argument.Value);
+        }
+
+        var agentInvokeOptions = new AgentInvokeOptions { KernelArguments = kernelArguments };
+
+        await foreach (var response in chatCompletionAgent.InvokeStreamingAsync(state.Request, chatHistory, options: agentInvokeOptions))
         {
             stringBuilder.Append(await agentMessageHandler.Handle(response.Message));
         }

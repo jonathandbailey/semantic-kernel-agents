@@ -10,11 +10,11 @@ namespace Todo.Application.Services;
 
 public class OrchestrationService(IAgentProvider agentProvider) : IOrchestrationService
 {
-    public async Task<AgentState> InvokeAsync(string sessionId, string message, Func<StreamingChatMessageContent, string, bool, Task> streamingMessageCallback)
+    public async Task<AgentState> InvokeAsync(string sessionId, string message, Dictionary<string,string> arguments, Func<StreamingChatMessageContent, string, bool, Task> streamingMessageCallback)
     {
         var orchestrator = await agentProvider.Create(AgentNames.OrchestratorAgent);
 
-        var state = CreateOrchestrationState(sessionId, message);
+        var state = CreateOrchestrationState(sessionId, message, arguments);
 
         state = await orchestrator.InvokeAsync(state);
 
@@ -46,9 +46,14 @@ public class OrchestrationService(IAgentProvider agentProvider) : IOrchestration
         return agentResponse;
     }
 
-    private static AgentState CreateOrchestrationState(string sessionId, string message)
+    private static AgentState CreateOrchestrationState(string sessionId, string message,
+        Dictionary<string, string> arguments)
     {
-        var state = new AgentState(AgentNames.OrchestratorAgent) { Request = new ChatMessageContent(AuthorRole.User, message) };
+        var state = new AgentState(AgentNames.OrchestratorAgent)
+        {
+            Request = new ChatMessageContent(AuthorRole.User, message),
+            Arguments = arguments
+        };
 
         state.SetTaskId(Guid.NewGuid().ToString());
 
@@ -80,5 +85,5 @@ public class OrchestrationService(IAgentProvider agentProvider) : IOrchestration
 
 public interface IOrchestrationService
 {
-    Task<AgentState> InvokeAsync(string sessionId, string message, Func<StreamingChatMessageContent, string, bool, Task> streamingMessageCallback);
+    Task<AgentState> InvokeAsync(string sessionId, string message, Dictionary<string,string> arguments, Func<StreamingChatMessageContent, string, bool, Task> streamingMessageCallback);
 }

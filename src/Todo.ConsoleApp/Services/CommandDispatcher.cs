@@ -36,7 +36,12 @@ public class CommandDispatcher : ICommandDispatcher
     private async Task ChatViaApi(string input)
     {
         var userResponse = await _httpChatClient.Send(new UserRequestDto { Message = input, TaskId = _taskId, SessionId = _sessionId, VacationPlanId = _vacationPlanId});
-        
+
+        if (userResponse.HasError)
+        {
+            Console.WriteLine(userResponse.Message);
+        }
+
         _sessionId = userResponse.SessionId;
         _taskId = userResponse.TaskId;
         _vacationPlanId = userResponse.VacationPlanId;
