@@ -1,7 +1,6 @@
 ﻿using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using Todo.Agents;
 using Todo.Agents.Build;
 using Todo.Agents.Communication;
@@ -11,9 +10,6 @@ namespace Todo.Application.Services;
 
 public class OrchestrationService(IAgentProvider agentProvider) : IOrchestrationService
 {
-    private static readonly Regex ActionRegex = new Regex(@"\[action:\s*(.*?)\](.*?)((?=\[action:)|$)", RegexOptions.Singleline);
-
-
     public async Task<AgentState> InvokeAsync(
         string sessionId, 
         string message, 
@@ -21,7 +17,6 @@ public class OrchestrationService(IAgentProvider agentProvider) : IOrchestration
         Func<StreamingChatMessageContent, string, bool, Task> streamingMessageCallback,
         string source)
     {
-
         var agentName = string.IsNullOrEmpty(source) ? AgentNames.UserAgent : source;
         
         var rootAgent = await agentProvider.Create(agentName, async (content, isEndOfStream) =>
@@ -32,16 +27,16 @@ public class OrchestrationService(IAgentProvider agentProvider) : IOrchestration
         var userState = CreateState(agentName, sessionId, message, arguments);
 
         userState = await rootAgent.InvokeAsync(userState);
-
-        var action = Parse(userState.Responses.First().Content!);
-
-        if (action.Action == "agent_invoke")
+   
+        if (AgentHeaderParser.HasHeader(AgentHeaderParser.AgentInvokeHeader, userState.Responses.First().Content!))
         {
-            var agentActionTask = GetAgentTaskRequest(action.Message);
-            
-            var workerAgent = await agentProvider.Create(agentActionTask.AgentName, async (content, isEndOfStream) =>
+            var content = AgentHeaderParser.RemoveHeaders(userState.Responses.First().Content!);
+
+            var agentActionTask = GetAgentTaskRequest(content);
+
+            var workerAgent = await agentProvider.Create(agentActionTask.AgentName, async (chunk, isEndOfStream) =>
             {
-                await streamingMessageCallback(content, sessionId, isEndOfStream);
+                await streamingMessageCallback(chunk, sessionId, isEndOfStream);
             });
 
             var agentWorkerState = CreateWorkerState(userState, agentActionTask);
@@ -50,8 +45,7 @@ public class OrchestrationService(IAgentProvider agentProvider) : IOrchestration
 
             return workerResponseState;
         }
-
-
+   
         return userState;
     }
 
@@ -101,21 +95,6 @@ public class OrchestrationService(IAgentProvider agentProvider) : IOrchestration
         }
 
         return state;
-    }
-
-    private static AgentActionResponse Parse(string input)
-    {
-        var match = ActionRegex.Match(input);
-    
-        if (!match.Success)
-        {
-            throw new ArgumentException("No valid action found in the input.");
-        }
-
-        var actionType = match.Groups[1].Value.Trim();
-        var content = match.Groups[2].Value.Trim();
-
-        return new AgentActionResponse() { Action = actionType, Message = content };
     }
 }
 
