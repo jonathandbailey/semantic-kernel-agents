@@ -12,7 +12,9 @@ public class VacationPlanService(IVacationPlanRepository vacationPlanRepository)
         {
             var vacationPlan = new VacationPlan(Guid.NewGuid(), PlanStatus.Open, "New Vacation Plan", "No description available.");
 
-            vacationPlan.AddStage(new TravelPlan(Guid.NewGuid(), "Accomodation", "No description available", PlanStage.Accommodation, PlanStatus.Open));
+            vacationPlan.AddStage(new TravelPlan(Guid.NewGuid(), "Accommodation", "All tasks related to booking accommodation.", PlanStage.Accommodation, PlanStatus.Open));
+            vacationPlan.AddStage(new TravelPlan(Guid.NewGuid(), "Travel", "All tasks related to getting to and from the destination.", PlanStage.Accommodation, PlanStatus.Open));
+            vacationPlan.AddStage(new TravelPlan(Guid.NewGuid(), "Budget", "All tasks related to budget planning for the trip.", PlanStage.Budget, PlanStatus.Open));
 
             await vacationPlanRepository.Save(vacationPlan);
 

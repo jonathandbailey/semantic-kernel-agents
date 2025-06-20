@@ -53,10 +53,10 @@ public class TodoService(IUserRepository userRepository, IUserMessageSender user
 
         foreach (var vacationPlanStage in vacationPlan.Stages)
         {
-            stringBuilder.AppendLine($"[{vacationPlanStage.Stage}:{vacationPlanStage.Status}]");
+            stringBuilder.AppendLine($"[{vacationPlanStage.Stage} - '{vacationPlanStage.Description}' :{vacationPlanStage.Status}]");
         }
 
-        return new Dictionary<string, string> { {"VacationPlanStatus", stringBuilder.ToString()}};
+        return new Dictionary<string, string> { {"TravelTaskList", stringBuilder.ToString()}};
     }
 }
 
