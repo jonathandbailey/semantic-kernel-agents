@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Todo.Agents\Todo.Agents.csproj" />
+    <ProjectReference Include="..\Agents\Agents.csproj" />
   </ItemGroup>
 
   <ItemGroup>

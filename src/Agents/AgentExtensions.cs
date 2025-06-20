@@ -1,11 +1,11 @@
-﻿using Microsoft.SemanticKernel;
+﻿using System.Text.RegularExpressions;
+using Agents.Communication;
+using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
-using Todo.Agents.Communication;
 using Todo.Core.A2A;
 using Todo.Infrastructure;
-using System.Text.RegularExpressions;
 
-namespace Todo.Agents;
+namespace Agents;
 
 public static class AgentExtensions
 {

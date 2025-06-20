@@ -1,4 +1,4 @@
-﻿namespace Todo.Agents.Communication
+﻿namespace Agents.Communication
 {
     public class AgentTaskRequest
     {

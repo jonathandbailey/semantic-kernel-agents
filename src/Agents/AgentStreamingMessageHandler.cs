@@ -1,8 +1,8 @@
-﻿using Microsoft.SemanticKernel;
-using System.Text;
+﻿using System.Text;
+using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 
-namespace Todo.Agents;
+namespace Agents;
 
 public class AgentStreamingMessageHandler(Func<StreamingChatMessageContent, bool, Task> messageCallback) : IAgentMessageHandler
 {

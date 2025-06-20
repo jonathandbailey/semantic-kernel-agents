@@ -1,4 +1,4 @@
-﻿namespace Todo.Agents.Build
+﻿namespace Agents.Build
 {
   
     public class PluginFactory : IPluginFactory

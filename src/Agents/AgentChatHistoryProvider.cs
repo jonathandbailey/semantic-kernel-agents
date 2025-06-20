@@ -5,7 +5,7 @@ using Todo.Infrastructure.Azure;
 
 #pragma warning disable SKEXP0110
 
-namespace Todo.Agents;
+namespace Agents;
 
 public class AgentChatHistoryProvider(IChatHistoryRepository chatHistoryRepository) : IAgentChatHistoryProvider
 {

@@ -1,4 +1,5 @@
-﻿namespace Todo.Agents.Middleware;
+﻿
+namespace Agents.Middleware;
 
 public class AgentDelegateWrapper(AgentDelegate agentDelegate, string name) : IAgent
 {

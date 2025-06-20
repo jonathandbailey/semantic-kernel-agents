@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Todo.Core.A2A;
 
-namespace Todo.Agents.Middleware;
+namespace Agents.Middleware;
 
 public class AgentTraceMiddleware(string agentName) : IAgentMiddleware
 {

@@ -2,7 +2,7 @@
 using Microsoft.SemanticKernel;
 using Todo.Infrastructure;
 
-namespace Todo.Agents.Middleware
+namespace Agents.Middleware
 {
     public class AgentExceptionHandlingMiddleware(ILogger<IAgent> logger, string agentName) : IAgentMiddleware
     {

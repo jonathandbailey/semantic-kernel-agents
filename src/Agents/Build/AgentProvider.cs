@@ -1,11 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Agents.Middleware;
+using Agents.Settings;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
-using Todo.Agents.Middleware;
-using Todo.Agents.Settings;
 using Todo.Infrastructure.Azure;
 
-namespace Todo.Agents.Build;
+namespace Agents.Build;
 
 public class AgentProvider(
     IAgentChatHistoryProvider agentChatHistoryProvider,

@@ -1,4 +1,4 @@
-﻿namespace Todo.Agents.Middleware
+﻿namespace Agents.Middleware
 {
     public class TerminationMiddleWare : IAgentMiddleware
     {

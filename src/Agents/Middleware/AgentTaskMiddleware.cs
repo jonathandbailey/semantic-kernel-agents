@@ -2,7 +2,7 @@
 using Todo.Core.A2A;
 using Todo.Infrastructure.Azure;
 
-namespace Todo.Agents.Middleware;
+namespace Agents.Middleware;
 
 public class AgentTaskMiddleware(ILogger<IAgent> logger, IAgentTaskRepository agentTaskRepository) : IAgentMiddleware
 {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.SemanticKernel.Agents;
 using Todo.Core.A2A;
 
-namespace Todo.Agents.Middleware
+namespace Agents.Middleware
 {
     public  class AgentConversationHistoryMiddleware(IAgentChatHistoryProvider agentChatHistoryProvider, string agentName) : IAgentMiddleware
     {

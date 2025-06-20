@@ -1,6 +1,6 @@
 ﻿using Microsoft.SemanticKernel;
 
-namespace Todo.Agents
+namespace Agents
 {
     public class AgentState(string agentName)
     {

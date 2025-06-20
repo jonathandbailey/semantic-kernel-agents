@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Todo.Agents;
+namespace Agents;
 
 public static class AgentHeaderParser
 {

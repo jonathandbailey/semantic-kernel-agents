@@ -1,6 +1,6 @@
-﻿using Todo.Agents.Middleware;
+﻿using Agents.Middleware;
 
-namespace Todo.Agents
+namespace Agents
 {
     public abstract class AgentBase : IAgentMiddleware
     {

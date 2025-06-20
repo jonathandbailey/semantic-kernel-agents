@@ -1,9 +1,9 @@
 ﻿using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using System.Text.Json;
-using Todo.Agents;
-using Todo.Agents.Build;
-using Todo.Agents.Communication;
+using Agents;
+using Agents.Build;
+using Agents.Communication;
 using Todo.Infrastructure;
 
 namespace Todo.Application.Services;

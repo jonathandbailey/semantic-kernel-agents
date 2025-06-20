@@ -1,4 +1,3 @@
-using Todo.Agents;
 
 namespace Agents.Tests
 {

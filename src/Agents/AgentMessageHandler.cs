@@ -1,7 +1,7 @@
-﻿using Microsoft.SemanticKernel;
-using System.Text;
+﻿using System.Text;
+using Microsoft.SemanticKernel;
 
-namespace Todo.Agents;
+namespace Agents;
 
 
 public class AgentMessageHandler : IAgentMessageHandler
