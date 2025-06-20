@@ -8,10 +8,14 @@ public class AgentStreamingMessageHandler(Func<StreamingChatMessageContent, bool
 {
     private readonly StringBuilder _buffer = new();
     private bool _isHeaderRemoved;
+    private bool _canStream = true;
    
     public async Task<string> Handle(StreamingChatMessageContent chatMessageContent)
     {
         _buffer.Append(chatMessageContent.Content);
+
+        if (!_canStream) return chatMessageContent.Content!;
+
 
         if (_isHeaderRemoved)
         {
@@ -22,6 +26,12 @@ public class AgentStreamingMessageHandler(Func<StreamingChatMessageContent, bool
         if(!AgentHeaderParser.HasStartEndHeaders(_buffer.ToString())) return chatMessageContent.Content!;
 
         _isHeaderRemoved = true;
+
+        if (!AgentHeaderParser.HasHeader(AgentHeaderParser.StreamToUserHeader, _buffer.ToString() ))
+        {
+            _canStream = false;
+            return chatMessageContent.Content!;
+        }
 
         var content = AgentHeaderParser.RemoveHeaders(_buffer.ToString());
        
