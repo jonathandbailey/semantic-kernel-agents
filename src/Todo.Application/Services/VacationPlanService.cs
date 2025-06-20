@@ -12,7 +12,7 @@ public class VacationPlanService(IVacationPlanRepository vacationPlanRepository)
         {
             var vacationPlan = new VacationPlan(Guid.NewGuid(), PlanStatus.Open, "New Vacation Plan", "No description available.");
 
-            vacationPlan.AddStage(new TravelPlan(Guid.NewGuid(), "Travel Plan", "No description available", PlanStage.Travel, PlanStatus.Open));
+            vacationPlan.AddStage(new TravelPlan(Guid.NewGuid(), "Accomodation", "No description available", PlanStage.Accommodation, PlanStatus.Open));
 
             await vacationPlanRepository.Save(vacationPlan);
 
@@ -29,6 +29,11 @@ public class VacationPlanService(IVacationPlanRepository vacationPlanRepository)
             if (source == "TravelAgent")
             {
                 vacationPlan.UpdateStageStatus(PlanStage.Travel, PlanStatus.Completed);
+            }
+
+            if (source == "AccommodationAgent")
+            {
+                vacationPlan.UpdateStageStatus(PlanStage.Accommodation, PlanStatus.Completed);
             }
 
             await vacationPlanRepository.Save(vacationPlan);

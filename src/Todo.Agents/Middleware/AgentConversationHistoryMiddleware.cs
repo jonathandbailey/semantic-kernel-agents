@@ -11,7 +11,7 @@ namespace Todo.Agents.Middleware
             
             var chatHistory = await agentChatHistoryProvider.LoadChatHistoryAsync(agentName, agentTask.SessionId);
 
-            state.Set("ChatHistory", chatHistory);
+            AppendChatHistory(chatHistory, state);
 
             var response = await next(state);
 
@@ -20,6 +20,18 @@ namespace Todo.Agents.Middleware
             await agentChatHistoryProvider.SaveChatHistoryAsync(chatHistory, agentName, agentTask.SessionId);
 
             return response;
+        }
+
+        private void AppendChatHistory(ChatHistoryAgentThread chatHistory, AgentState agentState)
+        {
+            var stateChatHistory = agentState.HasKey("ChatHistory") ? agentState.Get<ChatHistoryAgentThread>("ChatHistory") : new ChatHistoryAgentThread();
+
+            foreach (var message in chatHistory.ChatHistory)
+            {
+                stateChatHistory.ChatHistory.AddMessage(message.Role, message.Content!);
+            }
+
+            agentState.Set("ChatHistory", stateChatHistory);
         }
     }
 }

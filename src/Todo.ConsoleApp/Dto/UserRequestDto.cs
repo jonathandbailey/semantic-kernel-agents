@@ -9,5 +9,7 @@
         public string TaskId { get; init; } = string.Empty;
 
         public Guid VacationPlanId { get; set; } = Guid.Empty;
+
+        public string Source { get; set; } = string.Empty;
     }
 }

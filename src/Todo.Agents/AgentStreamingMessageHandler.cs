@@ -7,7 +7,7 @@ namespace Todo.Agents;
 
 public class AgentStreamingMessageHandler(Func<StreamingChatMessageContent, bool, Task> messageCallback) : IAgentMessageHandler
 {
-    private const string StatusHeaderRegex = @"^\[status:\s*.*?\]";
+    private const string StatusHeaderRegex = @"^\[action:\s*.*?\]";
     private readonly StringBuilder _buffer = new();
     private bool _isHeaderRemoved;
         

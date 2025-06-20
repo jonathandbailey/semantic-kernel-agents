@@ -1,6 +1,7 @@
 ﻿using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Todo.Agents;
 using Todo.Agents.Build;
 using Todo.Agents.Communication;
@@ -10,33 +11,53 @@ namespace Todo.Application.Services;
 
 public class OrchestrationService(IAgentProvider agentProvider) : IOrchestrationService
 {
-    public async Task<AgentState> InvokeAsync(string sessionId, string message, Dictionary<string,string> arguments, Func<StreamingChatMessageContent, string, bool, Task> streamingMessageCallback)
+    private static readonly Regex ActionRegex = new Regex(@"\[action:\s*(.*?)\](.*?)((?=\[action:)|$)", RegexOptions.Singleline);
+
+
+    public async Task<AgentState> InvokeAsync(
+        string sessionId, 
+        string message, 
+        Dictionary<string,string> arguments, 
+        Func<StreamingChatMessageContent, string, bool, Task> streamingMessageCallback,
+        string source)
     {
-        var orchestrator = await agentProvider.Create(AgentNames.OrchestratorAgent);
 
-        var state = CreateOrchestrationState(sessionId, message, arguments);
-
-        state = await orchestrator.InvokeAsync(state);
-
-        var agentAction = GetAgentResponse(state);
-
-        var workerAgent = await agentProvider.Create(agentAction.AgentName, async (content, isEndOfStream) =>
+        var agentName = string.IsNullOrEmpty(source) ? AgentNames.UserAgent : source;
+        
+        var rootAgent = await agentProvider.Create(agentName, async (content, isEndOfStream) =>
         {
-            await  streamingMessageCallback(content, sessionId, isEndOfStream);
+            await streamingMessageCallback(content, sessionId, isEndOfStream);
         });
 
-        var agentWorkerState = CreateWorkerState(state, agentAction);
+        var userState = CreateState(agentName, sessionId, message, arguments);
 
-        var workerResponseState = await workerAgent.InvokeAsync(agentWorkerState);
+        userState = await rootAgent.InvokeAsync(userState);
 
-        return workerResponseState;
+        var action = Parse(userState.Responses.First().Content!);
+
+        if (action.Action == "agent_invoke")
+        {
+            var agentActionTask = GetAgentTaskRequest(action.Message);
+            
+            var workerAgent = await agentProvider.Create(agentActionTask.AgentName, async (content, isEndOfStream) =>
+            {
+                await streamingMessageCallback(content, sessionId, isEndOfStream);
+            });
+
+            var agentWorkerState = CreateWorkerState(userState, agentActionTask);
+
+            var workerResponseState = await workerAgent.InvokeAsync(agentWorkerState);
+
+            return workerResponseState;
+        }
+
+
+        return userState;
     }
 
-    private static AgentTaskRequest GetAgentResponse(AgentState state)
+    private static AgentTaskRequest GetAgentTaskRequest(string message)
     {
-        var message = state.Responses.First().Content;
-
-        var agentResponse = JsonSerializer.Deserialize<AgentTaskRequest>(message!);
+        var agentResponse = JsonSerializer.Deserialize<AgentTaskRequest>(message);
 
         if (agentResponse == null)
         {
@@ -46,10 +67,10 @@ public class OrchestrationService(IAgentProvider agentProvider) : IOrchestration
         return agentResponse;
     }
 
-    private static AgentState CreateOrchestrationState(string sessionId, string message,
+    private static AgentState CreateState(string agentName, string sessionId, string message,
         Dictionary<string, string> arguments)
     {
-        var state = new AgentState(AgentNames.OrchestratorAgent)
+        var state = new AgentState(agentName)
         {
             Request = new ChatMessageContent(AuthorRole.User, message),
             Arguments = arguments
@@ -81,9 +102,26 @@ public class OrchestrationService(IAgentProvider agentProvider) : IOrchestration
 
         return state;
     }
+
+    private static AgentActionResponse Parse(string input)
+    {
+        var match = ActionRegex.Match(input);
+    
+        if (!match.Success)
+        {
+            throw new ArgumentException("No valid action found in the input.");
+        }
+
+        var actionType = match.Groups[1].Value.Trim();
+        var content = match.Groups[2].Value.Trim();
+
+        return new AgentActionResponse() { Action = actionType, Message = content };
+    }
 }
+
+
 
 public interface IOrchestrationService
 {
-    Task<AgentState> InvokeAsync(string sessionId, string message, Dictionary<string,string> arguments, Func<StreamingChatMessageContent, string, bool, Task> streamingMessageCallback);
+    Task<AgentState> InvokeAsync(string sessionId, string message, Dictionary<string,string> arguments, Func<StreamingChatMessageContent, string, bool, Task> streamingMessageCallback, string source);
 }

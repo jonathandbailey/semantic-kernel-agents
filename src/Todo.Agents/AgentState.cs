@@ -21,6 +21,11 @@ namespace Todo.Agents
             return (T)val;
         }
 
+        public bool HasKey(string key)
+        {
+            return Data.ContainsKey(key);
+        }
+
         public bool TryGet<T>(string key, out T value)
         {
             if (Data.TryGetValue(key, out var val) && val is T tVal)

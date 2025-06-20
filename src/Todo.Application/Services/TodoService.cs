@@ -30,9 +30,15 @@ public class TodoService(IUserRepository userRepository, IUserMessageSender user
                 var payLoad = new UserResponseDto { Message = content.Content!, SessionId = sessionId, IsEndOfStream = isEndOfStream };
 
                 await userMessageSender.RespondAsync(payLoad, user.Id);
-            });
+            }, notification.Source);
       
-        var payLoad = new UserResponseDto { Message = responseState.Responses.First().Content!, SessionId = responseState.GetSessionId(), VacationPlanId = vacationPlan.Id };
+        var payLoad = new UserResponseDto
+        {
+            Message = responseState.Responses.First().Content!, 
+            SessionId = responseState.GetSessionId(), 
+            VacationPlanId = vacationPlan.Id,
+            Source = responseState.AgentName
+        };
 
         var agentTask = responseState.GetAgentTask();
 
@@ -47,7 +53,7 @@ public class TodoService(IUserRepository userRepository, IUserMessageSender user
 
         foreach (var vacationPlanStage in vacationPlan.Stages)
         {
-            stringBuilder.AppendLine($"{vacationPlanStage.Stage}:{vacationPlanStage.Status}");
+            stringBuilder.AppendLine($"[{vacationPlanStage.Stage}:{vacationPlanStage.Status}]");
         }
 
         return new Dictionary<string, string> { {"VacationPlanStatus", stringBuilder.ToString()}};

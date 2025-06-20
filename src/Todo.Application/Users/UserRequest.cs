@@ -16,6 +16,8 @@ namespace Todo.Application.Users
 
         public Guid VacationPlanId { get; set; } = Guid.Empty;
 
+        public string Source { get; set; } = string.Empty;
+
         public required SendTaskRequest SendTaskRequest { get; init; }
     }
 }

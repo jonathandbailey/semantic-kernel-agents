@@ -29,7 +29,8 @@ namespace Todo.Api.Extensions
                 Message = userRequestDto.Message,
                 SessionId = userRequestDto.SessionId,
                 TaskId = userRequestDto.TaskId,
-                VacationPlanId = userRequestDto.VacationPlanId
+                VacationPlanId = userRequestDto.VacationPlanId,
+                Source = userRequestDto.Source
             };
         }
     }

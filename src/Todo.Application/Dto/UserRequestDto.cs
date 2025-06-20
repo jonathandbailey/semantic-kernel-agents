@@ -12,5 +12,7 @@ namespace Todo.Application.Dto
         public string TaskId { get; set; } = string.Empty;
 
         public Guid VacationPlanId { get; set; } = Guid.Empty;
+
+        public string Source { get; set; } = string.Empty;
     }
 }
