@@ -9,6 +9,7 @@ public static class AgentHeaderParser
 
     public const string AgentInvokeHeader = "[agent-invoke]";
     public const string StreamToUserHeader = "[stream-to-user]";
+    public const string TaskCompleteHeader = "[task-complete]";
 
     public static bool HasStartEndHeaders(string input)
     {

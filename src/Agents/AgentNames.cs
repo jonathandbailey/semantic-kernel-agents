@@ -2,9 +2,11 @@
 
 public static class AgentNames
 {
-    public const string TaskAgent = "TaskAgent";
+    public const string TaskAgent = "Task";
 
-    public const string OrchestratorAgent = "OrchestratorAgent";
+    public const string OrchestratorAgent = "Orchestrator";
 
-    public const string UserAgent = "UserAgent";
+    public const string UserAgent = "User";
+
+    public const string AccommodationAgent = "Accommodation";
 }

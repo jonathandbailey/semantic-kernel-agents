@@ -1,11 +1,12 @@
 ﻿using System.Text;
+using Agents.Graph;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace Agents;
 
-public class Agent(ChatCompletionAgent chatCompletionAgent, string name, IAgentMessageHandler agentMessageHandler) : AgentBase, IAgent
+public class Agent(ChatCompletionAgent chatCompletionAgent, string name, IAgentMessageHandler agentMessageHandler) : AgentBase, IAgent, INode
 {
     public string Name { get; } = name;
 
