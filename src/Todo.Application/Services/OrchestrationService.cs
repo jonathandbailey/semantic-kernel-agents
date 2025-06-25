@@ -3,33 +3,42 @@ using Microsoft.SemanticKernel.ChatCompletion;
 using Agents;
 using Agents.Build;
 using Agents.Graph;
+using Todo.Core.Vacations;
 
 namespace Todo.Application.Services;
 
-public class OrchestrationService(IAgentProvider agentProvider) : IOrchestrationService
+public class OrchestrationService(IAgentProvider agentProvider, IVacationPlanService vacationPlanService) : IOrchestrationService
 {
     public async Task<AgentState> InvokeAsync(
         string sessionId,
         string message,
         Dictionary<string, string> arguments,
         Func<StreamingChatMessageContent, string, bool, Task> streamingMessageCallback,
-        string source)
+        string source,
+        Guid vacationPlanId)
     {
         var agentName = string.IsNullOrEmpty(source) ? AgentNames.UserAgent : source;
 
         var userState = CreateState(agentName, sessionId, message, arguments);
 
         userState.Set("source", source);
+        userState.Set("vacationPlanId", vacationPlanId);
 
         var graph = new AgentGraph();
 
-        graph.AddNode(new RootNode("Root"));
+        graph.AddNode(new HeaderRoutingNode("Root", AgentNames.UserAgent));
         graph.AddNode(new AgentNode(AgentNames.UserAgent, agentProvider, streamingMessageCallback));
         graph.AddNode(new AgentNode(AgentNames.AccommodationAgent, agentProvider, streamingMessageCallback));
         
-        graph.AddEdge("Root", [new AgentInvokeEdge(AgentNames.UserAgent), new AgentInvokeEdge(AgentNames.AccommodationAgent)]);
+        graph.Connect("Root", AgentNames.UserAgent);
+        graph.Connect("Root", AgentNames.AccommodationAgent);
 
-        graph.AddEdge(AgentNames.UserAgent, [ new AgentInvokeEdge(AgentNames.AccommodationAgent)]);
+        graph.Connect(AgentNames.UserAgent, AgentNames.AccommodationAgent);
+
+        graph.AddNode(new TaskNode("Task", vacationPlanService));
+
+        graph.Connect(AgentNames.AccommodationAgent, new AgentTaskCompleteEdge("Task"));
+
 
         var finalState = await graph.RunAsync("Root", new NodeState(userState));
 
@@ -45,8 +54,6 @@ public class OrchestrationService(IAgentProvider agentProvider) : IOrchestration
             Arguments = arguments
         };
 
-        state.SetTaskId(Guid.NewGuid().ToString());
-
         state.SetSessionId(!string.IsNullOrWhiteSpace(sessionId) ? sessionId : Guid.NewGuid().ToString());
 
         return state;
@@ -57,5 +64,5 @@ public class OrchestrationService(IAgentProvider agentProvider) : IOrchestration
 
 public interface IOrchestrationService
 {
-    Task<AgentState> InvokeAsync(string sessionId, string message, Dictionary<string,string> arguments, Func<StreamingChatMessageContent, string, bool, Task> streamingMessageCallback, string source);
+    Task<AgentState> InvokeAsync(string sessionId, string message, Dictionary<string,string> arguments, Func<StreamingChatMessageContent, string, bool, Task> streamingMessageCallback, string source, Guid vacationPlanId);
 }

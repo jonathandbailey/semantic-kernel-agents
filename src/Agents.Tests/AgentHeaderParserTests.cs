@@ -4,7 +4,7 @@ namespace Agents.Tests
     public class AgentHeaderParserTests
     {
         private const string ContentWithStreamToUserHeader =
-            @"[header-start]\n[stream-to-user]\n[header-end]\nThis is the content\and more content";
+            "[header-start]\n[stream-to-user]\n[header-end]\nThis is the content\and more content";
         
         [Fact]
         public void HasHeaders_WithMultipleHeaders_ReturnsTrue()

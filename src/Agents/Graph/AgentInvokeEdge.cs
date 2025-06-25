@@ -6,9 +6,9 @@
 
         public bool CanInvoke(AgentState state)
         {
-            var source = state.Get<string>("source");
+            var headerMatch = $"[agent-invoke:{TargetNode}]";
 
-            return source == TargetNode;
+            return AgentHeaderParser.HasHeader(headerMatch, state.Response.Content!);
         }
     }
 }

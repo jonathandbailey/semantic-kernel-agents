@@ -1,5 +1,4 @@
-﻿using Todo.Core.A2A;
-using Todo.Core.Vacations;
+﻿using Todo.Core.Vacations;
 using Todo.Infrastructure.File;
 
 namespace Todo.Application.Services;
@@ -24,27 +23,20 @@ public class VacationPlanService(IVacationPlanRepository vacationPlanRepository)
         return await vacationPlanRepository.Load(id);
     }
 
-    public async Task UpdateAsync(VacationPlan vacationPlan, string source, string agentTaskState)
+    public async Task UpdateAsync(VacationPlan vacationPlan, string source)
     {
-        if (agentTaskState == AgentTaskState.Completed)
-        {
-            if (source == "TravelAgent")
+        
+            if (source == "Travel")
             {
                 vacationPlan.UpdateStageStatus(PlanStage.Travel, PlanStatus.Completed);
             }
 
-            if (source == "AccommodationAgent")
+            if (source == "Accommodation")
             {
                 vacationPlan.UpdateStageStatus(PlanStage.Accommodation, PlanStatus.Completed);
             }
 
             await vacationPlanRepository.Save(vacationPlan);
-        }
+        
     }
-}
-
-public interface IVacationPlanService
-{
-    Task<VacationPlan> GetAsync(Guid id);
-    Task UpdateAsync(VacationPlan vacationPlan, string source, string agentTaskState);
 }

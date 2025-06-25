@@ -19,11 +19,16 @@ public static class AgentHeaderParser
         return startMatch.Success && endMatch.Success;
     }
 
-    public static bool HasHeader(string header, string input)
+    public static bool HasHeader(string header, string content)
     {
-        var headers = ExtractHeaders(input);
+        if (string.IsNullOrEmpty(content))
+            return false;
+        
+        var headers = ExtractHeaders(content);
 
-        return headers.Contains(header);
+        var hasHeader = headers.Contains(header);
+
+        return hasHeader;
     }
 
     public static List<string> ExtractHeaders(string input)

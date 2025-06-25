@@ -32,7 +32,7 @@ public class Agent(ChatCompletionAgent chatCompletionAgent, string name, IAgentM
 
         var content = await agentMessageHandler.FlushMessages();
 
-        state.Responses.Add(new ChatMessageContent(AuthorRole.Assistant, content));
+        state.Response = new ChatMessageContent(AuthorRole.Assistant, content);
 
         return state;
     }

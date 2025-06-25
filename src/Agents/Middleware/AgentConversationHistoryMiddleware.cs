@@ -1,5 +1,4 @@
 ﻿using Microsoft.SemanticKernel.Agents;
-using Todo.Core.A2A;
 
 namespace Agents.Middleware
 {
@@ -7,9 +6,9 @@ namespace Agents.Middleware
     {
         public async Task<AgentState> InvokeAsync(AgentState state, AgentDelegate next)
         {
-            var agentTask = state.Get<AgentTask>("AgentTask");
+            var sessionId = state.GetSessionId();
             
-            var chatHistory = await agentChatHistoryProvider.LoadChatHistoryAsync(agentName, agentTask.SessionId);
+            var chatHistory = await agentChatHistoryProvider.LoadChatHistoryAsync(agentName, sessionId);
 
             AppendChatHistory(chatHistory, state);
 
@@ -17,7 +16,7 @@ namespace Agents.Middleware
 
             chatHistory = response.Get<ChatHistoryAgentThread>("ChatHistory");
 
-            await agentChatHistoryProvider.SaveChatHistoryAsync(chatHistory, agentName, agentTask.SessionId);
+            await agentChatHistoryProvider.SaveChatHistoryAsync(chatHistory, agentName, sessionId);
 
             return response;
         }

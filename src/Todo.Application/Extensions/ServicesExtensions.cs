@@ -8,6 +8,7 @@ using Todo.Application.Models;
 using Todo.Application.Services;
 using Todo.Application.Settings;
 using Todo.Core.Users;
+using Todo.Core.Vacations;
 using Todo.Infrastructure;
 using Todo.Infrastructure.Azure;
 using Todo.Infrastructure.File;
@@ -37,7 +38,6 @@ namespace Todo.Application.Extensions
             services.AddScoped<IAgentFactory, AgentFactory>();
             services.AddScoped<IPluginFactory, PluginFactory>();
 
-            services.AddScoped<IAgentTaskRepository, AgentTaskFileRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddScoped<IVacationPlanRepository, VacationPlanFileRepository>();

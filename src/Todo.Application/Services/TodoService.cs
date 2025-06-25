@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Agents;
+﻿using Agents;
 using MediatR;
 using Todo.Application.Dto;
 using Todo.Application.Interfaces;
@@ -22,7 +21,7 @@ public class TodoService(IUserRepository userRepository, IUserMessageSender user
         
         var user = await userRepository.Get(notification.UserId);
 
-        var arguments = CreateArguments(vacationPlan);
+        var arguments = new Dictionary<string, string> { { "VacationPlanId", vacationPlan.Id.ToString() } };
 
         var responseState = await orchestrationService.InvokeAsync(notification.SessionId!, notification.Message, arguments,
             async (content, sessionId, isEndOfStream) =>
@@ -30,33 +29,21 @@ public class TodoService(IUserRepository userRepository, IUserMessageSender user
                 var payLoad = new UserResponseDto { Message = content.Content!, SessionId = sessionId, IsEndOfStream = isEndOfStream };
 
                 await userMessageSender.RespondAsync(payLoad, user.Id);
-            }, notification.Source);
+            }, notification.Source, vacationPlan.Id);
       
         var payLoad = new UserResponseDto
         {
-            Message = responseState.Responses.First().Content!, 
+            Message = responseState.Response.Content!, 
             SessionId = responseState.GetSessionId(), 
             VacationPlanId = vacationPlan.Id,
-            Source = responseState.AgentName
+            Source = responseState.Get<string>("source")
         };
 
-        var agentTask = responseState.GetAgentTask();
+        //var agentTask = responseState.GetAgentTask();
 
-        await vacationPlanService.UpdateAsync(vacationPlan, responseState.AgentName, agentTask.Status.State);
+        //await vacationPlanService.UpdateAsync(vacationPlan, responseState.AgentName, agentTask.Status.State);
     
         return payLoad;
-    }
-
-    private Dictionary<string, string> CreateArguments(VacationPlan vacationPlan)
-    {
-        var stringBuilder = new StringBuilder();
-
-        foreach (var vacationPlanStage in vacationPlan.Stages)
-        {
-            stringBuilder.AppendLine($"[{vacationPlanStage.Stage} - '{vacationPlanStage.Description}' :{vacationPlanStage.Status}]");
-        }
-
-        return new Dictionary<string, string> { {"TravelTaskList", stringBuilder.ToString()}};
     }
 }
 

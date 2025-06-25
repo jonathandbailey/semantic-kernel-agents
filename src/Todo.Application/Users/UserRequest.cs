@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Todo.Application.Dto;
-using Todo.Core.A2A;
 
 namespace Todo.Application.Users
 {
@@ -17,7 +16,5 @@ namespace Todo.Application.Users
         public Guid VacationPlanId { get; set; } = Guid.Empty;
 
         public string Source { get; set; } = string.Empty;
-
-        public required SendTaskRequest SendTaskRequest { get; init; }
     }
 }

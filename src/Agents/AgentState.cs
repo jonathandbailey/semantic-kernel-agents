@@ -8,7 +8,7 @@ namespace Agents
 
         public required ChatMessageContent Request { get; init; }
 
-        public List<ChatMessageContent> Responses { get; set; } = [];
+        public ChatMessageContent Response { get; set; } = new ChatMessageContent();
 
         public Dictionary<string, string> Arguments { get; set; } = [];
 

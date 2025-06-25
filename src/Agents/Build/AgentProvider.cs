@@ -3,13 +3,11 @@ using Agents.Settings;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
-using Todo.Infrastructure.Azure;
 
 namespace Agents.Build;
 
 public class AgentProvider(
     IAgentChatHistoryProvider agentChatHistoryProvider,
-    IAgentTaskRepository agentTaskRepository,
     ILogger<IAgent> agentLogger,
     IAgentFactory agentFactory,
     IOptions<List<AgentSettings>> agentSettings) : IAgentProvider
@@ -35,7 +33,6 @@ public class AgentProvider(
         var agentBuild = new AgentMiddlewareBuilder();
       
         agentBuild.Use(new AgentExceptionHandlingMiddleware(agentLogger, agent.Name));
-        agentBuild.Use(new AgentTaskMiddleware(agentLogger, agentTaskRepository));
         agentBuild.Use(new AgentTraceMiddleware(agent.Name));
         agentBuild.Use(new AgentConversationHistoryMiddleware(agentChatHistoryProvider, agent.Name));
 

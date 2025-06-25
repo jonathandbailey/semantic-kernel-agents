@@ -11,9 +11,19 @@
             _nodes[node.Name] = node;
         }
 
-        public void AddEdge(string targetNode, List<IEdge> edge)
+        public void SetEdges(string targetNode, List<IEdge> edge)
         {
             _edges[targetNode] = edge;
+        }
+
+        public void AddEdge(string targetNode, IEdge edge)
+        {
+            if (!_edges.ContainsKey(targetNode))
+            {
+                _edges[targetNode] = [];
+            }
+            
+            _edges[targetNode].Add(edge);
         }
 
         public async Task<NodeState> RunAsync(string startNode, NodeState nodeState)
