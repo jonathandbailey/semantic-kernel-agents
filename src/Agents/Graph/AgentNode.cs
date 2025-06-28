@@ -1,22 +1,36 @@
-﻿using Agents.Build;
+﻿using System.Text;
+using Agents.Build;
 using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace Agents.Graph
 {
-    public class AgentNode(string name, IAgentProvider agentProvider, Func<StreamingChatMessageContent, string, bool, Task> streamingMessageCallback) : INode
+    public class AgentNode(string name, IAgentProvider agentProvider) : INode
     {
-        public async Task<AgentState> InvokeAsync(AgentState state)
+        public async Task<NodeState> InvokeAsync(NodeState state)
         {
-            var agent = await agentProvider.Create(Name, async (content, isEndOfStream) =>
+            var agent = await agentProvider.Create(Name);
+
+            var requestState = new AgentState(Name)
             {
-                await streamingMessageCallback(content, state.GetSessionId(), isEndOfStream);
-            });
+                Request = new ChatMessageContent(AuthorRole.User, AgentHeaderParser.RemoveHeaders(state.AgentState.Response.Content!)),
+                Response = new ChatMessageContent(),
+                Arguments = state.AgentState.Arguments,
+                SessionId = state.AgentState.SessionId,
+            };
 
-            var responseState = await agent.InvokeAsync(state);
+            var responseState = await agent.InvokeAsync(requestState);
 
-            responseState.Set("source", Name);
+            var headers = AgentHeaderParser.ExtractHeaders(responseState.Response.Content!);
 
-            return responseState;
+            var stringBuilder = new StringBuilder();
+
+            foreach (var header in headers)
+            {
+                stringBuilder.AppendLine(header);
+            }
+
+            return new NodeState(responseState) { Source = Name, Headers = stringBuilder.ToString()};
         }
 
         public string Name { get; } = name;

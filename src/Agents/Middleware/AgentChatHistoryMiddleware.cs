@@ -2,11 +2,11 @@
 
 namespace Agents.Middleware
 {
-    public  class AgentConversationHistoryMiddleware(IAgentChatHistoryProvider agentChatHistoryProvider, string agentName) : IAgentMiddleware
+    public  class AgentChatHistoryMiddleware(IAgentChatHistoryProvider agentChatHistoryProvider, string agentName) : IAgentMiddleware
     {
         public async Task<AgentState> InvokeAsync(AgentState state, AgentDelegate next)
         {
-            var sessionId = state.GetSessionId();
+            var sessionId = state.SessionId.ToString();
             
             var chatHistory = await agentChatHistoryProvider.LoadChatHistoryAsync(agentName, sessionId);
 

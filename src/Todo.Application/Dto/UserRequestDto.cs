@@ -4,7 +4,7 @@ namespace Todo.Application.Dto
 {
     public class UserRequestDto
     {
-        public string SessionId { get; set; } = string.Empty;
+        public Guid SessionId { get; set; } = Guid.Empty;
 
         [Required]
         public string Message { get; set; } = string.Empty;

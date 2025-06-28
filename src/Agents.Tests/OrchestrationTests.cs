@@ -15,18 +15,30 @@ namespace Agents.Tests
             const string routingNodeName = "Routing";
 
             var moqUserNode = new Mock<INode>();
-            var moqAccommodationNode = new Mock<INode>();
-
             moqUserNode.Setup(x => x.Name).Returns("User");
-            moqAccommodationNode.Setup(x => x.Name).Returns("Accommodation");
-
             var userAgentState = new AgentState(AgentNames.UserAgent)
             {
                 Request = new ChatMessageContent(),
                 Response = new ChatMessageContent(AuthorRole.Assistant, string.Format(routingTemplate, AgentNames.AccommodationAgent))
             };
 
-            moqUserNode.Setup(x => x.InvokeAsync(It.IsAny<AgentState>())).ReturnsAsync(() => userAgentState);
+            var userNodeState = new NodeState(userAgentState)
+                { Headers = string.Format(routingTemplate, AgentNames.AccommodationAgent) };
+
+            moqUserNode.Setup(x => x.InvokeAsync(It.IsAny<NodeState>())).ReturnsAsync(() => userNodeState);
+
+            var moqAccommodationNode = new Mock<INode>();
+            
+            moqAccommodationNode.Setup(x => x.Name).Returns("Accommodation");
+
+            var accommodationAgentState = new AgentState(AgentNames.AccommodationAgent)
+            {
+                Request = new ChatMessageContent(),
+                Response = new ChatMessageContent()
+            };
+
+            moqAccommodationNode.Setup(x => x.InvokeAsync(It.IsAny<NodeState>()))
+                .ReturnsAsync(new NodeState(accommodationAgentState));
 
             var graph = new AgentGraph();
 
@@ -46,8 +58,8 @@ namespace Agents.Tests
 
             await graph.RunAsync(routingNodeName, new NodeState(userState));
 
-            moqAccommodationNode.Verify(x => x.InvokeAsync(It.IsAny<AgentState>()));
-            moqUserNode.Verify(x => x.InvokeAsync(It.IsAny<AgentState>()));
+            moqAccommodationNode.Verify(x => x.InvokeAsync(It.IsAny<NodeState>()));
+            moqUserNode.Verify(x => x.InvokeAsync(It.IsAny<NodeState>()));
         }
     }
 }

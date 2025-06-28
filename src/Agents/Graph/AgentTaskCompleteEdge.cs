@@ -3,9 +3,9 @@
     public class AgentTaskCompleteEdge(string targetNode) : IEdge
     {
         public string TargetNode { get; set; } = targetNode;
-        public bool CanInvoke(AgentState state)
+        public bool CanInvoke(NodeState state)
         {
-            return AgentHeaderParser.HasHeader(AgentHeaderParser.TaskCompleteHeader, state.Response.Content!);
+            return AgentHeaderParser.HasHeader(AgentHeaderParser.TaskCompleteHeader, state.AgentState.Response.Content!);
         }
     }
 }

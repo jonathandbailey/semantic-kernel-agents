@@ -2,9 +2,9 @@ using Todo.Api;
 using Todo.Api.Hubs;
 using Todo.Api.Settings;
 using Todo.Application.Extensions;
-using Todo.Application.Interfaces;
 using Todo.Application.Models;
 using Todo.Application.Settings;
+using Todo.Core.Users;
 
 
 var builder = WebApplication.CreateBuilder(args);

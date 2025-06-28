@@ -4,11 +4,11 @@
     {
         public string TargetNode { get; set; } = targetNode;
 
-        public bool CanInvoke(AgentState state)
+        public bool CanInvoke(NodeState state)
         {
             var headerMatch = $"[agent-invoke:{TargetNode}]";
 
-            return AgentHeaderParser.HasHeader(headerMatch, state.Response.Content!);
+            return AgentHeaderParser.HasHeader(headerMatch, state.Headers);
         }
     }
 }

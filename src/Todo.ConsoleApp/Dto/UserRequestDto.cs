@@ -2,7 +2,7 @@
 {
     public class UserRequestDto
     {
-        public string SessionId { get; init; } = string.Empty;
+        public Guid SessionId { get; init; } = Guid.Empty;
 
         public string Message { get; init; } = string.Empty;
 

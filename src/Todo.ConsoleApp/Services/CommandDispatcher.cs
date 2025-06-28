@@ -7,7 +7,7 @@ public class CommandDispatcher : ICommandDispatcher
 {
     private readonly IChatClient _httpChatClient;
     private readonly Dictionary<string, Func<string, Task>> _commands = new();
-    private string _sessionId = string.Empty;
+    private Guid _sessionId = Guid.Empty;
     private Guid _vacationPlanId = Guid.Empty;
     private string _source = string.Empty;
 

@@ -6,9 +6,11 @@ namespace Agents
     {
         public string AgentName { get; } = agentName;
 
-        public required ChatMessageContent Request { get; init; }
+        public required ChatMessageContent Request { get; set; }
 
         public ChatMessageContent Response { get; set; } = new ChatMessageContent();
+
+        public Guid SessionId { get; set; } = Guid.Empty;
 
         public Dictionary<string, string> Arguments { get; set; } = [];
 

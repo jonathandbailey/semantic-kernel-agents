@@ -3,5 +3,5 @@
 public interface IEdge
 {
     string TargetNode { get; set; }
-    bool CanInvoke(AgentState state);
+    bool CanInvoke(NodeState state);
 }

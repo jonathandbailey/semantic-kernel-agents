@@ -9,11 +9,10 @@ namespace Todo.Application.Services;
 
 public class OrchestrationService(IAgentProvider agentProvider, IVacationPlanService vacationPlanService) : IOrchestrationService
 {
-    public async Task<AgentState> InvokeAsync(
-        string sessionId,
+    public async Task<NodeState> InvokeAsync(
+        Guid sessionId,
         string message,
         Dictionary<string, string> arguments,
-        Func<StreamingChatMessageContent, string, bool, Task> streamingMessageCallback,
         string source,
         Guid vacationPlanId)
     {
@@ -27,8 +26,8 @@ public class OrchestrationService(IAgentProvider agentProvider, IVacationPlanSer
         var graph = new AgentGraph();
 
         graph.AddNode(new HeaderRoutingNode("Root", AgentNames.UserAgent));
-        graph.AddNode(new AgentNode(AgentNames.UserAgent, agentProvider, streamingMessageCallback));
-        graph.AddNode(new AgentNode(AgentNames.AccommodationAgent, agentProvider, streamingMessageCallback));
+        graph.AddNode(new AgentNode(AgentNames.UserAgent, agentProvider));
+        graph.AddNode(new AgentNode(AgentNames.AccommodationAgent, agentProvider));
         
         graph.Connect("Root", AgentNames.UserAgent);
         graph.Connect("Root", AgentNames.AccommodationAgent);
@@ -39,13 +38,15 @@ public class OrchestrationService(IAgentProvider agentProvider, IVacationPlanSer
 
         graph.Connect(AgentNames.AccommodationAgent, new AgentTaskCompleteEdge("Task"));
 
+        graph.Connect("Task", AgentNames.UserAgent);
 
-        var finalState = await graph.RunAsync("Root", new NodeState(userState));
 
-        return finalState.AgentState;
+        var finalState = await graph.RunAsync("Root", new NodeState(userState) { Source = source });
+
+        return finalState;
     }
 
-    private static AgentState CreateState(string agentName, string sessionId, string message,
+    private static AgentState CreateState(string agentName, Guid sessionId, string message,
         Dictionary<string, string> arguments)
     {
         var state = new AgentState(agentName)
@@ -54,7 +55,7 @@ public class OrchestrationService(IAgentProvider agentProvider, IVacationPlanSer
             Arguments = arguments
         };
 
-        state.SetSessionId(!string.IsNullOrWhiteSpace(sessionId) ? sessionId : Guid.NewGuid().ToString());
+        state.SessionId = sessionId == Guid.Empty ? Guid.NewGuid() : sessionId;
 
         return state;
     }
@@ -64,5 +65,5 @@ public class OrchestrationService(IAgentProvider agentProvider, IVacationPlanSer
 
 public interface IOrchestrationService
 {
-    Task<AgentState> InvokeAsync(string sessionId, string message, Dictionary<string,string> arguments, Func<StreamingChatMessageContent, string, bool, Task> streamingMessageCallback, string source, Guid vacationPlanId);
+    Task<NodeState> InvokeAsync(Guid sessionId, string message, Dictionary<string,string> arguments, string source, Guid vacationPlanId);
 }

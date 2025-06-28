@@ -1,5 +1,6 @@
 ﻿using Agents.Graph;
 using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.ChatCompletion;
 using Moq;
 
 namespace Agents.Tests
@@ -18,12 +19,10 @@ namespace Agents.Tests
             graph.AddNode(new HeaderRoutingNode(routingNodeName, AgentNames.UserAgent));
 
             var userState = new AgentState(routingNodeName) { Request = new ChatMessageContent() };
+        
+            var finalState = await graph.RunAsync(routingNodeName, new NodeState(userState) {Source = AgentNames.AccommodationAgent});
 
-            userState.Set("source", AgentNames.AccommodationAgent);
-
-            var finalState = await graph.RunAsync(routingNodeName, new NodeState(userState));
-
-            var hasRoutingHeader = AgentHeaderParser.HasHeader(string.Format(routingTemplate, AgentNames.AccommodationAgent), finalState.AgentState.Response.Content!);
+            var hasRoutingHeader = AgentHeaderParser.HasHeader(string.Format(routingTemplate, AgentNames.AccommodationAgent), finalState.Headers);
             
             Assert.True(hasRoutingHeader, "Response does not contain the correct routing header.");
         }
@@ -43,7 +42,7 @@ namespace Agents.Tests
 
             var finalState = await graph.RunAsync(routingNodeName, new NodeState(userState));
 
-            var hasRoutingHeader = AgentHeaderParser.HasHeader(string.Format(routingTemplate, AgentNames.UserAgent), finalState.AgentState.Response.Content!);
+            var hasRoutingHeader = AgentHeaderParser.HasHeader(string.Format(routingTemplate, AgentNames.UserAgent), finalState.Headers);
 
             Assert.True(hasRoutingHeader, "Response does not contain the correct routing header.");
         }
@@ -56,6 +55,14 @@ namespace Agents.Tests
             var moqUserNode = new Mock<INode>();
 
             moqUserNode.Setup(x => x.Name).Returns("User");
+
+            var userAgentState = new AgentState(AgentNames.UserAgent)
+            {
+                Request = new ChatMessageContent(),
+                Response = new ChatMessageContent(AuthorRole.Assistant, string.Format(routingTemplate, AgentNames.AccommodationAgent))
+            };
+
+            moqUserNode.Setup(x => x.InvokeAsync(It.IsAny<NodeState>())).ReturnsAsync(() => new NodeState(userAgentState));
 
             var graph = new AgentGraph();
 
@@ -71,7 +78,7 @@ namespace Agents.Tests
 
             await graph.RunAsync(routingNodeName, new NodeState(userState));
          
-            moqUserNode.Verify( x=> x.InvokeAsync(It.IsAny<AgentState>()));
+            moqUserNode.Verify( x=> x.InvokeAsync(It.IsAny<NodeState>()));
         }
 
         [Fact]
@@ -85,6 +92,15 @@ namespace Agents.Tests
             moqUserNode.Setup(x => x.Name).Returns("User");
             moqAccommodationNode.Setup(x => x.Name).Returns("Accommodation");
 
+            var accommodationAgentState = new AgentState(AgentNames.AccommodationAgent)
+            {
+                Request = new ChatMessageContent(),
+                Response = new ChatMessageContent()
+            };
+
+            moqAccommodationNode.Setup(x => x.InvokeAsync(It.IsAny<NodeState>()))
+                .ReturnsAsync(new NodeState(accommodationAgentState));
+
             var graph = new AgentGraph();
 
             graph.AddNode(new HeaderRoutingNode(routingNodeName, AgentNames.UserAgent));
@@ -97,12 +113,10 @@ namespace Agents.Tests
                     new AgentInvokeEdge(AgentNames.AccommodationAgent)]);
 
             var userState = new AgentState(routingNodeName) { Request = new ChatMessageContent() };
+     
+            await graph.RunAsync(routingNodeName, new NodeState(userState) {Source = AgentNames.AccommodationAgent});
 
-            userState.Set("source", AgentNames.AccommodationAgent);
-
-            await graph.RunAsync(routingNodeName, new NodeState(userState));
-
-            moqAccommodationNode.Verify(x => x.InvokeAsync(It.IsAny<AgentState>()));
+            moqAccommodationNode.Verify(x => x.InvokeAsync(It.IsAny<NodeState>()));
         }
     }
 }

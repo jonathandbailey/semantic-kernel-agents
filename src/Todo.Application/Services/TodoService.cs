@@ -1,8 +1,7 @@
-﻿using Agents;
-using MediatR;
+﻿using MediatR;
 using Todo.Application.Dto;
-using Todo.Application.Interfaces;
 using Todo.Application.Users;
+using Todo.Core.Users;
 using Todo.Core.Vacations;
 using Todo.Infrastructure;
 
@@ -19,29 +18,23 @@ public class TodoService(IUserRepository userRepository, IUserMessageSender user
     {
         var vacationPlan = await vacationPlanService.GetAsync(notification.VacationPlanId);
         
+        var sessionId = notification.SessionId == Guid.Empty ? Guid.NewGuid() : notification.SessionId;
+
         var user = await userRepository.Get(notification.UserId);
+
+        userMessageSender.Initialize(sessionId, user.Id);
 
         var arguments = new Dictionary<string, string> { { "VacationPlanId", vacationPlan.Id.ToString() } };
 
-        var responseState = await orchestrationService.InvokeAsync(notification.SessionId!, notification.Message, arguments,
-            async (content, sessionId, isEndOfStream) =>
-            {
-                var payLoad = new UserResponseDto { Message = content.Content!, SessionId = sessionId, IsEndOfStream = isEndOfStream };
-
-                await userMessageSender.RespondAsync(payLoad, user.Id);
-            }, notification.Source, vacationPlan.Id);
+        var responseState = await orchestrationService.InvokeAsync(sessionId, notification.Message, arguments, notification.Source, vacationPlan.Id);
       
         var payLoad = new UserResponseDto
         {
-            Message = responseState.Response.Content!, 
-            SessionId = responseState.GetSessionId(), 
+            Message = responseState.AgentState.Response.Content!, 
+            SessionId = responseState.AgentState.SessionId, 
             VacationPlanId = vacationPlan.Id,
-            Source = responseState.Get<string>("source")
+            Source = responseState.Source
         };
-
-        //var agentTask = responseState.GetAgentTask();
-
-        //await vacationPlanService.UpdateAsync(vacationPlan, responseState.AgentName, agentTask.Status.State);
     
         return payLoad;
     }

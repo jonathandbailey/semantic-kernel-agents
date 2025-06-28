@@ -2,7 +2,7 @@
 {
     public class UserResponseDto
     {
-        public string SessionId { get; set; } = string.Empty;
+        public Guid SessionId { get; set; } = Guid.Empty;
 
         public string Message { get; set; } = string.Empty;
 

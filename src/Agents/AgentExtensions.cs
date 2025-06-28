@@ -34,18 +34,3 @@ public static class AgentExtensions
     }
 }
 
-public static class AgentStateExtensions
-{
-    private const string SessionIdTag = "SessionId";
-   
-
-    public static void SetSessionId(this AgentState agentState, string sessionId)
-    {
-        agentState.Set(SessionIdTag, sessionId);
-    }
-
-    public static string GetSessionId(this AgentState agentState)
-    {
-        return agentState.GetOrDefault<string>(SessionIdTag);
-    }
-}

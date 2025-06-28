@@ -30,7 +30,7 @@
         {
             var currentNode = startNode;
 
-            var agentState = nodeState.AgentState;
+            var agentState = nodeState;
 
             while (currentNode != null)
             {
@@ -45,7 +45,7 @@
                 currentNode = next?.TargetNode;
             }
 
-            return new NodeState(agentState);
+            return agentState;
         }
     }
 }

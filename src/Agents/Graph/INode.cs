@@ -2,6 +2,6 @@
 
 public interface INode
 {
-    public Task<AgentState> InvokeAsync(AgentState state);
+    public Task<NodeState> InvokeAsync(NodeState state);
     string Name { get; }
 }

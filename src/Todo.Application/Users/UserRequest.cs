@@ -11,7 +11,7 @@ namespace Todo.Application.Users
 
         public string? TaskId { get; set; }
 
-        public string? SessionId { get; set; }
+        public Guid SessionId { get; set; } = Guid.Empty;
 
         public Guid VacationPlanId { get; set; } = Guid.Empty;
 
