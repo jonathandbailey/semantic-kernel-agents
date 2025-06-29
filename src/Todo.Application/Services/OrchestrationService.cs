@@ -3,11 +3,10 @@ using Microsoft.SemanticKernel.ChatCompletion;
 using Agents;
 using Agents.Build;
 using Agents.Graph;
-using Todo.Core.Vacations;
 
 namespace Todo.Application.Services;
 
-public class OrchestrationService(IAgentProvider agentProvider, IVacationPlanService vacationPlanService) : IOrchestrationService
+public class OrchestrationService(IAgentProvider agentProvider) : IOrchestrationService
 {
     public async Task<NodeState> InvokeAsync(
         Guid sessionId,
@@ -23,25 +22,24 @@ public class OrchestrationService(IAgentProvider agentProvider, IVacationPlanSer
         userState.Set("source", source);
         userState.Set("vacationPlanId", vacationPlanId);
 
+        const string routingNodeName = "Routing";
+
         var graph = new AgentGraph();
 
-        graph.AddNode(new HeaderRoutingNode("Root", AgentNames.UserAgent));
+        graph.AddNode(new HeaderRoutingNode(routingNodeName, AgentNames.UserAgent));
         graph.AddNode(new AgentNode(AgentNames.UserAgent, agentProvider));
         graph.AddNode(new AgentNode(AgentNames.AccommodationAgent, agentProvider));
         
-        graph.Connect("Root", AgentNames.UserAgent);
-        graph.Connect("Root", AgentNames.AccommodationAgent);
+        graph.Connect(routingNodeName, AgentNames.UserAgent);
+        graph.Connect(routingNodeName, AgentNames.AccommodationAgent);
 
         graph.Connect(AgentNames.UserAgent, AgentNames.AccommodationAgent);
 
-        graph.AddNode(new TaskNode("Task", vacationPlanService));
+        graph.AddNode(new AgentNode(AgentNames.TaskAgent, agentProvider));
 
-        graph.Connect(AgentNames.AccommodationAgent, new AgentTaskCompleteEdge("Task"));
+        graph.Connect(AgentNames.AccommodationAgent, AgentNames.TaskAgent);
 
-        graph.Connect("Task", AgentNames.UserAgent);
-
-
-        var finalState = await graph.RunAsync("Root", new NodeState(userState) { Source = source });
+        var finalState = await graph.RunAsync(routingNodeName, new NodeState(userState) { Source = source });
 
         return finalState;
     }

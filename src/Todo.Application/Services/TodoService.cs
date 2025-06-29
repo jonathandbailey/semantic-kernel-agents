@@ -24,7 +24,7 @@ public class TodoService(IUserRepository userRepository, IUserMessageSender user
 
         userMessageSender.Initialize(sessionId, user.Id);
 
-        var arguments = new Dictionary<string, string> { { "VacationPlanId", vacationPlan.Id.ToString() } };
+        var arguments = CreateArguments(vacationPlan);
 
         var responseState = await orchestrationService.InvokeAsync(sessionId, notification.Message, arguments, notification.Source, vacationPlan.Id);
       
@@ -37,6 +37,18 @@ public class TodoService(IUserRepository userRepository, IUserMessageSender user
         };
     
         return payLoad;
+    }
+
+    private Dictionary<string, string> CreateArguments(VacationPlan vacationPlan)
+    {
+        var arguments = new Dictionary<string, string> { { "VacationPlanId", vacationPlan.Id.ToString() } };
+
+        foreach (var stage in vacationPlan.Stages)
+        {
+            arguments.Add(stage.Stage.ToString(), stage.Id.ToString());
+        }
+
+        return arguments;
     }
 }
 

@@ -24,5 +24,16 @@ namespace Agents.Plugins
 
             return stringBuilder.ToString();
         }
+
+        [KernelFunction("complete_travel_task_item")]
+        [Description("Updates a Task in a Vacation Travel Plan")]
+        public async Task<string> UpdateTravelTaskItem(
+            [Description("VacationPlanId")]  Guid vacationPlanId, 
+            [Description("TaskId")] Guid taskId)
+        {
+            await vacationPlanService.UpdateItemAsync(vacationPlanId, taskId);
+
+            return "Task Updated Successfully.";
+        }
     }
 }

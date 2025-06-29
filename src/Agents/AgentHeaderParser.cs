@@ -58,4 +58,32 @@ public static class AgentHeaderParser
         }
         return input;
     }
+
+    public static Dictionary<string, string> ExtractHeaderValues(List<string> headers, string headerKey)
+    {
+        var result = new Dictionary<string, string>();
+        if (headers.Count == 0 || string.IsNullOrWhiteSpace(headerKey)) return result;
+
+        var pattern = $@"\[{Regex.Escape(headerKey)}:([^\]]+)\]";
+        var regex = new Regex(pattern);
+        string? foundValue = null;
+
+        foreach (var header in headers)
+        {
+            var match = regex.Match(header);
+            if (match.Success && match.Groups.Count > 1)
+            {
+                if (foundValue != null)
+                {
+                    throw new InvalidOperationException($"Multiple values found for header '{headerKey}'. Only one value is allowed.");
+                }
+                foundValue = match.Groups[1].Value;
+            }
+        }
+        if (foundValue != null)
+        {
+            result[headerKey] = foundValue;
+        }
+        return result;
+    }
 }

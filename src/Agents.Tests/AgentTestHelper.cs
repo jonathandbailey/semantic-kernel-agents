@@ -87,6 +87,7 @@ namespace Agents.Tests
             graph.Connect(RoutingNodeName, AgentNames.UserAgent).
                 Connect(AgentNames.UserAgent, AgentNames.AccommodationAgent);
 
+
             return graph;
         }
     }

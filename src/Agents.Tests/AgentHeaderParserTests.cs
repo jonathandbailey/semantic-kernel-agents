@@ -5,7 +5,13 @@ namespace Agents.Tests
     {
         private const string ContentWithStreamToUserHeader =
             "[header-start]\n[stream-to-user]\n[header-end]\nThis is the content\and more content";
-        
+
+        private const string TaskIdKey = "task-id";
+        private const string TaskIdGuidKey = "2E66793C-C7F6-4512-8106-C5372CFB9029";
+
+        private const string ContentWithTaskKeyHeader =
+            "[header-start]\n[task-id:{0}]\n[header-end]\nThis is the content\and more content";
+
         [Fact]
         public void HasHeaders_WithMultipleHeaders_ReturnsTrue()
         {
@@ -37,6 +43,19 @@ namespace Agents.Tests
 
             Assert.True(hasHeader);
 
+        }
+
+        [Fact]
+        public void ExtractHeaderValues_WithTaskId_ReturnsKeyValuePair()
+        {
+            var headerInput = string.Format(ContentWithTaskKeyHeader, TaskIdGuidKey);
+            
+            var headers = AgentHeaderParser.ExtractHeaders(headerInput);
+
+            var keys = AgentHeaderParser.ExtractHeaderValues(headers, TaskIdKey);
+
+            Assert.True(keys.ContainsKey(TaskIdKey));
+            Assert.True(keys.ContainsValue(TaskIdGuidKey));
         }
     }
 

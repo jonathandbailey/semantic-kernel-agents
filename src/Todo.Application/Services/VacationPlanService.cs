@@ -39,4 +39,13 @@ public class VacationPlanService(IVacationPlanRepository vacationPlanRepository)
             await vacationPlanRepository.Save(vacationPlan);
         
     }
+
+    public async Task UpdateItemAsync(Guid vacationPlanId, Guid taskId)
+    {
+        var vacationPlan = await vacationPlanRepository.Load(vacationPlanId);
+
+        vacationPlan.UpdateStageStatus(taskId, PlanStatus.Completed);
+
+        await vacationPlanRepository.Save(vacationPlan);
+    }
 }

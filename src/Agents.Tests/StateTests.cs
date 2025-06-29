@@ -61,4 +61,35 @@ public class StateTests
 
         Assert.Equal(sessionId, responseState.AgentState.SessionId);
     }
+
+    [Fact]
+    public async Task UserAgent_WithHeaderRouting_InvokesTaskAgentWithCorrectState()
+    {
+        const string userPrompt = "I want to plan a trip to Paris?";
+        const string content = "User wants to plan Accommodation for their trip to Paris?";
+        const string agentInvokeAccommodation = "[header-start]\n[agent-invoke:Accommodation]\n[header-end]\n" + content;
+        const string accommodationAgentResponse = "Would you like to book a Hotel, Apartment or something else?";
+
+        var sessionId = Guid.NewGuid();
+
+        var userAgentMoq = AgentTestHelper.CreateMockAgent(AgentNames.UserAgent, userPrompt, agentInvokeAccommodation, sessionId);
+        var accommodationAgentMoq = AgentTestHelper.CreateMockAgent(AgentNames.AccommodationAgent, content, accommodationAgentResponse, sessionId);
+
+        var graph = AgentTestHelper.BuildGraph(userAgentMoq, accommodationAgentMoq);
+
+        var initialState = AgentTestHelper.CreateState(AgentTestHelper.RoutingNodeName, userPrompt, sessionId);
+        var expectedState = AgentTestHelper.CreateState(AgentNames.AccommodationAgent, content, sessionId);
+
+        var nodeState = new NodeState(initialState);
+
+        var responseState = await graph.RunAsync(AgentTestHelper.RoutingNodeName, nodeState);
+
+        userAgentMoq.Verify(x => x.InvokeAsync(It.IsAny<AgentState>()));
+        accommodationAgentMoq.Verify(x => x.InvokeAsync(It.Is<AgentState>(agentState => AgentTestHelper.Compare(agentState, expectedState))));
+
+        Assert.Equal(AgentNames.AccommodationAgent, responseState.Source);
+        Assert.Equal(accommodationAgentResponse, responseState.AgentState.Response.Content);
+
+        Assert.Equal(sessionId, responseState.AgentState.SessionId);
+    }
 }
