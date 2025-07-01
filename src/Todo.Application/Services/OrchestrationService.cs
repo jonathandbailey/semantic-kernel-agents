@@ -3,10 +3,11 @@ using Microsoft.SemanticKernel.ChatCompletion;
 using Agents;
 using Agents.Build;
 using Agents.Graph;
+using Todo.Core.Vacations;
 
 namespace Todo.Application.Services;
 
-public class OrchestrationService(IAgentProvider agentProvider) : IOrchestrationService
+public class OrchestrationService(IAgentProvider agentProvider, IVacationPlanService vacationPlanService) : IOrchestrationService
 {
     public async Task<NodeState> InvokeAsync(
         Guid sessionId,
@@ -27,7 +28,7 @@ public class OrchestrationService(IAgentProvider agentProvider) : IOrchestration
         var graph = new AgentGraph();
 
         graph.AddNode(new HeaderRoutingNode(routingNodeName, AgentNames.UserAgent));
-        graph.AddNode(new AgentNode(AgentNames.UserAgent, agentProvider));
+        graph.AddNode(new OrchestrationNode(AgentNames.UserAgent, vacationPlanService, agentProvider));
         graph.AddNode(new AgentNode(AgentNames.AccommodationAgent, agentProvider));
         
         graph.Connect(routingNodeName, AgentNames.UserAgent);
@@ -38,6 +39,7 @@ public class OrchestrationService(IAgentProvider agentProvider) : IOrchestration
         graph.AddNode(new AgentNode(AgentNames.TaskAgent, agentProvider));
 
         graph.Connect(AgentNames.AccommodationAgent, AgentNames.TaskAgent);
+        graph.Connect(AgentNames.TaskAgent, AgentNames.UserAgent);
 
         var finalState = await graph.RunAsync(routingNodeName, new NodeState(userState) { Source = source });
 

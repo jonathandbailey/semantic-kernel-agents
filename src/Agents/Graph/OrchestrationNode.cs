@@ -1,11 +1,12 @@
-﻿using System.Text;
-using Agents.Build;
-using Microsoft.SemanticKernel;
+﻿using Agents.Build;
 using Microsoft.SemanticKernel.ChatCompletion;
+using System.Text;
+using Microsoft.SemanticKernel;
+using Todo.Core.Vacations;
 
 namespace Agents.Graph
 {
-    public class AgentNode(string name, IAgentProvider agentProvider) : INode
+    public class OrchestrationNode(string name, IVacationPlanService vacationPlanService, IAgentProvider agentProvider) : INode
     {
         public async Task<NodeState> InvokeAsync(NodeState state)
         {
@@ -17,9 +18,13 @@ namespace Agents.Graph
             {
                 Request = new ChatMessageContent(AuthorRole.User, request),
                 Response = new ChatMessageContent(),
-                Arguments = AddHeadersToArguments(state.AgentState.Arguments, state.Headers),
+                Arguments = state.AgentState.Arguments,
                 SessionId = state.AgentState.SessionId,
             };
+
+            var arguments = await GetArguments(state);
+
+            requestState.Arguments.Add("travel_task_list", arguments);
 
             var responseState = await agent.InvokeAsync(requestState);
 
@@ -32,23 +37,24 @@ namespace Agents.Graph
                 stringBuilder.AppendLine(header);
             }
 
-            return new NodeState(responseState) { Source = Name, Headers = stringBuilder.ToString()};
+            return new NodeState(responseState) { Source = Name, Headers = stringBuilder.ToString() };
         }
 
-        private Dictionary<string, string> AddHeadersToArguments(Dictionary<string, string> arguments, string content)
+        private async Task<string> GetArguments(NodeState state)
         {
-            var headers = AgentHeaderParser.ExtractHeaders(content);
+            var vacationPlan = await vacationPlanService.GetAsync(state.VacationPlanId);
 
-            var headerValues = AgentHeaderParser.ExtractHeaderValues(headers, "task-id");
+            var stringBuilder = new StringBuilder();
 
-            if (headerValues.ContainsKey("task-id"))
+            foreach (var vacationPlanStage in vacationPlan.Stages)
             {
-                arguments.Add("TaskId", headerValues["task-id"]);
+                stringBuilder.AppendLine($"[{vacationPlanStage.Stage} - '{vacationPlanStage.Description}' :{vacationPlanStage.Status}]");
             }
 
-            return arguments;
+            return stringBuilder.ToString();
         }
 
         public string Name { get; } = name;
     }
+
 }

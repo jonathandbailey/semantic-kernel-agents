@@ -14,7 +14,7 @@ namespace Agents.Middleware
             }
             catch (HttpOperationException exception)
             {
-                var agentException = new AgentException("An error occurred during HTTP operation.", exception, exception.StatusCode);
+                var agentException = new AgentException($"An error occurred during HTTP operation:{exception.Message}", exception, exception.StatusCode);
 
                 logger.LogError($"HTTP Operation Error in Agent : {agentName} :{exception.Message}", agentException);
                 
@@ -23,7 +23,7 @@ namespace Agents.Middleware
             
             catch (Exception e)
             {   
-                var agentException =  new AgentException("An unexpected error occurred.", e);
+                var agentException =  new AgentException($"An unexpected error occurred :{e.Message}", e);
 
                 logger.LogError($"Unexpected error in Agent : {agentName} :{e.Message}", agentException);
 

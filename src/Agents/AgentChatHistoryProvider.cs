@@ -1,5 +1,4 @@
 ﻿using Microsoft.SemanticKernel.Agents;
-using Microsoft.SemanticKernel.ChatCompletion;
 using Todo.Core.A2A;
 using Todo.Infrastructure.Azure;
 
@@ -17,7 +16,7 @@ public class AgentChatHistoryProvider(IChatHistoryRepository chatHistoryReposito
 
         foreach (var chatMessageContent in messages)
         {
-            if (!string.IsNullOrEmpty(chatMessageContent.Content) && chatMessageContent.Role != AuthorRole.Tool)
+            if (!string.IsNullOrEmpty(chatMessageContent.Content))
             {
                 convertedMessages.Add(chatMessageContent.ToMessage());
             }
