@@ -32,7 +32,7 @@ public class TodoService(IUserRepository userRepository, IUserMessageSender user
         {
             Message = responseState.AgentState.Response.Content!, 
             SessionId = responseState.AgentState.SessionId, 
-            VacationPlanId = vacationPlan.Id,
+            VacationPlanId = responseState.VacationPlanId,
             Source = responseState.Source
         };
     

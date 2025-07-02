@@ -30,18 +30,22 @@ public class OrchestrationService(IAgentProvider agentProvider, IVacationPlanSer
         graph.AddNode(new HeaderRoutingNode(routingNodeName, AgentNames.UserAgent));
         graph.AddNode(new OrchestrationNode(AgentNames.UserAgent, vacationPlanService, agentProvider));
         graph.AddNode(new AgentNode(AgentNames.AccommodationAgent, agentProvider));
-        
-        graph.Connect(routingNodeName, AgentNames.UserAgent);
-        graph.Connect(routingNodeName, AgentNames.AccommodationAgent);
-
-        graph.Connect(AgentNames.UserAgent, AgentNames.AccommodationAgent);
-
+        graph.AddNode(new AgentNode(AgentNames.TravelAgent, agentProvider));
         graph.AddNode(new AgentNode(AgentNames.TaskAgent, agentProvider));
 
+        graph.Connect(routingNodeName, AgentNames.UserAgent);
+        graph.Connect(routingNodeName, AgentNames.AccommodationAgent);
+        graph.Connect(routingNodeName, AgentNames.TravelAgent);
+
+        graph.Connect(AgentNames.UserAgent, AgentNames.AccommodationAgent);
+        graph.Connect(AgentNames.UserAgent, AgentNames.TravelAgent);
+
         graph.Connect(AgentNames.AccommodationAgent, AgentNames.TaskAgent);
+        graph.Connect(AgentNames.TravelAgent, AgentNames.TaskAgent);
+        
         graph.Connect(AgentNames.TaskAgent, AgentNames.UserAgent);
 
-        var finalState = await graph.RunAsync(routingNodeName, new NodeState(userState) { Source = source });
+        var finalState = await graph.RunAsync(routingNodeName, new NodeState(userState) { Source = source, VacationPlanId = vacationPlanId});
 
         return finalState;
     }

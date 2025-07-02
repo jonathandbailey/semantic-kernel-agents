@@ -13,8 +13,7 @@ public class VacationPlanService(IVacationPlanRepository vacationPlanRepository)
 
             vacationPlan.AddStage(new TravelPlan(Guid.NewGuid(), "Accommodation", "All tasks related to booking accommodation.", PlanStage.Accommodation, PlanStatus.Open));
             vacationPlan.AddStage(new TravelPlan(Guid.NewGuid(), "Travel", "All tasks related to getting to and from the destination.", PlanStage.Travel, PlanStatus.Open));
-            vacationPlan.AddStage(new TravelPlan(Guid.NewGuid(), "Budget", "All tasks related to budget planning for the trip.", PlanStage.Budget, PlanStatus.Open));
-
+            
             await vacationPlanRepository.Save(vacationPlan);
 
             return vacationPlan;

@@ -8,5 +8,7 @@ public static class AgentNames
 
     public const string UserAgent = "User";
 
+    public const string TravelAgent = "Travel";
+
     public const string AccommodationAgent = "Accommodation";
 }

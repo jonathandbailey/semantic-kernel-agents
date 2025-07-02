@@ -37,7 +37,7 @@ namespace Agents.Graph
                 stringBuilder.AppendLine(header);
             }
 
-            return new NodeState(responseState) { Source = Name, Headers = stringBuilder.ToString() };
+            return new NodeState(responseState) { Source = Name, Headers = stringBuilder.ToString(), VacationPlanId = state.VacationPlanId};
         }
 
         private async Task<string> GetArguments(NodeState state)
