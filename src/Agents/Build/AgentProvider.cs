@@ -34,6 +34,7 @@ public class AgentProvider(
       
         agentBuild.Use(new AgentExceptionHandlingMiddleware(agentLogger, agent.Name));
         agentBuild.Use(new AgentTraceMiddleware(agent.Name));
+        agentBuild.Use(new AgentConversationsMiddleware(agentChatHistoryProvider));
         agentBuild.Use(new AgentChatHistoryMiddleware(agentChatHistoryProvider, agent.Name));
 
         agentBuild.Use((IAgentMiddleware)agent);

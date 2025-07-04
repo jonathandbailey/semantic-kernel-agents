@@ -52,6 +52,53 @@ public class ChatHistoryRepository : IChatHistoryRepository
         }
     }
 
+    public async Task<string> GetConversationAsync(string name)
+    {
+        var blobClient = _blobContainerClient.GetBlobClient(name);
+        var exists = (await blobClient.ExistsAsync()).Value;
+
+        if (!exists)
+        {
+            return string.Empty;
+        }
+
+        var blob = await _blobContainerClient.DownloadBlobAsync(name);
+
+        Verify.NotNullOrWhiteSpace(blob);
+        
+        return blob;
+    }
+
+    public async Task SaveConversationAsync(string name, string conversation)
+    {
+        Verify.NotNullOrWhiteSpace(name);
+
+        try
+        {
+            var blobClient = _blobContainerClient.GetBlobClient(name);
+     
+            Verify.NotNullOrWhiteSpace(conversation);
+
+            using var stream = new MemoryStream();
+            using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(conversation));
+            await blobClient.UploadAsync(memoryStream, overwrite: true);
+        }
+        catch (RequestFailedException requestFailedException)
+        {
+            _logger.LogError(requestFailedException,
+                "Azure Request Failed to agent conversation to blob storage container {containerName} : {errorCode}",
+                _blobContainerClient.Name, requestFailedException.ErrorCode);
+            throw;
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception,
+                "Unknown Exception trying to save agent conversation to blob storage container {containerName}",
+                _blobContainerClient.Name);
+            throw;
+        }
+    }
+
     public async Task<List<Message>> GetChatHistoryAsync(string name)
     {
         try
@@ -95,4 +142,6 @@ public interface IChatHistoryRepository
 {
     Task<List<Message>> GetChatHistoryAsync(string name);
     Task SaveChatHistoryAsync(string name, List<Message> messages);
+    Task<string> GetConversationAsync(string name);
+    Task SaveConversationAsync(string name, string conversation);
 }

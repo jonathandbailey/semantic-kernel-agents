@@ -1,4 +1,5 @@
-﻿using Microsoft.SemanticKernel.Agents;
+﻿using System.Text;
+using Microsoft.SemanticKernel.Agents;
 using Todo.Core.A2A;
 using Todo.Infrastructure.Azure;
 
@@ -39,9 +40,40 @@ public class AgentChatHistoryProvider(IChatHistoryRepository chatHistoryReposito
         return chatThread;
     }
 
+    public async Task AddToConversation(string sessionId, ChatHistoryAgentThread agentThread, string agentName)
+    {
+        var newestMessages = agentThread.ChatHistory.TakeLast(2).ToList();
+
+        if (!newestMessages.Any())
+        {
+            return;
+        }
+
+        var filename = GetConversationFileName(sessionId);
+
+        var conversation = await chatHistoryRepository.GetConversationAsync(filename);
+
+        var stringBuilder = new StringBuilder(conversation);
+
+        foreach (var chatMessageContent in newestMessages)
+        {
+            var content = AgentHeaderParser.RemoveHeaders(chatMessageContent.Content!);
+            
+            stringBuilder.AppendLine($"**[{agentName}]-[{chatMessageContent.Role}]** : {content}");
+            stringBuilder.AppendLine();
+        }
+
+        await chatHistoryRepository.SaveConversationAsync(filename, stringBuilder.ToString());
+    }
+
     private static string GetFileName(string sessionId, string agentName)
     {
         return $"{sessionId} - [{agentName}].json";
+    }
+
+    private static string GetConversationFileName(string sessionId)
+    {
+        return $"{sessionId} - conversation.md";
     }
 }
 
@@ -49,4 +81,5 @@ public interface IAgentChatHistoryProvider
 {
     Task<ChatHistoryAgentThread> LoadChatHistoryAsync(string agentName, string sessionId);
     Task SaveChatHistoryAsync(ChatHistoryAgentThread agentThread, string agentName, string sessionId);
+    Task AddToConversation(string sessionId, ChatHistoryAgentThread agentThread, string agentName);
 }

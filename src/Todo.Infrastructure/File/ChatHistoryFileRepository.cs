@@ -40,6 +40,53 @@ namespace Todo.Infrastructure.File
             }
         }
 
+        public async Task<string> GetConversationAsync(string name)
+        {
+            try
+            {
+                var filePath = Path.Combine(_directoryPath, name);
+
+                if (!System.IO.File.Exists(filePath))
+                {
+                    return string.Empty;
+                }
+
+                var json = await System.IO.File.ReadAllTextAsync(filePath);
+
+                Verify.NotNullOrWhiteSpace(json);
+
+                return json;
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception,
+                    "Exception trying to get chat history from file {filePath}",
+                    name);
+                throw;
+            }
+        }
+
+        public async Task SaveConversationAsync(string name, string conversation)
+        {
+            Verify.NotNullOrWhiteSpace(name);
+
+            try
+            {
+                Verify.NotNullOrWhiteSpace(conversation);
+
+                var filePath = Path.Combine(_directoryPath, name);
+
+                await System.IO.File.WriteAllTextAsync(filePath, conversation);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception,
+                    "Exception trying to save chat history to file {filePath}",
+                    name);
+                throw;
+            }
+        }
+
         public async Task<List<Message>> GetChatHistoryAsync(string name)
         {
             try
