@@ -12,24 +12,24 @@ namespace Agents.Tests
         [Fact]
         public async Task RunGraph_WithAgentToAgentInvoke_CallsCorrectAgent()
         {
-            const string routingNodeName = "Routing";
+            const string routingNodeName = NodeNames.Routing;
 
-            var moqUserNode = new Mock<INode>();
-            moqUserNode.Setup(x => x.Name).Returns("User");
-            var userAgentState = new AgentState(AgentNames.UserAgent)
+            var moqOrchestrationNode = new Mock<INode>();
+            moqOrchestrationNode.Setup(x => x.Name).Returns(NodeNames.Orchestration);
+            var orchestrationAgentState = new AgentState(AgentNames.UserAgent)
             {
                 Request = new ChatMessageContent(),
                 Response = new ChatMessageContent(AuthorRole.Assistant, string.Format(routingTemplate, AgentNames.AccommodationAgent))
             };
 
-            var userNodeState = new NodeState(userAgentState)
-                { Headers = string.Format(routingTemplate, AgentNames.AccommodationAgent) };
+            var userNodeState = new NodeState(orchestrationAgentState)
+                { Headers = string.Format(routingTemplate, AgentNames.AccommodationAgent), Route = NodeNames.Accommodation};
 
-            moqUserNode.Setup(x => x.InvokeAsync(It.IsAny<NodeState>())).ReturnsAsync(() => userNodeState);
+            moqOrchestrationNode.Setup(x => x.InvokeAsync(It.IsAny<NodeState>())).ReturnsAsync(() => userNodeState);
 
             var moqAccommodationNode = new Mock<INode>();
             
-            moqAccommodationNode.Setup(x => x.Name).Returns("Accommodation");
+            moqAccommodationNode.Setup(x => x.Name).Returns(NodeNames.Accommodation);
 
             var accommodationAgentState = new AgentState(AgentNames.AccommodationAgent)
             {
@@ -40,26 +40,28 @@ namespace Agents.Tests
             moqAccommodationNode.Setup(x => x.InvokeAsync(It.IsAny<NodeState>()))
                 .ReturnsAsync(new NodeState(accommodationAgentState));
 
-            var graph = new AgentGraph();
+            var graphBuilder = new GraphBuilder();
 
-            graph.AddNode(new HeaderRoutingNode(routingNodeName, AgentNames.UserAgent));
+            graphBuilder.AddNode(new RoutingNode(routingNodeName, NodeNames.Orchestration));
 
-            graph.AddNode(moqUserNode.Object);
-            graph.AddNode(moqAccommodationNode.Object);
+            graphBuilder.AddNode(moqOrchestrationNode.Object);
+            graphBuilder.AddNode(moqAccommodationNode.Object);
       
-            graph.Connect(routingNodeName, AgentNames.UserAgent);
-            graph.Connect(routingNodeName, AgentNames.AccommodationAgent);
+            graphBuilder.Connect(NodeNames.Routing, NodeNames.Orchestration);
+            graphBuilder.Connect(NodeNames.Routing, NodeNames.Accommodation);
 
-            graph.Connect(AgentNames.UserAgent, AgentNames.AccommodationAgent);
+            graphBuilder.Connect(NodeNames.Orchestration, NodeNames.Accommodation);
 
             var userState = new AgentState(routingNodeName) { Request = new ChatMessageContent() };
 
-            userState.Set("source", AgentNames.UserAgent);
+            userState.Set("source", AgentNames.OrchestratorAgent);
+
+            var graph = graphBuilder.Build();
 
             await graph.RunAsync(routingNodeName, new NodeState(userState));
 
             moqAccommodationNode.Verify(x => x.InvokeAsync(It.IsAny<NodeState>()));
-            moqUserNode.Verify(x => x.InvokeAsync(It.IsAny<NodeState>()));
+            moqOrchestrationNode.Verify(x => x.InvokeAsync(It.IsAny<NodeState>()));
         }
     }
 }

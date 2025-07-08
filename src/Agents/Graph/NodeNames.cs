@@ -2,8 +2,14 @@
 {
     public class NodeNames
     {
-        public const string Routing = "Routing";
+        public const string Routing = "RoutingNode";
 
-        public const string OrchestrationData = "OrchestrationData";
+        public const string Orchestration = "OrchestrationNode";
+
+        public const string Accommodation = "AccommodationNode";
+
+        public const string Task = "TaskNode";
+
+        public const string Travel = "TravelNode";
     }
 }

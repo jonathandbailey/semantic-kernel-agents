@@ -80,7 +80,7 @@ namespace Agents.Tests
 
             var graph = new AgentGraph();
 
-            graph.AddNode(new HeaderRoutingNode(RoutingNodeName, AgentNames.UserAgent));
+            graph.AddNode(new RoutingNode(RoutingNodeName, AgentNames.UserAgent));
             graph.AddNode(userAgentNode);
             graph.AddNode(accommodationNode);
 

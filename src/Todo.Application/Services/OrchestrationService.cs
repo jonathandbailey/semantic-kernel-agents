@@ -1,13 +1,13 @@
-﻿using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.ChatCompletion;
-using Agents;
+﻿using Agents;
 using Agents.Build;
 using Agents.Graph;
-using Todo.Core.Vacations;
+
+using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace Todo.Application.Services;
 
-public class OrchestrationService(IAgentProvider agentProvider, IVacationPlanService vacationPlanService) : IOrchestrationService
+public class OrchestrationService(IAgentProvider agentProvider) : IOrchestrationService
 {
     public async Task<NodeState> InvokeAsync(
         Guid sessionId,
@@ -22,30 +22,37 @@ public class OrchestrationService(IAgentProvider agentProvider, IVacationPlanSer
 
         userState.Set("VacationPlanId", vacationPlanId);
 
+        var routingNode = new RoutingNode(NodeNames.Routing, NodeNames.Orchestration);
+        var orchestrationAgent = await agentProvider.Create(AgentNames.OrchestratorAgent);
 
-        var routingNode = new HeaderRoutingNode(NodeNames.Routing, AgentNames.OrchestratorAgent);
+        var accommodationAgent = await agentProvider.Create(AgentNames.AccommodationAgent);
+        var travelAgent = await agentProvider.Create(AgentNames.TravelAgent);
 
-        var graph = new AgentGraph();
-
-        graph.AddNode(routingNode);
+        var taskAgent = await agentProvider.Create(AgentNames.TaskAgent);
         
-        graph.AddNode(new AgentNode(AgentNames.OrchestratorAgent, agentProvider));
+        var graphBuilder = new GraphBuilder();
+
+        graphBuilder.AddNode(routingNode);
         
-        graph.AddNode(new AgentNode(AgentNames.AccommodationAgent, agentProvider));
-        graph.AddNode(new AgentNode(AgentNames.TravelAgent, agentProvider));
-        graph.AddNode(new AgentNode(AgentNames.TaskAgent, agentProvider));
-
-        graph.Connect(NodeNames.Routing, AgentNames.OrchestratorAgent);
-        graph.Connect(NodeNames.Routing, AgentNames.AccommodationAgent);
-        graph.Connect(NodeNames.Routing, AgentNames.TravelAgent);
-
-        graph.Connect(AgentNames.OrchestratorAgent, AgentNames.AccommodationAgent);
-        graph.Connect(AgentNames.OrchestratorAgent, AgentNames.TravelAgent);
-
-        graph.Connect(AgentNames.AccommodationAgent, AgentNames.TaskAgent);
-        graph.Connect(AgentNames.TravelAgent, AgentNames.TaskAgent);
+        graphBuilder.AddNode(NodeNames.Orchestration, orchestrationAgent);
         
-        graph.Connect(AgentNames.TaskAgent, AgentNames.OrchestratorAgent);
+        graphBuilder.AddNode(NodeNames.Accommodation, accommodationAgent);
+        graphBuilder.AddNode(NodeNames.Travel, travelAgent);
+        graphBuilder.AddNode(NodeNames.Task, taskAgent);
+
+        graphBuilder.Connect(NodeNames.Routing, NodeNames.Orchestration);
+        graphBuilder.Connect(NodeNames.Routing, NodeNames.Accommodation);
+        graphBuilder.Connect(NodeNames.Routing, NodeNames.Travel);
+
+        graphBuilder.Connect(NodeNames.Orchestration, NodeNames.Accommodation);
+        graphBuilder.Connect(NodeNames.Orchestration, NodeNames.Travel);
+
+        graphBuilder.Connect(NodeNames.Accommodation, NodeNames.Task);
+        graphBuilder.Connect(NodeNames.Travel, NodeNames.Task);
+        
+        graphBuilder.Connect(NodeNames.Task, NodeNames.Orchestration);
+
+        var graph = graphBuilder.Build();
 
         var finalState = await graph.RunAsync(NodeNames.Routing, new NodeState(userState) { Source = source, VacationPlanId = vacationPlanId});
 

@@ -16,7 +16,7 @@ namespace Agents.Tests
             
             var graph = new AgentGraph();
 
-            graph.AddNode(new HeaderRoutingNode(routingNodeName, AgentNames.UserAgent));
+            graph.AddNode(new RoutingNode(routingNodeName, AgentNames.UserAgent));
 
             var userState = new AgentState(routingNodeName) { Request = new ChatMessageContent() };
         
@@ -34,7 +34,7 @@ namespace Agents.Tests
 
             var graph = new AgentGraph();
 
-            graph.AddNode(new HeaderRoutingNode(routingNodeName, AgentNames.UserAgent));
+            graph.AddNode(new RoutingNode(routingNodeName, AgentNames.UserAgent));
 
             var userState = new AgentState(routingNodeName) { Request = new ChatMessageContent() };
 
@@ -66,7 +66,7 @@ namespace Agents.Tests
 
             var graph = new AgentGraph();
 
-            graph.AddNode(new HeaderRoutingNode(routingNodeName, AgentNames.UserAgent));
+            graph.AddNode(new RoutingNode(routingNodeName, AgentNames.UserAgent));
 
             graph.AddNode(moqUserNode.Object);
 
@@ -103,7 +103,7 @@ namespace Agents.Tests
 
             var graph = new AgentGraph();
 
-            graph.AddNode(new HeaderRoutingNode(routingNodeName, AgentNames.UserAgent));
+            graph.AddNode(new RoutingNode(routingNodeName, AgentNames.UserAgent));
 
             graph.AddNode(moqUserNode.Object);
             graph.AddNode(moqAccommodationNode.Object);

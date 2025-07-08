@@ -1,16 +1,13 @@
-﻿using Agents.Build;
-using Microsoft.SemanticKernel;
+﻿using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using System.Text;
 
 namespace Agents.Graph
 {
-    public class AgentNode(string name, IAgentProvider agentProvider) : INode
+    public class AgentNode2(string name, IAgent agent, GraphRegistry graphRegistry) : INode
     {
         public async Task<NodeState> InvokeAsync(NodeState state)
         {
-            var agent = await agentProvider.Create(Name);
-  
             var requestState = PreProcess(state);
 
             var responseState = await agent.InvokeAsync(requestState);
@@ -55,7 +52,9 @@ namespace Agents.Graph
 
             if (headerValues.ContainsKey("agent-invoke"))
             {
-                route = headerValues["agent-invoke"];
+                var headerValue = headerValues["agent-invoke"];
+                
+                route = graphRegistry.Nodes[headerValue];
             }
 
             return new NodeState(agentState) { Source = Name, Headers = stringBuilder.ToString(), VacationPlanId = state.VacationPlanId, Route = route};
@@ -76,6 +75,7 @@ namespace Agents.Graph
         }
 
         public string Name { get; } = name;
+
         public Guid Id { get; } = Guid.NewGuid();
     }
 }
