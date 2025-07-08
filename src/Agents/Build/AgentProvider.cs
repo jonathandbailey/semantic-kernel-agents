@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.SemanticKernel;
 using Todo.Core.Users;
+using Todo.Core.Vacations;
 
 namespace Agents.Build;
 
@@ -12,6 +13,7 @@ public class AgentProvider(
     ILogger<IAgent> agentLogger,
     IAgentFactory agentFactory,
     IUserMessageSender userMessageSender,
+    IVacationPlanService vacationPlanService,
     IOptions<List<AgentSettings>> agentSettings) : IAgentProvider
 {
     private readonly List<AgentSettings> _agentSettings = agentSettings.Value;
@@ -34,6 +36,12 @@ public class AgentProvider(
       
         agentBuild.Use(new AgentExceptionHandlingMiddleware(agentLogger, agent.Name));
         agentBuild.Use(new AgentTraceMiddleware(agent.Name));
+
+        if (agent.Name == AgentNames.OrchestratorAgent)
+        {
+            agentBuild.Use(new TravelDataMiddleware(vacationPlanService));
+        }
+
         agentBuild.Use(new AgentConversationsMiddleware(agentChatHistoryProvider));
         agentBuild.Use(new AgentChatHistoryMiddleware(agentChatHistoryProvider, agent.Name));
 

@@ -14,7 +14,7 @@ namespace Agents.Middleware
 
             var response = await next(state);
 
-            chatHistory = response.Get<ChatHistoryAgentThread>("ChatHistory");
+            chatHistory = state.AgentThread;
 
             await agentChatHistoryProvider.SaveChatHistoryAsync(chatHistory, agentName, sessionId);
 
@@ -23,14 +23,12 @@ namespace Agents.Middleware
 
         private void AppendChatHistory(ChatHistoryAgentThread chatHistory, AgentState agentState)
         {
-            var stateChatHistory = agentState.HasKey("ChatHistory") ? agentState.Get<ChatHistoryAgentThread>("ChatHistory") : new ChatHistoryAgentThread();
+            var stateChatHistory = agentState.AgentThread;
 
             foreach (var message in chatHistory.ChatHistory)
             {
                 stateChatHistory.ChatHistory.AddMessage(message.Role, message.Content!);
             }
-
-            agentState.Set("ChatHistory", stateChatHistory);
         }
     }
 }

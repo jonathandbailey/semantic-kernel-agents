@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Microsoft.SemanticKernel;
+﻿using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
 
@@ -11,10 +10,8 @@ public class Agent(ChatCompletionAgent chatCompletionAgent, string name, IAgentM
 
     public override async Task<AgentState> InvokeAsync(AgentState state)
     {
-        var chatHistory = state.Get<ChatHistoryAgentThread>("ChatHistory");
-
-        var stringBuilder = new StringBuilder();
-
+        var chatHistory = state.AgentThread;
+   
         var kernelArguments = new KernelArguments();
         
         foreach (var argument in state.Arguments)
@@ -26,7 +23,7 @@ public class Agent(ChatCompletionAgent chatCompletionAgent, string name, IAgentM
 
         await foreach (var response in chatCompletionAgent.InvokeStreamingAsync(state.Request, chatHistory, options: agentInvokeOptions))
         {
-            stringBuilder.Append(await agentMessageHandler.Handle(response.Message));
+            await agentMessageHandler.Handle(response.Message);
         }
 
         var content = await agentMessageHandler.FlushMessages();

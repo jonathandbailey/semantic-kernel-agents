@@ -1,6 +1,4 @@
-﻿using Microsoft.SemanticKernel.Agents;
-
-namespace Agents.Middleware
+﻿namespace Agents.Middleware
 {
     public class AgentConversationsMiddleware(IAgentChatHistoryProvider agentChatHistoryProvider) : IAgentMiddleware
     {
@@ -8,7 +6,7 @@ namespace Agents.Middleware
         {
             var response = await next(state);
 
-            var chatHistory = response.Get<ChatHistoryAgentThread>("ChatHistory");
+            var chatHistory = state.AgentThread;
 
             await agentChatHistoryProvider.AddToConversation(state.SessionId.ToString(), chatHistory, state.AgentName);
 

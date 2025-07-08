@@ -1,4 +1,5 @@
 ﻿using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.Agents;
 
 namespace Agents
 {
@@ -11,6 +12,8 @@ namespace Agents
         public ChatMessageContent Response { get; set; } = new ChatMessageContent();
 
         public Guid SessionId { get; set; } = Guid.Empty;
+
+        public ChatHistoryAgentThread AgentThread { get; set; } = new ChatHistoryAgentThread();
 
         public Dictionary<string, string> Arguments { get; set; } = [];
 
@@ -27,28 +30,7 @@ namespace Agents
         {
             return Data.ContainsKey(key);
         }
-
-        public bool TryGet<T>(string key, out T value)
-        {
-            if (Data.TryGetValue(key, out var val) && val is T tVal)
-            {
-                value = tVal;
-                return true;
-            }
-            value = default!;
-            return false;
-        }
-
-        public T GetOrDefault<T>(string key)
-        {
-            if (Data.TryGetValue(key, out var val) && val is T tVal)
-            {
-                
-                return tVal;
-            }
-            
-            return default!;
-        }
+      
 
         public void Set<T>(string key, T value) => Data[key] = value!;
     }

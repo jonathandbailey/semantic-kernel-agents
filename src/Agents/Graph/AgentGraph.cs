@@ -47,5 +47,12 @@
 
             return agentState;
         }
+
+        public async Task<NodeState> RunAsync(INode node, NodeState nodeState)
+        {
+            var agentState = await node.InvokeAsync(nodeState);
+
+            return agentState;
+        }
     }
 }

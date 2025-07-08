@@ -1,7 +1,7 @@
-﻿using System.Text;
-using Agents.Build;
+﻿using Agents.Build;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
+using System.Text;
 
 namespace Agents.Graph
 {
@@ -10,7 +10,16 @@ namespace Agents.Graph
         public async Task<NodeState> InvokeAsync(NodeState state)
         {
             var agent = await agentProvider.Create(Name);
+  
+            var requestState = PreProcess(state);
 
+            var responseState = await agent.InvokeAsync(requestState);
+
+            return PostProcess(responseState, state);
+        }
+
+        private AgentState PreProcess(NodeState state)
+        {
             var request = AgentHeaderParser.RemoveHeaders(state.AgentState.Response.Content!);
 
             var requestState = new AgentState(Name)
@@ -21,9 +30,17 @@ namespace Agents.Graph
                 SessionId = state.AgentState.SessionId,
             };
 
-            var responseState = await agent.InvokeAsync(requestState);
+            if (state.AgentState.HasKey("VacationPlanId"))
+            {
+                requestState.Set("VacationPlanId", state.AgentState.Get<Guid>("VacationPlanId"));
+            }
 
-            var headers = AgentHeaderParser.ExtractHeaders(responseState.Response.Content!);
+            return requestState;
+        }
+
+        private NodeState PostProcess(AgentState agentState, NodeState state)
+        {
+            var headers = AgentHeaderParser.ExtractHeaders(agentState.Response.Content!);
 
             var stringBuilder = new StringBuilder();
 
@@ -32,7 +49,16 @@ namespace Agents.Graph
                 stringBuilder.AppendLine(header);
             }
 
-            return new NodeState(responseState) { Source = Name, Headers = stringBuilder.ToString(), VacationPlanId = state.VacationPlanId};
+            var headerValues = AgentHeaderParser.ExtractHeaderValues(headers, "agent-invoke");
+
+            var route = string.Empty;
+
+            if (headerValues.ContainsKey("agent-invoke"))
+            {
+                route = headerValues["agent-invoke"];
+            }
+
+            return new NodeState(agentState) { Source = Name, Headers = stringBuilder.ToString(), VacationPlanId = state.VacationPlanId, Route = route};
         }
 
         private Dictionary<string, string> AddHeadersToArguments(Dictionary<string, string> arguments, string content)

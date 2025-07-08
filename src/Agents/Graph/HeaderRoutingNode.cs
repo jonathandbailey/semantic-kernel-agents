@@ -14,7 +14,9 @@ namespace Agents.Graph
             state.Headers = string.Format(routingTemplate, state.Source);
 
             state.AgentState.Response = new ChatMessageContent(AuthorRole.Assistant, state.AgentState.Request.Content);
-            
+
+            state.Route = state.Source;
+
             return Task.FromResult(state);
         }
 
