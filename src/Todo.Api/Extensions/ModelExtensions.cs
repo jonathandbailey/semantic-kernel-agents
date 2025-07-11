@@ -7,11 +7,13 @@ namespace Todo.Api.Extensions
     {
         public static UserRequest ToUserRequest(this UserRequestDto userRequestDto, Guid userId)
         {
+            var sessionId = Guid.TryParse(userRequestDto.SessionId, out var guid) ? guid : Guid.Empty;
+            
             return new UserRequest
             {
                 UserId = userId, 
                 Message = userRequestDto.Message,
-                SessionId = userRequestDto.SessionId,
+                SessionId = sessionId,
                 TaskId = userRequestDto.TaskId,
                 VacationPlanId = userRequestDto.VacationPlanId,
                 Source = userRequestDto.Source

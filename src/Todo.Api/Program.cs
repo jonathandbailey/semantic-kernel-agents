@@ -21,6 +21,18 @@ builder.Host.UseSerilog();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicyLocalHost", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
 builder.Services.AddSignalR();
 
 var loggerFactory = AppOpenTelemetry.CreateLoggerFactory(
@@ -52,6 +64,8 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.MapHub<UserHub>(builder.Configuration.GetRequiredSetting<string>(SettingsConstants.HubSettingsUrl));
 
 app.UseHttpsRedirection();
+
+app.UseCors("CorsPolicyLocalHost");
 
 app.UseAuthorization();
 

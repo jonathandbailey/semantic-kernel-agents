@@ -1,11 +1,11 @@
 import './App.css'
-import ConverstionPage from './pages/ConversationPage'
+import ConversationPage from './pages/ConversationPage'
 
 function App() {
 
   return (
     <>
-      <ConverstionPage />
+      <ConversationPage />
     </>
   )
 }
