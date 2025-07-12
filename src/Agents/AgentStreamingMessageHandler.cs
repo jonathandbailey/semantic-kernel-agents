@@ -9,10 +9,12 @@ public class AgentStreamingMessageHandler(Func<StreamingChatMessageContent, bool
     private readonly StringBuilder _buffer = new();
     private bool _isHeaderRemoved;
     private bool _canStream = true;
-    private Guid _id = Guid.NewGuid();
+    private Guid _requestId;
    
-    public async Task<string> Handle(StreamingChatMessageContent chatMessageContent)
+    public async Task<string> Handle(StreamingChatMessageContent chatMessageContent, Guid requestId)
     {
+        _requestId = requestId;
+        
         _buffer.Append(chatMessageContent.Content);
 
         if (!_canStream) return chatMessageContent.Content!;
@@ -20,7 +22,7 @@ public class AgentStreamingMessageHandler(Func<StreamingChatMessageContent, bool
 
         if (_isHeaderRemoved)
         {
-            await messageCallback(chatMessageContent, false, _id);
+            await messageCallback(chatMessageContent, false, requestId);
             return chatMessageContent.Content!;
         }
 
@@ -36,10 +38,9 @@ public class AgentStreamingMessageHandler(Func<StreamingChatMessageContent, bool
 
         var content = AgentHeaderParser.RemoveHeaders(_buffer.ToString());
        
-        _id = Guid.NewGuid();
-
+  
         var contentMessage = new StreamingChatMessageContent(chatMessageContent.Role, content);
-        await messageCallback(contentMessage, false,_id);
+        await messageCallback(contentMessage, false, requestId);
 
         return content;
     }
@@ -47,7 +48,7 @@ public class AgentStreamingMessageHandler(Func<StreamingChatMessageContent, bool
     public async Task<string> FlushMessages()
     {
         var contentMessage = new StreamingChatMessageContent(AuthorRole.Assistant, string.Empty);
-        await messageCallback(contentMessage, true, _id);
+        await messageCallback(contentMessage, true, _requestId);
 
         var content = _buffer.ToString();
 

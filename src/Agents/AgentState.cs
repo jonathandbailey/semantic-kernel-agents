@@ -5,6 +5,8 @@ namespace Agents
 {
     public class AgentState(string agentName)
     {
+        public Guid RequestId { get; set; } = Guid.NewGuid();
+        
         public string AgentName { get; } = agentName;
 
         public required ChatMessageContent Request { get; set; }

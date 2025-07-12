@@ -10,7 +10,8 @@ interface UserState {
 
 const defaultUser: User = {
     id: "",
-    sessionId: ""
+    sessionId: "",
+    source: ""
 };
 
 export const useUserStore = create<UserState>((set, get) => ({

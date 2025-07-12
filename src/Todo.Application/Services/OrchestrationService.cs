@@ -14,13 +14,15 @@ public class OrchestrationService(IAgentProvider agentProvider) : IOrchestration
         string message,
         Dictionary<string, string> arguments,
         string source,
-        Guid vacationPlanId)
+        Guid vacationPlanId,
+        Guid id)
     {
         var agentName = string.IsNullOrEmpty(source) ? AgentNames.UserAgent : source;
 
         var userState = CreateState(agentName, sessionId, message, arguments);
 
         userState.Set("VacationPlanId", vacationPlanId);
+        userState.RequestId = id;
 
         var routingNode = new RoutingNode(NodeNames.Routing, NodeNames.Orchestration);
         var orchestrationAgent = await agentProvider.Create(AgentNames.OrchestratorAgent);
@@ -78,5 +80,5 @@ public class OrchestrationService(IAgentProvider agentProvider) : IOrchestration
 
 public interface IOrchestrationService
 {
-    Task<NodeState> InvokeAsync(Guid sessionId, string message, Dictionary<string,string> arguments, string source, Guid vacationPlanId);
+    Task<NodeState> InvokeAsync(Guid sessionId, string message, Dictionary<string,string> arguments, string source, Guid vacationPlanId, Guid id);
 }

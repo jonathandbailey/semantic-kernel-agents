@@ -1,4 +1,3 @@
-import ChatHistory from "../components/ChatHistory/ChatHistory";
 import ChatInput from "../components/ChatInput/ChatInput";
 import promptService from "../services/promptService";
 import { useConversationStore } from "../store/useConversationStore";
@@ -6,46 +5,56 @@ import { useMutation } from "@tanstack/react-query";
 import type { SendUserResponse } from "../types/sendUserResponse";
 import signalRService from "../services/streamingService";
 import { useUserStore } from "../store/useUserStore";
+import type { Interaction } from "../types/interaction";
+import { useState } from "react";
+import UserMessage from "../components/UserMessage/UserMessage";
+import AssistantMessage from "../components/AssistantMessage/AssistantMessage";
 
 
 const ConversationPage = () => {
-    const messages = useConversationStore(state => state.messages);
+    const [uiInteractions, setUiInteractions] = useState<Interaction[]>([]);
+
+
     const addMessage = useConversationStore(state => state.addMessage);
-    const updateMessage = useConversationStore(state => state.updateMessage);
 
     const user = useUserStore(state => state.user);
     const updateUser = useUserStore(state => state.updateUser);
 
     signalRService.on("user", (response: SendUserResponse) => {
 
-        const existingMessage = messages.find(msg => msg.id === response.id);
+        console.log("Received response from SignalR:", response);
+        console.log("Current UI Interactions:", uiInteractions);
+        setUiInteractions((prev) =>
+            prev.map((interaction) => {
+                if (interaction.id === response.id) {
+                    console.log("Updating interaction:", interaction);
+                    return {
+                        ...interaction,
+                        assistantMessage: {
+                            ...interaction.assistantMessage,
+                            text: interaction.assistantMessage.text + response.message,
+                            isLoading: false,
+                            hasError: false,
+                            errorMessage: "",
+                        },
+                    };
+                }
 
-        if (!existingMessage) {
-            addMessage({
-                id: response.id,
-                sender: "assistant" as "assistant",
-                text: response.message,
-            });
-        } else {
-            updateMessage({
-                ...existingMessage,
-                text: existingMessage.text + response.message,
-            });
-        }
+                return interaction;
+            })
+        );
     });
 
     const promptMutation = useMutation({
-        mutationFn: async (message: string) => {
-
-            const request = { message: message, sessionId: user.sessionId, id: crypto.randomUUID() } as SendUserResponse;
+        mutationFn: async ({ id, message }: { id: string; message: string }) => {
+            const request = { id, message, sessionId: user.sessionId, source: user.source } as SendUserResponse;
             console.log(request)
             return await promptService.generate(request);
         },
         onSuccess: (response: SendUserResponse) => {
-            updateUser({ sessionId: response.sessionId });
+            updateUser({ sessionId: response.sessionId, source: response.source });
         },
         onError: () => {
-
             addMessage({
                 id: crypto.randomUUID(),
                 sender: "assistant" as "assistant",
@@ -55,19 +64,36 @@ const ConversationPage = () => {
     });
 
     const handleOnEnter = (value: string) => {
-        const newMessage = {
+        const newInteraction: Interaction = {
             id: crypto.randomUUID(),
-            sender: "user" as "user",
-            text: value
-        };
-        addMessage(newMessage);
+            userMessage: {
+                id: crypto.randomUUID(),
+                sender: "user" as "user",
+                text: value
+            },
+            assistantMessage: {
+                id: crypto.randomUUID(),
+                text: "",
+                isLoading: true,
+                hasError: false,
+                errorMessage: "",
+            },
+        }
 
-        promptMutation.mutate(value);
+        setUiInteractions((prev) => [...prev, newInteraction]);
+        promptMutation.mutate({ message: value, id: newInteraction.id });
     };
 
     return (
         <>
-            <ChatHistory messages={messages} />
+            <div style={{ flex: 1, overflowY: "auto" }}>
+                {uiInteractions.map((interaction) => (
+                    <div key={interaction.id}>
+                        <UserMessage message={interaction.userMessage} />
+                        <AssistantMessage message={interaction.assistantMessage} />
+                    </div>
+                ))}
+            </div>
             <ChatInput onEnter={handleOnEnter} />
         </>
     );

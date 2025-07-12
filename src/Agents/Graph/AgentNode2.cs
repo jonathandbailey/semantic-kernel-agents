@@ -25,6 +25,7 @@ namespace Agents.Graph
                 Response = new ChatMessageContent(),
                 Arguments = AddHeadersToArguments(state.AgentState.Arguments, state.Headers),
                 SessionId = state.AgentState.SessionId,
+                RequestId = state.AgentState.RequestId
             };
 
             if (state.AgentState.HasKey("VacationPlanId"))

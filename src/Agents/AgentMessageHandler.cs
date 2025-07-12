@@ -8,7 +8,7 @@ public class AgentMessageHandler : IAgentMessageHandler
 {
     private readonly StringBuilder _buffer = new();
 
-    public Task<string> Handle(StreamingChatMessageContent chatMessageContent)
+    public Task<string> Handle(StreamingChatMessageContent chatMessageContent, Guid requestId)
     {
         _buffer.Append(chatMessageContent.Content);
 
@@ -27,6 +27,6 @@ public class AgentMessageHandler : IAgentMessageHandler
 
 public interface IAgentMessageHandler
 {
-    Task<string> Handle(StreamingChatMessageContent chatMessageContent);
+    Task<string> Handle(StreamingChatMessageContent chatMessageContent, Guid requestId);
     Task<string> FlushMessages();
 }

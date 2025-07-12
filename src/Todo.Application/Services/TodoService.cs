@@ -26,7 +26,7 @@ public class TodoService(IUserRepository userRepository, IUserMessageSender user
 
         var arguments = CreateArguments(vacationPlan);
 
-        var responseState = await orchestrationService.InvokeAsync(sessionId, notification.Message, arguments, notification.Source, vacationPlan.Id);
+        var responseState = await orchestrationService.InvokeAsync(sessionId, notification.Message, arguments, notification.Source, vacationPlan.Id, notification.Id);
       
         var payLoad = new UserResponseDto
         {

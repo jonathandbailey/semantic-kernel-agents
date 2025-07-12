@@ -5,6 +5,8 @@ namespace Todo.Application.Users
 {
     public class UserRequest : IRequest<UserResponseDto>
     {
+        public Guid Id { get; set; }
+        
         public Guid UserId { get; init; }
 
         public required string Message { get; set; }
