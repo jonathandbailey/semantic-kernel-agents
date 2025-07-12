@@ -3,11 +3,17 @@ import ChatInput from "../components/ChatInput/ChatInput";
 import promptService from "../services/promptService";
 import { useConversationStore } from "../store/useConversationStore";
 import { useMutation } from "@tanstack/react-query";
+import type { SendUserResponse } from "../types/sendUserResponse";
+import signalRService from "../services/streamingService";
 
 
 const ConversationPage = () => {
     const messages = useConversationStore(state => state.messages);
     const addMessage = useConversationStore(state => state.addMessage);
+
+    signalRService.on("user", (message: SendUserResponse) => {
+        console.log("Received message from SignalR:", message);
+    });
 
     const promptMutation = useMutation({
         mutationFn: async (message: string) => {
