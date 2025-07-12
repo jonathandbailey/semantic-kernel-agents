@@ -5,12 +5,16 @@ import { useConversationStore } from "../store/useConversationStore";
 import { useMutation } from "@tanstack/react-query";
 import type { SendUserResponse } from "../types/sendUserResponse";
 import signalRService from "../services/streamingService";
+import { useUserStore } from "../store/useUserStore";
 
 
 const ConversationPage = () => {
     const messages = useConversationStore(state => state.messages);
     const addMessage = useConversationStore(state => state.addMessage);
     const updateMessage = useConversationStore(state => state.updateMessage);
+
+    const user = useUserStore(state => state.user);
+    const updateUser = useUserStore(state => state.updateUser);
 
     signalRService.on("user", (response: SendUserResponse) => {
 
@@ -33,11 +37,13 @@ const ConversationPage = () => {
     const promptMutation = useMutation({
         mutationFn: async (message: string) => {
 
-            const request = { message: message, sessionId: "" };
+            const request = { message: message, sessionId: user.sessionId, id: crypto.randomUUID() } as SendUserResponse;
             console.log(request)
             return await promptService.generate(request);
         },
-        onSuccess: () => { },
+        onSuccess: (response: SendUserResponse) => {
+            updateUser({ sessionId: response.sessionId });
+        },
         onError: () => {
 
             addMessage({
