@@ -10,9 +10,24 @@ import signalRService from "../services/streamingService";
 const ConversationPage = () => {
     const messages = useConversationStore(state => state.messages);
     const addMessage = useConversationStore(state => state.addMessage);
+    const updateMessage = useConversationStore(state => state.updateMessage);
 
-    signalRService.on("user", (message: SendUserResponse) => {
-        console.log("Received message from SignalR:", message);
+    signalRService.on("user", (response: SendUserResponse) => {
+
+        const existingMessage = messages.find(msg => msg.id === response.id);
+
+        if (!existingMessage) {
+            addMessage({
+                id: response.id,
+                sender: "assistant" as "assistant",
+                text: response.message,
+            });
+        } else {
+            updateMessage({
+                ...existingMessage,
+                text: existingMessage.text + response.message,
+            });
+        }
     });
 
     const promptMutation = useMutation({
@@ -22,13 +37,7 @@ const ConversationPage = () => {
             console.log(request)
             return await promptService.generate(request);
         },
-        onSuccess: (response) => {
-            addMessage({
-                id: crypto.randomUUID(),
-                sender: "assistant" as "assistant",
-                text: response.message,
-            });
-        },
+        onSuccess: () => { },
         onError: () => {
 
             addMessage({
