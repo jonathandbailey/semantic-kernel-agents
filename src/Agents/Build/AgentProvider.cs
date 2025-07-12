@@ -25,9 +25,9 @@ public class AgentProvider(
         return BuildAgentMiddleware(agent);
     }
 
-    private async Task StreamingMessageCallback(StreamingChatMessageContent streamingChatMessageContent, bool isEndOfStream)
+    private async Task StreamingMessageCallback(StreamingChatMessageContent streamingChatMessageContent, bool isEndOfStream, Guid id)
     {
-        await userMessageSender.StreamingMessageCallback(streamingChatMessageContent.Content!, isEndOfStream);
+        await userMessageSender.StreamingMessageCallback(streamingChatMessageContent.Content!, isEndOfStream, id);
     }
 
     private IAgent BuildAgentMiddleware(IAgent agent)

@@ -27,9 +27,9 @@ namespace Todo.Api.Hubs
             _userId = userId;
         }
 
-        public async Task StreamingMessageCallback(string content, bool isEndOfStream)
+        public async Task StreamingMessageCallback(string content, bool isEndOfStream, Guid id)
         {
-            var payLoad = new UserResponseDto { Message = content, SessionId = _sessionId, IsEndOfStream = isEndOfStream };
+            var payLoad = new UserResponseDto {Id = id, Message = content, SessionId = _sessionId, IsEndOfStream = isEndOfStream };
 
             await RespondAsync(payLoad, _userId);
         }

@@ -2,6 +2,8 @@
 {
     public class UserResponseDto
     {
+        public Guid Id { get; set; }
+        
         public Guid SessionId { get; set; } = Guid.Empty;
 
         public string Message { get; set; } = string.Empty;

@@ -18,7 +18,7 @@ public class AgentFactory(
         return new Agent(chatCompletionAgent, agentSetting.Name, new AgentMessageHandler());
     }
 
-    public async Task<IAgent> Create(AgentSettings agentSetting, Func<StreamingChatMessageContent, bool, Task> streamingMessageCallback)
+    public async Task<IAgent> Create(AgentSettings agentSetting, Func<StreamingChatMessageContent, bool, Guid, Task> streamingMessageCallback)
     {
         var chatCompletionAgent = await CreateChatCompletionAgent(agentSetting);
 
@@ -78,5 +78,5 @@ public class AgentFactory(
 public interface IAgentFactory
 {
    Task<IAgent> Create(AgentSettings configuration);
-   Task<IAgent> Create(AgentSettings agentSetting, Func<StreamingChatMessageContent, bool, Task> streamingMessageCallback);
+   Task<IAgent> Create(AgentSettings agentSetting, Func<StreamingChatMessageContent, bool,Guid, Task> streamingMessageCallback);
 }
