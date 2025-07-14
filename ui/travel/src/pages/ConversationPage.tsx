@@ -20,6 +20,8 @@ const ConversationPage = () => {
     const user = useUserStore(state => state.user);
     const updateUser = useUserStore(state => state.updateUser);
 
+
+
     signalRService.on("user", (response: SendUserResponse) => {
 
         console.log("Received response from SignalR:", response);

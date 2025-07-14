@@ -1,5 +1,5 @@
 import './App.css'
-import ConversationPage from './pages/ConversationPage'
+import RootLayout from './components/Layout/RootLayout';
 import signalRService from './services/streamingService'
 
 signalRService.initialize();
@@ -8,7 +8,7 @@ function App() {
 
   return (
     <>
-      <ConversationPage />
+      <RootLayout />
     </>
   )
 }

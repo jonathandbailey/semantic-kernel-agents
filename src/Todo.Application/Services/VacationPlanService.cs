@@ -47,4 +47,16 @@ public class VacationPlanService(IVacationPlanRepository vacationPlanRepository)
 
         await vacationPlanRepository.Save(vacationPlan);
     }
+
+    public async Task<VacationPlan> Create()
+    {
+        var vacationPlan = new VacationPlan(Guid.NewGuid(), PlanStatus.Open, "Untitled", "No description available.");
+
+        vacationPlan.AddStage(new TravelPlan(Guid.NewGuid(), "Accommodation", "All tasks related to booking accommodation.", PlanStage.Accommodation, PlanStatus.Open));
+        vacationPlan.AddStage(new TravelPlan(Guid.NewGuid(), "Travel", "All tasks related to getting to and from the destination.", PlanStage.Travel, PlanStatus.Open));
+
+        await vacationPlanRepository.Save(vacationPlan);
+
+        return vacationPlan;
+    }
 }

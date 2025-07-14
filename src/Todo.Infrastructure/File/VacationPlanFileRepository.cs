@@ -58,11 +58,37 @@ namespace Todo.Infrastructure.File
                 throw;
             }
         }
+
+        public async Task<List<VacationPlanCatalogItem>> GetCatalog()
+        {
+            try
+            {
+                var filePath = Path.Combine(_directoryPath, $"VacationPlanCatalog.json");
+
+                var json = await System.IO.File.ReadAllTextAsync(filePath);
+
+                Verify.NotNullOrWhiteSpace(json);
+
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+                var vacationPlan = JsonSerializer.Deserialize<List<VacationPlanCatalogItem>>(json, options);
+
+                Verify.NotNull(vacationPlan);
+
+                return vacationPlan;
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Failed to Load Vacation Plan Catalog");
+                throw;
+            }
+        }
     }
 
     public interface IVacationPlanRepository
     {
         Task Save(VacationPlan vacationPlan);
         Task<VacationPlan> Load(Guid id);
+        Task<List<VacationPlanCatalogItem>> GetCatalog();
     }
 }
