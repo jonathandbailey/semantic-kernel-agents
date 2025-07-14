@@ -25,6 +25,7 @@ public class OrchestrationService(IAgentProvider agentProvider) : IOrchestration
         userState.RequestId = id;
 
         var routingNode = new RoutingNode(NodeNames.Routing, NodeNames.Orchestration);
+     
         var orchestrationAgent = await agentProvider.Create(AgentNames.OrchestratorAgent);
 
         var accommodationAgent = await agentProvider.Create(AgentNames.AccommodationAgent);

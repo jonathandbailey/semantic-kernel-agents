@@ -14,12 +14,12 @@ const RootLayout = () => {
 
 
 
-    const { data, error, isLoading } = useQuery({
+    const { data } = useQuery({
         queryKey: ["vacationPlanCatalog"],
         queryFn: () => vacationPlanService.getCatalog()
     });
 
-    const handleClick = (e: any) => { };
+    const handleClick = () => { };
 
     return (<>
         <BrowserRouter>

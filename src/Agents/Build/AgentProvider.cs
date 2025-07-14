@@ -42,6 +42,11 @@ public class AgentProvider(
             agentBuild.Use(new TravelDataMiddleware(vacationPlanService));
         }
 
+        if (agent.Name == AgentNames.AccommodationAgent)
+        {
+            agentBuild.Use(new TaskParserMiddleware());
+        }
+
         agentBuild.Use(new AgentConversationsMiddleware(agentChatHistoryProvider));
         agentBuild.Use(new AgentChatHistoryMiddleware(agentChatHistoryProvider, agent.Name));
 

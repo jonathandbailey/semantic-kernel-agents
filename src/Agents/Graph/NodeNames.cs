@@ -10,6 +10,8 @@
 
         public const string Task = "TaskNode";
 
+        public const string TaskParser = "TaskParserNode";
+
         public const string Travel = "TravelNode";
     }
 }

@@ -29,7 +29,8 @@ namespace Agents.Plugins
         [Description("Updates a Task in a Vacation Travel Plan")]
         public async Task<string> UpdateTravelTaskItem(
             [Description("VacationPlanId")]  Guid vacationPlanId, 
-            [Description("TaskId")] Guid taskId)
+            [Description("TaskId")] Guid taskId,
+            [Description("StageTasks")] string stageTasks)
         {
             await vacationPlanService.UpdateItemAsync(vacationPlanId, taskId);
 
