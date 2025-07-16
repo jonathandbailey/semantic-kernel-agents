@@ -11,11 +11,10 @@
         public string Description { get; }
 
         public PlanStage Stage { get; }
+
+        public List<StageTask> Tasks { get; private set; } = [];
         
-        public void UpdateStatus(PlanStatus status)
-        {
-            Status = status;
-        }
+        
 
         public TravelPlan(Guid id, string title, string description, PlanStage stage, PlanStatus status)
         {
@@ -24,6 +23,18 @@
             Title = title;
             Description = description;
             Stage = stage;
+        }
+
+        public void UpdateStatus(PlanStatus status, List<StageTask> stageTasks)
+        {
+            Status = status;
+
+            Tasks = stageTasks;
+        }
+
+        public void UpdateStatus(PlanStatus status)
+        {
+            Status = status;
         }
     }
 }

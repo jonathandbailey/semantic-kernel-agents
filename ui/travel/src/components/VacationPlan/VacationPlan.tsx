@@ -1,6 +1,7 @@
-
 import { Tabs, Typography } from "antd";
 import type { VacationPlanModel } from "../../types/vacationPlan";
+import { useVacationPlanStore } from "../../store/useVacationPlanStore";
+import { useEffect } from "react";
 
 const { Title } = Typography;
 
@@ -9,6 +10,12 @@ interface VacationPlanProps {
 }
 
 const VacationPlan = ({ item }: VacationPlanProps) => {
+    const setVacationPlan = useVacationPlanStore((state) => state.setVacationPlan);
+
+    useEffect(() => {
+        setVacationPlan(item);
+    }, [item, setVacationPlan]);
+
     return (
         <>
             <Title>

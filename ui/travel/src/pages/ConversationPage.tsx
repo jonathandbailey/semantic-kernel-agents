@@ -9,6 +9,7 @@ import type { Interaction } from "../types/interaction";
 import { useState } from "react";
 import UserMessage from "../components/UserMessage/UserMessage";
 import AssistantMessage from "../components/AssistantMessage/AssistantMessage";
+import { useVacationPlanStore } from "../store/useVacationPlanStore";
 
 
 const ConversationPage = () => {
@@ -19,6 +20,7 @@ const ConversationPage = () => {
 
     const user = useUserStore(state => state.user);
     const updateUser = useUserStore(state => state.updateUser);
+    const vacationPlanModel = useVacationPlanStore(state => state.vacationPlan);
 
 
 
@@ -49,7 +51,7 @@ const ConversationPage = () => {
 
     const promptMutation = useMutation({
         mutationFn: async ({ id, message }: { id: string; message: string }) => {
-            const request = { id, message, sessionId: user.sessionId, source: user.source } as SendUserResponse;
+            const request = { id, message, sessionId: user.sessionId, source: user.source, vacationPlanId: vacationPlanModel.id } as SendUserResponse;
             console.log(request)
             return await promptService.generate(request);
         },

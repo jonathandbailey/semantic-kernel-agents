@@ -1,7 +1,8 @@
-﻿using System.ComponentModel;
+﻿using Agents.Build;
 using Microsoft.SemanticKernel;
+using System.ComponentModel;
 using System.Text;
-using Agents.Build;
+using System.Text.Json;
 using Todo.Core.Vacations;
 
 namespace Agents.Plugins
@@ -32,9 +33,24 @@ namespace Agents.Plugins
             [Description("TaskId")] Guid taskId,
             [Description("StageTasks")] string stageTasks)
         {
-            await vacationPlanService.UpdateItemAsync(vacationPlanId, taskId);
 
-            return "Task Updated Successfully.";
+            try
+            {
+                var tasks = JsonSerializer.Deserialize<List<StageTask>>(stageTasks);
+
+                if (tasks == null)
+                {
+                    return "Task Failed to Deserailize.";
+                }
+
+                await vacationPlanService.UpdateItemAsync(vacationPlanId, taskId, tasks);
+
+                return "Task Updated Successfully.";
+            }
+            catch (Exception exception)
+            {
+                return "Failed to Update Tasks";
+            }
         }
     }
 }

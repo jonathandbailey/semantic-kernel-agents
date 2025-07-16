@@ -3,4 +3,5 @@ export interface SendUserResponse {
     sessionId: string;
     message: string;
     source: string;
+    vacationPlanId: string;
 }

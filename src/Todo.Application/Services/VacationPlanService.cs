@@ -48,6 +48,15 @@ public class VacationPlanService(IVacationPlanRepository vacationPlanRepository)
         await vacationPlanRepository.Save(vacationPlan);
     }
 
+    public async Task UpdateItemAsync(Guid vacationPlanId, Guid taskId, List<StageTask> stageTasks)
+    {
+        var vacationPlan = await vacationPlanRepository.Load(vacationPlanId);
+
+        vacationPlan.UpdateStageStatus(taskId, PlanStatus.Completed, stageTasks);
+
+        await vacationPlanRepository.Save(vacationPlan);
+    }
+
     public async Task<VacationPlan> Create()
     {
         var vacationPlan = new VacationPlan(Guid.NewGuid(), PlanStatus.Open, "Untitled", "No description available.");

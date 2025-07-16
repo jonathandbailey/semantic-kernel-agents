@@ -62,5 +62,17 @@ namespace Todo.Core.Vacations
 
             stage.UpdateStatus(status);
         }
+
+        public void UpdateStageStatus(Guid stageId, PlanStatus status, List<StageTask> stageTasks)
+        {
+            var stage = Stages.FirstOrDefault(x => x.Id == stageId);
+
+            if (stage == null)
+            {
+                throw new ArgumentException($"Vacation Plan : {Title}, ({Id}) does not have a stage with id : {stageId}.");
+            }
+
+            stage.UpdateStatus(status, stageTasks);
+        }
     }
 }
