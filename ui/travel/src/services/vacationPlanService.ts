@@ -15,6 +15,13 @@ const vacationPlanService = {
             "/api/vacationplan/" + id
         );
         return response.data;
+    },
+
+    create: async (): Promise<VacationPlanModel> => {
+        const response = await apiClient.post<VacationPlanModel>(
+            "/api/vacationplan"
+        );
+        return response.data;
     }
 }
 

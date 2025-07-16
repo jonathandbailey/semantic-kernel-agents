@@ -1,10 +1,12 @@
 import { Layout, Menu, Splitter } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import vacationPlanService from "../../services/vacationPlanService";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type { VacationPlanCatalogItem } from "../../types/vacationPlanCatalogItem";
 import { Link, BrowserRouter, Routes, Route } from "react-router-dom";
 import VacationPlanPage from "../../pages/VacationPlanPage";
 import ConversationPage from "../../pages/ConversationPage";
+import type { VacationPlanModel } from "../../types/vacationPlan";
 
 
 const { Content, Sider } = Layout;
@@ -12,6 +14,17 @@ const { Content, Sider } = Layout;
 
 const RootLayout = () => {
 
+    const createVacationPlan = useMutation({
+        mutationFn: async () => {
+            return await vacationPlanService.create();
+        },
+        onSuccess: (response: VacationPlanModel) => {
+            console.log("Vacation plan created successfully:", response);
+        },
+        onError: () => {
+            console.error("Error creating vacation plan");
+        }
+    });
 
 
     const { data } = useQuery({
@@ -20,6 +33,12 @@ const RootLayout = () => {
     });
 
     const handleClick = () => { };
+
+    const handleAddPlanClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+
+        createVacationPlan.mutate();
+    };
 
     return (<>
         <BrowserRouter>
@@ -32,7 +51,15 @@ const RootLayout = () => {
                         style={{ paddingTop: "32px", paddingLeft: "8px" }}
                         onClick={handleClick}
                     >
-                        <Menu.ItemGroup key="g3" title={<div style={{ color: "gray", paddingLeft: 12 }}>Plans</div>}>
+                        <Menu.ItemGroup
+                            key="g3"
+                            title={
+                                <div style={{ color: "gray", paddingLeft: 12, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                                    <span>Plans</span>
+                                    <PlusOutlined style={{ cursor: "pointer" }} onClick={handleAddPlanClick} />
+                                </div>
+                            }
+                        >
                             {data?.map((catalogItem: VacationPlanCatalogItem) => (
                                 <Menu.Item key={catalogItem.id}>
                                     <Link to={`/plan/${catalogItem.id}`}>

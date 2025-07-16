@@ -36,6 +36,28 @@ namespace Todo.Infrastructure.File
             }
         }
 
+        public async Task AddVacationPlanToCatalog(VacationPlan vacationPlan)
+        {
+            try
+            {
+                var catalog = await GetCatalog();
+
+                catalog.Add(new VacationPlanCatalogItem() { Title = vacationPlan.Title, Id = vacationPlan.Id});
+
+                var json = JsonSerializer.Serialize(catalog);
+
+                var filePath = Path.Combine(_directoryPath, $"VacationPlanCatalog.json");
+
+                Verify.NotNullOrWhiteSpace(json);
+                await System.IO.File.WriteAllTextAsync(filePath, json);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed to Update Catalog");
+                throw;
+            }
+        }
+
         public async Task<VacationPlan> Load(Guid id)
         {
             try
@@ -90,5 +112,6 @@ namespace Todo.Infrastructure.File
         Task Save(VacationPlan vacationPlan);
         Task<VacationPlan> Load(Guid id);
         Task<List<VacationPlanCatalogItem>> GetCatalog();
+        Task AddVacationPlanToCatalog(VacationPlan vacationPlan);
     }
 }

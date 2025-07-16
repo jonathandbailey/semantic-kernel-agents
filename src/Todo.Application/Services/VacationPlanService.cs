@@ -66,6 +66,8 @@ public class VacationPlanService(IVacationPlanRepository vacationPlanRepository)
 
         await vacationPlanRepository.Save(vacationPlan);
 
+        await vacationPlanRepository.AddVacationPlanToCatalog(vacationPlan);
+
         return vacationPlan;
     }
 }
