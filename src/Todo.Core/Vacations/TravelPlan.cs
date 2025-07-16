@@ -1,4 +1,6 @@
-﻿namespace Todo.Core.Vacations
+﻿using System.Text.Json.Serialization;
+
+namespace Todo.Core.Vacations
 {
     public class TravelPlan : IVacationPlanStage
     {
@@ -13,8 +15,17 @@
         public PlanStage Stage { get; }
 
         public List<StageTask> Tasks { get; private set; } = [];
-        
-        
+
+        [JsonConstructor]
+        public TravelPlan(Guid id, string title, string description, PlanStage stage, PlanStatus status, List<StageTask> tasks)
+        {
+            Id = id;
+            Status = status;
+            Title = title;
+            Description = description;
+            Stage = stage;
+            Tasks = tasks;
+        }
 
         public TravelPlan(Guid id, string title, string description, PlanStage stage, PlanStatus status)
         {

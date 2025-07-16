@@ -24,4 +24,12 @@ public class VacationPlanController(IMediator mediator) : Controller
 
         return Ok(response);
     }
+
+    [HttpPost]
+    public async Task<IActionResult> Create()
+    {
+        var response = await mediator.Send(new CreateVacationPlanCommand(User.Id()));
+
+        return Ok(response);
+    }
 }

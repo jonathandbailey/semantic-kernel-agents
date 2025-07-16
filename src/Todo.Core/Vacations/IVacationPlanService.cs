@@ -6,4 +6,5 @@ public interface IVacationPlanService
     Task UpdateAsync(VacationPlan vacationPlan, string source);
     Task UpdateItemAsync(Guid vacationPlanId, Guid taskId);
     Task UpdateItemAsync(Guid vacationPlanId, Guid taskId, List<StageTask> stageTasks);
+    Task<VacationPlan> Create();
 }

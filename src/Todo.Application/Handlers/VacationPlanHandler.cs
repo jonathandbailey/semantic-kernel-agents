@@ -5,9 +5,10 @@ using Todo.Infrastructure.File;
 
 namespace Todo.Application.Handlers
 {
-    public class VacationPlanHandler(IVacationPlanRepository vacationPlanRepository) : 
+    public class VacationPlanHandler(IVacationPlanRepository vacationPlanRepository, IVacationPlanService vacationPlanService) : 
         IRequestHandler<GetVacationPlanCatalogQuery, List<VacationPlanCatalogItem>>,
-        IRequestHandler<GetVacationPlanQuery, VacationPlan>
+        IRequestHandler<GetVacationPlanQuery, VacationPlan>,
+        IRequestHandler<CreateVacationPlanCommand, VacationPlan>
     {
         public async Task<List<VacationPlanCatalogItem>> Handle(GetVacationPlanCatalogQuery request, CancellationToken cancellationToken)
         {
@@ -19,6 +20,13 @@ namespace Todo.Application.Handlers
         public async Task<VacationPlan> Handle(GetVacationPlanQuery request, CancellationToken cancellationToken)
         {
             var vacationPlan = await vacationPlanRepository.Load(request.VacationPlanId);
+
+            return vacationPlan;
+        }
+
+        public async Task<VacationPlan> Handle(CreateVacationPlanCommand request, CancellationToken cancellationToken)
+        {
+            var vacationPlan = await vacationPlanService.Create();
 
             return vacationPlan;
         }

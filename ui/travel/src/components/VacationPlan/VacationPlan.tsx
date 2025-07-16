@@ -26,6 +26,13 @@ const VacationPlan = ({ item }: VacationPlanProps) => {
                 {item.stages?.map((stage, idx) => (
                     <Tabs.TabPane tab={stage.title} key={stage.id ?? idx}>
                         {stage.description}
+                        <ul>
+                            {stage.tasks.map((task) => (
+                                <li key={task.id}>
+                                    {task.title}
+                                </li>
+                            ))}
+                        </ul>
                     </Tabs.TabPane>
                 ))}
             </Tabs>
