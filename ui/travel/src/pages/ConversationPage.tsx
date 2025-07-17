@@ -6,10 +6,13 @@ import type { SendUserResponse } from "../types/sendUserResponse";
 import signalRService from "../services/streamingService";
 import { useUserStore } from "../store/useUserStore";
 import type { Interaction } from "../types/interaction";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import UserMessage from "../components/UserMessage/UserMessage";
 import AssistantMessage from "../components/AssistantMessage/AssistantMessage";
 import { useVacationPlanStore } from "../store/useVacationPlanStore";
+import { List } from "antd";
+
+
 
 
 const ConversationPage = () => {
@@ -22,7 +25,13 @@ const ConversationPage = () => {
     const updateUser = useUserStore(state => state.updateUser);
     const vacationPlanModel = useVacationPlanStore(state => state.vacationPlan);
 
+    const lastMessageRef = useRef<HTMLDivElement | null>(null);
 
+    useEffect(() => {
+        if (lastMessageRef.current) {
+            lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [uiInteractions]);
 
     signalRService.on("user", (response: SendUserResponse) => {
 
@@ -90,14 +99,20 @@ const ConversationPage = () => {
 
     return (
         <div style={{ display: "flex", flexDirection: "column", height: "95vh" }}>
-            <div style={{ flex: 1, overflowY: "auto", padding: "48px" }}>
-                {uiInteractions.map((interaction) => (
-                    <div key={interaction.id}>
-                        <UserMessage message={interaction.userMessage} />
-                        <AssistantMessage message={interaction.assistantMessage} />
-                    </div>
-                ))}
-            </div>
+
+            <List style={{ flex: 1, overflowY: "auto", padding: "48px" }} split={false}>
+                {uiInteractions.map((interaction, index) => {
+                    const isLast = index === uiInteractions.length - 1;
+                    return (
+                        <List.Item key={interaction.id} style={{ width: "100%", display: "flex", flexDirection: "column" }} ref={isLast ? lastMessageRef : null}>
+                            <UserMessage message={interaction.userMessage} />
+                            <AssistantMessage message={interaction.assistantMessage} />
+                        </List.Item>
+                    );
+                })}
+            </List>
+
+
             <div style={{ position: "sticky", bottom: 0, background: "#fff", zIndex: 10, paddingRight: 48, paddingLeft: 48 }}>
                 <ChatInput onEnter={handleOnEnter} />
             </div>
