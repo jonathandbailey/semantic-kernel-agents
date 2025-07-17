@@ -14,22 +14,23 @@ const { Content, Sider } = Layout;
 
 const RootLayout = () => {
 
+
+    const { data, refetch } = useQuery({
+        queryKey: ["vacationPlanCatalog"],
+        queryFn: () => vacationPlanService.getCatalog()
+    });
+
     const createVacationPlan = useMutation({
         mutationFn: async () => {
             return await vacationPlanService.create();
         },
         onSuccess: (response: VacationPlanModel) => {
             console.log("Vacation plan created successfully:", response);
+            refetch();
         },
         onError: () => {
             console.error("Error creating vacation plan");
         }
-    });
-
-
-    const { data } = useQuery({
-        queryKey: ["vacationPlanCatalog"],
-        queryFn: () => vacationPlanService.getCatalog()
     });
 
     const handleClick = () => { };
@@ -73,29 +74,30 @@ const RootLayout = () => {
                     </Menu>
                 </Sider>
                 <Layout>
-                    <Splitter style={{ boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
-                        <Splitter.Panel defaultSize="50%" min="20%" max="70%">
-                            <Content style={{
-                                display: "flex",
-                                flexDirection: "column",
+                    <Content style={{
+                        display: "flex",
+                        flexDirection: "column",
 
-                                overflow: "hidden",
-                                backgroundColor: "white",
-                            }}>
-                                <div style={{ padding: "32px" }}>
-                                    <Routes>
-                                        <Route path="/plan/:id" element={<VacationPlanPage />} />
-                                    </Routes>
-                                </div>
-
-                            </Content>
-                        </Splitter.Panel>
-                        <Splitter.Panel>
-                            <ConversationPage />
-                        </Splitter.Panel>
-                    </Splitter>
+                        overflow: "hidden",
+                        backgroundColor: "white",
+                    }}>
+                        <Splitter style={{ boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
+                            <Splitter.Panel defaultSize="50%" min="20%" max="70%" style={{ padding: 48 }}>
 
 
+                                <Routes>
+                                    <Route path="/plan/:id" element={<VacationPlanPage />} />
+                                </Routes>
+
+
+
+                            </Splitter.Panel>
+                            <Splitter.Panel style={{ padding: 48 }}>
+                                <ConversationPage />
+                            </Splitter.Panel>
+                        </Splitter>
+
+                    </Content>
                 </Layout>
             </Layout >
         </BrowserRouter >

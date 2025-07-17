@@ -11,7 +11,7 @@ const AssistantMessage = ({ message }: AssistantMessageProps) => {
         <Card
             style={{
                 marginBottom: 16,
-                marginLeft: 96,
+                marginLeft: 0,
                 textAlign: "left",
                 alignSelf: "center",
                 maxWidth: 800,

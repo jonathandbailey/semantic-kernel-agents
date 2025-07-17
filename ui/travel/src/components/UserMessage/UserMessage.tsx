@@ -13,7 +13,7 @@ const UserMessage = ({ message }: UserMessageProps) => {
                     width: 400,
                     marginLeft: "auto",
                     marginBottom: 16,
-                    marginRight: 96,
+                    marginRight: 0,
                     textAlign: "left",
                     backgroundColor: "#f5f5f5",
                 }}
