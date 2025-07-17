@@ -92,7 +92,7 @@ const RootLayout = () => {
 
 
                             </Splitter.Panel>
-                            <Splitter.Panel style={{ padding: 48 }}>
+                            <Splitter.Panel style={{ padding: 0 }}>
                                 <ConversationPage />
                             </Splitter.Panel>
                         </Splitter>

@@ -89,8 +89,8 @@ const ConversationPage = () => {
     };
 
     return (
-        <>
-            <div style={{ flex: 1, overflowY: "auto" }}>
+        <div style={{ display: "flex", flexDirection: "column", height: "95vh" }}>
+            <div style={{ flex: 1, overflowY: "auto", padding: "48px" }}>
                 {uiInteractions.map((interaction) => (
                     <div key={interaction.id}>
                         <UserMessage message={interaction.userMessage} />
@@ -98,8 +98,10 @@ const ConversationPage = () => {
                     </div>
                 ))}
             </div>
-            <ChatInput onEnter={handleOnEnter} />
-        </>
+            <div style={{ position: "sticky", bottom: 0, background: "#fff", zIndex: 10, paddingRight: 48, paddingLeft: 48 }}>
+                <ChatInput onEnter={handleOnEnter} />
+            </div>
+        </div>
     );
 }
 
