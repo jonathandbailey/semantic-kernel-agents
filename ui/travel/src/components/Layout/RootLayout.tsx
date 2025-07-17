@@ -7,6 +7,8 @@ import { Link, BrowserRouter, Routes, Route } from "react-router-dom";
 import VacationPlanPage from "../../pages/VacationPlanPage";
 import ConversationPage from "../../pages/ConversationPage";
 import type { VacationPlanModel } from "../../types/vacationPlan";
+import signalRService from "../../services/streamingService";
+import type { AssistantCommand } from "../../types/assistantCommand";
 
 
 const { Content, Sider } = Layout;
@@ -40,6 +42,11 @@ const RootLayout = () => {
 
         createVacationPlan.mutate();
     };
+
+    signalRService.on("command", (response: AssistantCommand) => {
+
+        console.log("SignalR Assistent Command:", response);
+    });
 
     return (<>
         <BrowserRouter>

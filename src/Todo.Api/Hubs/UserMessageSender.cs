@@ -21,6 +21,16 @@ namespace Todo.Api.Hubs
             }
         }
 
+        public async Task CommandAsync<T>(T payload)
+        {
+            var connections = userConnectionManager.GetConnections(_userId);
+
+            foreach (var connectionId in connections)
+            {
+                await userHub.Clients.Client(connectionId).SendAsync(hubSettings.Value.CommandChannel, payload);
+            }
+        }
+
         public void Initialize(Guid sessionId, Guid userId)
         {
             _sessionId = sessionId;

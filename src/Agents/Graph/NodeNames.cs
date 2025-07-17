@@ -13,5 +13,7 @@
         public const string TaskParser = "TaskParserNode";
 
         public const string Travel = "TravelNode";
+
+        public const string UserCommand = "UserCommandNode";
     }
 }

@@ -24,6 +24,11 @@
             _graph.AddEdge(source, new AgentInvokeEdge(target));
         }
 
+        public void Connect(string source, IEdge edge)
+        {
+            _graph.AddEdge(source, edge);
+        }
+
         public AgentGraph Build()
         {
             return _graph;

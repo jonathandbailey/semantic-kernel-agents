@@ -35,12 +35,9 @@ const ConversationPage = () => {
 
     signalRService.on("user", (response: SendUserResponse) => {
 
-        console.log("Received response from SignalR:", response);
-        console.log("Current UI Interactions:", uiInteractions);
         setUiInteractions((prev) =>
             prev.map((interaction) => {
                 if (interaction.id === response.id) {
-                    console.log("Updating interaction:", interaction);
                     return {
                         ...interaction,
                         assistantMessage: {

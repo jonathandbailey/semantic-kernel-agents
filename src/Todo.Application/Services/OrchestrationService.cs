@@ -4,10 +4,11 @@ using Agents.Graph;
 
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
+using Todo.Core.Users;
 
 namespace Todo.Application.Services;
 
-public class OrchestrationService(IAgentProvider agentProvider) : IOrchestrationService
+public class OrchestrationService(IAgentProvider agentProvider, IUserMessageSender userMessageSender) : IOrchestrationService
 {
     public async Task<NodeState> InvokeAsync(
         Guid sessionId,
@@ -25,6 +26,8 @@ public class OrchestrationService(IAgentProvider agentProvider) : IOrchestration
         userState.RequestId = id;
 
         var routingNode = new RoutingNode(NodeNames.Routing, NodeNames.Orchestration);
+
+        var userCommandNode = new UserCommandNode(NodeNames.UserCommand, userMessageSender);
      
         var orchestrationAgent = await agentProvider.Create(AgentNames.OrchestratorAgent);
 
@@ -42,6 +45,7 @@ public class OrchestrationService(IAgentProvider agentProvider) : IOrchestration
         graphBuilder.AddNode(NodeNames.Accommodation, accommodationAgent);
         graphBuilder.AddNode(NodeNames.Travel, travelAgent);
         graphBuilder.AddNode(NodeNames.Task, taskAgent);
+        graphBuilder.AddNode(userCommandNode);
 
         graphBuilder.Connect(NodeNames.Routing, NodeNames.Orchestration);
         graphBuilder.Connect(NodeNames.Routing, NodeNames.Accommodation);
@@ -53,7 +57,9 @@ public class OrchestrationService(IAgentProvider agentProvider) : IOrchestration
         graphBuilder.Connect(NodeNames.Accommodation, NodeNames.Task);
         graphBuilder.Connect(NodeNames.Travel, NodeNames.Task);
         
-        graphBuilder.Connect(NodeNames.Task, NodeNames.Orchestration);
+       
+        graphBuilder.Connect(NodeNames.Task, new DefaultEdge(NodeNames.UserCommand));
+        graphBuilder.Connect(NodeNames.UserCommand, new DefaultEdge(NodeNames.Orchestration));
 
         var graph = graphBuilder.Build();
 
